@@ -1,0 +1,48 @@
+.header {
+  width: 1920px;
+  height: 4rem;
+  background-color: #753422;
+  display: flex;
+}
+
+.header ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: baseline;
+}
+
+.header li {
+  margin: 0 1rem;
+}
+
+.header a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+.header a:hover {
+  color: rgb(199, 195, 195);
+}
+
+/*
+Test
+*/
+
+.container {
+  display: flex;
+  flex-flow: row nowrap;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left-container {
+  justify-content: flex-start;
+}
+
+.right-container {
+  justify-content: flex-end;
+}

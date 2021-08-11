@@ -1,0 +1,94 @@
+.container {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  margin-top: 6rem;
+  gap: 30px;
+}
+
+.filter-container {
+  padding: 10px;
+  background-color: #d79771;
+  position: absolute;
+  top: 10rem;
+  left: 5rem;
+}
+
+.filter-title {
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  font-size: 25px;
+}
+
+.year-filter {
+  display: flex;
+  background-color: #b05b3b;
+  padding: 10px;
+  gap: 20px;
+}
+
+.year-filter--title {
+  color: white;
+  padding: 10px;
+  text-align: center;
+  background-color: #b05b3b;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.category-filter--title {
+  color: white;
+  padding: 10px;
+  text-align: center;
+  background-color: #b05b3b;
+  margin-bottom: 10px;
+  margin-top: 30px;
+}
+
+.category-item {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.category-item:hover {
+  color: rgb(199, 195, 195);
+  cursor: pointer;
+}
+
+.search {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: #b05b3b;
+  margin-left: 30rem;
+  align-items: baseline;
+  justify-items: center;
+  width: auto;
+}
+
+.search--input {
+  display: flex;
+  width: 600px;
+  margin-left: px;
+  gap: 30px;
+  padding: 20px;
+}
+
+.search--field {
+  width: 300px;
+  height: 40px;
+}
+
+.search--button {
+  width: 80px;
+  height: 40px;
+  background-color: #753422;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+}

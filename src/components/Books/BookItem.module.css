@@ -1,0 +1,8 @@
+.book-item {
+  background-color: #ffdea4;
+  border: 3px solid black;
+  padding: 10px;
+  margin-bottom: -3px;
+  width: 600px;
+  color: black;
+}
