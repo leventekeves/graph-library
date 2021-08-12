@@ -93,3 +93,7 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.search--button:active {
+  background-color: #d79771;
+}

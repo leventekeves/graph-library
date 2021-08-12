@@ -40,3 +40,16 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.add-book:active {
+  width: 7rem;
+  justify-self: center;
+  grid-column: 1/3;
+  background-color: #ffdea4;
+  border: none;
+  color: black;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}

@@ -61,14 +61,41 @@ const BooksContent = () => {
     }
   };
 
+  let startYear = 1990;
+  const currentYear = new Date().getFullYear();
+  const years = [];
+
+  while (startYear < currentYear) {
+    years.push(startYear);
+    startYear++;
+  }
+
   return (
     <div className={classes.container}>
       <div className={classes.search}>
         <form className={classes["search--input"]} onSubmit={submitHandler}>
           <div className={classes["filter-container"]}>
             <div className={classes["filter-title"]}>Filter</div>
+
             <div className={classes["year-filter--title"]}>Year</div>
-            <input type="number" placeholder="Year..." ref={yearInputRef} />
+            <select
+              name="testname"
+              id="testid"
+              ref={yearInputRef}
+              defaultValue={"Select year"}
+            >
+              <option key={"Select year"} value={"Select year"}>
+                {"Select year"}
+              </option>
+              {years.map((year, index) => {
+                return (
+                  <option key={`year${index}`} value={year}>
+                    {year}
+                  </option>
+                );
+              })}
+            </select>
+            {/* <input type="number" placeholder="Year..." ref={yearInputRef} /> */}
             <div className={classes["category-filter--title"]}>Categories</div>
             <div
               onClick={categoryFilterHandler}

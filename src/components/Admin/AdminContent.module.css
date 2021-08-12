@@ -14,3 +14,13 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.admin-button:active {
+  background-color: #d79771;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}

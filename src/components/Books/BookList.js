@@ -15,7 +15,9 @@ const BookList = (props) => {
               book.category
                 .toLowerCase()
                 .includes(props.search.toLowerCase())) &&
-            (props.year ? book.year === +props.year : true) &&
+            (props.year && props.year !== "Select year"
+              ? +book.year === +props.year
+              : true) &&
             (props.category ? book.category === props.category : true)
           ) {
             return (

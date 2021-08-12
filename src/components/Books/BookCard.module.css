@@ -34,3 +34,13 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.rent-button:active {
+  background-color: #ffdea4;
+  border: none;
+  color: black;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
