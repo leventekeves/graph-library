@@ -36,7 +36,7 @@ const CommentList = (props) => {
     <div className={classes["comment-container"]}>
       {comments
         .map((comment) => {
-          if (+props.currentBook === +comment.bookid) {
+          if (props.currentBook === comment.bookid) {
             return (
               <CommentItem
                 key={comment.id}

@@ -25,9 +25,10 @@ const BooksContent = () => {
 
     const transformedBooks = [];
 
-    for (const id in data) {
+    for (const key in data) {
       const bookObj = {
-        ...data[id],
+        id: key,
+        ...data[key],
       };
 
       transformedBooks.push(bookObj);

@@ -61,10 +61,6 @@ const AdminNewBook = () => {
           <label>Release Year:</label>
           <input name="year" type="text" onChange={handleChange} />
         </div>
-        <div className={classes["new-book--single"]}>
-          <label>ID:</label>
-          <input name="id" type="text" onChange={handleChange} />
-        </div>
         <button className={classes["add-book"]}>Add Book</button>
       </form>
     </div>

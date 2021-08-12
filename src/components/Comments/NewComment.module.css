@@ -23,3 +23,9 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.new-comment--success {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: bold;
+}

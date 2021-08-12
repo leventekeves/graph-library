@@ -1,9 +1,10 @@
-import { Fragment, useRef } from "react";
+import { Fragment, useRef, useState } from "react";
 
 import classes from "./NewComment.module.css";
 
 const NewComment = (props) => {
   const commentInputRef = useRef();
+  const [succesMessage, setSuccesMessage] = useState("");
 
   async function addCommentHandler(comment) {
     await fetch(
@@ -47,6 +48,8 @@ const NewComment = (props) => {
       message: commentInputRef.current.value,
     };
     addCommentHandler(comment);
+    commentInputRef.current.value = "";
+    setSuccesMessage("Comment submitted! Refresh to be able to see it!");
   };
 
   return (
@@ -62,6 +65,7 @@ const NewComment = (props) => {
           </button>
         </form>
       </div>
+      <div className={classes["new-comment--success"]}>{succesMessage}</div>
     </Fragment>
   );
 };

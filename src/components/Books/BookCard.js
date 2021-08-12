@@ -20,15 +20,20 @@ const BookCard = () => {
 
     const transformedBooks = [];
 
-    for (const id in data) {
+    for (const key in data) {
       const bookObj = {
-        ...data[id],
+        id: key,
+        ...data[key],
       };
 
       transformedBooks.push(bookObj);
     }
     setBooks(transformedBooks);
   }
+
+  const bookIndex = books.findIndex((book) => {
+    return book.id === bookId;
+  });
 
   useEffect(() => {
     fetchBooksHandler();
@@ -37,19 +42,19 @@ const BookCard = () => {
   if (books.length === 0) {
     return <div></div>;
   }
-  if (books[bookId - 1]) {
+  if (books[bookIndex]) {
     return (
       <Fragment>
         <div className={classes["book-container"]}>
           <div className={classes["book-card"]}>
-            <div className={classes.title}>{books[bookId - 1].title}</div>
-            <div className={classes.author}>{books[bookId - 1].author}</div>
+            <div className={classes.title}>{books[bookIndex].title}</div>
+            <div className={classes.author}>{books[bookIndex].author}</div>
             <div className={classes.description}>
-              {books[bookId - 1].description}
+              {books[bookIndex].description}
             </div>
-            <div>Pages: {books[bookId - 1].pages}</div>
-            <div>Release year: {books[bookId - 1].year}</div>
-            <div>In stock: {books[bookId - 1].stock}</div>
+            <div>Pages: {books[bookIndex].pages}</div>
+            <div>Release year: {books[bookIndex].year}</div>
+            <div>In stock: {books[bookIndex].stock}</div>
             <button className={classes["rent-button"]}>Rent</button>
           </div>
         </div>
