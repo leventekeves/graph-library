@@ -9,22 +9,22 @@ const Navigation = () => {
         <div className={classes["left-container"]}>
           <ul>
             <li>
-              <Link to="/">Főoldal</Link>
+              <Link to="/">Homepage</Link>
             </li>
             <li>
-              <Link to="/books">Könyvek</Link>
+              <Link to="/books">Books</Link>
             </li>
             <li>
-              <Link to="/lists">Listák</Link>
+              <Link to="/lists">Lists</Link>
             </li>
             <li>
-              <Link to="/expand">Bővítés</Link>
+              <Link to="/expand">Expand</Link>
             </li>
             <li>
-              <Link to="/rent">Kölcsönzések</Link>
+              <Link to="/rent">Rentals</Link>
             </li>
             <li>
-              <Link to="/bookmarks">Könyvjelzők</Link>
+              <Link to="/bookmarks">Bookmarks</Link>
             </li>
           </ul>
         </div>
@@ -37,10 +37,10 @@ const Navigation = () => {
               <Link to="/profile">Profil</Link>
             </li>
             <li>
-              <Link to="/login">Bejelentkezés</Link>
+              <Link to="/login">Login</Link>
             </li>
             <li>
-              <Link to="/signup">Regisztrálás</Link>
+              <Link to="/signup">Signup</Link>
             </li>
           </ul>
         </div>

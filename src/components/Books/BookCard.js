@@ -1,5 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import CommentList from "../Comments/CommentList";
+import NewComment from "../Comments/NewComment";
 import classes from "./BookCard.module.css";
 
 const BookCard = () => {
@@ -32,11 +34,10 @@ const BookCard = () => {
     fetchBooksHandler();
   }, []);
 
-  console.log(books);
-
   if (books.length === 0) {
     return <div></div>;
-  } else {
+  }
+  if (books[bookId - 1]) {
     return (
       <Fragment>
         <div className={classes["book-container"]}>
@@ -46,59 +47,18 @@ const BookCard = () => {
             <div className={classes.description}>
               {books[bookId - 1].description}
             </div>
-            <div>Oldalak száma: {books[bookId - 1].pages}</div>
-            <div>Megjelenési év: {books[bookId - 1].year}</div>
-            <div>Raktáron: {books[bookId - 1].stock} darab</div>
-            <button className={classes["rent-button"]}>Kölcsönzés</button>
+            <div>Pages: {books[bookId - 1].pages}</div>
+            <div>Release year: {books[bookId - 1].year}</div>
+            <div>In stock: {books[bookId - 1].stock}</div>
+            <button className={classes["rent-button"]}>Rent</button>
           </div>
         </div>
-
-        <div className={classes["new-comment"]}>
-          <button className={classes["new-comment--button"]}>Új komment</button>
-        </div>
-
-        <div>
-          <div className={classes["comment-container"]}>
-            <div className={classes["comment-item"]}>
-              <div className={classes["comment-item--header"]}>
-                <p>Név</p>
-                <p>Dátum</p>
-              </div>
-              <div className={classes["comment-item--content"]}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Praesentium nihil ullam voluptatibus voluptate inventore ut quo
-                perspiciatis debitis! Harum aliquid ratione ut possimus
-                veritatis, beatae accusamus eos maiores placeat cumque.{" "}
-              </div>
-            </div>
-            <div className={classes["comment-item"]}>
-              <div className={classes["comment-item--header"]}>
-                <p>Név</p>
-                <p>Dátum</p>
-              </div>
-              <div className={classes["comment-item--content"]}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Praesentium nihil ullam voluptatibus voluptate inventore ut quo
-                perspiciatis debitis! Harum aliquid ratione ut possimus
-                veritatis, beatae accusamus eos maiores placeat cumque.
-              </div>
-            </div>
-            <div className={classes["comment-item"]}>
-              <div className={classes["comment-item--header"]}>
-                <p>Név</p>
-                <p>Dátum</p>
-              </div>
-              <div className={classes["comment-item--content"]}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Praesentium nihil ullam voluptatibus voluptate inventore ut quo
-                perspiciatis debitis! Harum aliquid ratione ut possimus
-                veritatis, beatae accusamus eos maiores placeat cumque.
-              </div>
-            </div>
-          </div>
-        </div>
+        <NewComment currentBook={bookId} />
+        <CommentList currentBook={bookId} />
       </Fragment>
     );
+  } else {
+    return <div>Book Not Found!</div>;
   }
 };
 

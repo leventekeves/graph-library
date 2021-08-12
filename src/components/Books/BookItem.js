@@ -2,7 +2,6 @@ import classes from "./BookItem.module.css";
 import { Link } from "react-router-dom";
 
 const BookItem = (props) => {
-  console.log(props);
   return (
     <Link to={`books/${props.id}`} style={{ textDecoration: "none" }}>
       <div className={classes["book-item"]}>

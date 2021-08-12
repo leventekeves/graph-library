@@ -1,0 +1,25 @@
+.new-comment {
+  display: flex;
+  flex-direction: column;
+  margin-top: 3rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.new-comment--input {
+  width: 40rem;
+  height: 10rem;
+  margin-bottom: 20px;
+  font-size: 18px;
+  padding: 5px;
+}
+
+.new-comment--button {
+  background-color: #753422;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}

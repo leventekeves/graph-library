@@ -1,5 +1,7 @@
+import AdminContent from "../components/Admin/AdminContent";
+
 const AdminPage = () => {
-  return <div>AdminPage</div>;
+  return <AdminContent />;
 };
 
 export default AdminPage;

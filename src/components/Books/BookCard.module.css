@@ -32,47 +32,5 @@
   padding: 8px 12px;
   text-align: center;
   text-decoration: none;
-}
-
-.new-comment {
-  display: flex;
-  margin-top: 3rem;
-  justify-content: center;
-}
-
-.new-comment--button {
-  background-color: #753422;
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  text-align: center;
-  text-decoration: none;
-}
-
-.comment-container {
-  padding: 10px;
-  margin-top: 1rem;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.comment-item {
-  border: 2px solid black;
-  width: 800px;
-}
-
-.comment-item--header {
-  background-color: #d79771;
-  display: flex;
-  justify-content: space-between;
-  padding: 5px;
-}
-
-.comment-item--content {
-  background-color: #eeceba;
-  padding: 5px;
+  cursor: pointer;
 }

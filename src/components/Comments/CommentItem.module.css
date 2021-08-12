@@ -1,0 +1,16 @@
+.comment-item {
+  border: 2px solid black;
+  width: 800px;
+}
+
+.comment-item--header {
+  background-color: #d79771;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.comment-item--content {
+  background-color: #eeceba;
+  padding: 5px;
+}

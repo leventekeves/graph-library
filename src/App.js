@@ -55,6 +55,9 @@ function App() {
         <Route path="/signup">
           <SignupPage />
         </Route>
+        <Route path="*">
+          <HomePage />
+        </Route>
       </Switch>
     </Layout>
   );

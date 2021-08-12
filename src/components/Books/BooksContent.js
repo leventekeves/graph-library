@@ -32,8 +32,6 @@ const BooksContent = () => {
 
       transformedBooks.push(bookObj);
     }
-    console.log(data);
-    console.log(transformedBooks);
     setBooks(transformedBooks);
   }
 
@@ -68,9 +66,9 @@ const BooksContent = () => {
         <form className={classes["search--input"]} onSubmit={submitHandler}>
           <div className={classes["filter-container"]}>
             <div className={classes["filter-title"]}>Filter</div>
-            <div className={classes["year-filter--title"]}>Év</div>
-            <input type="number" placeholder="Év..." ref={yearInputRef} />
-            <div className={classes["category-filter--title"]}>Kategóriák</div>
+            <div className={classes["year-filter--title"]}>Year</div>
+            <input type="number" placeholder="Year..." ref={yearInputRef} />
+            <div className={classes["category-filter--title"]}>Categories</div>
             <div
               onClick={categoryFilterHandler}
               className={classes["category-item"]}
@@ -99,10 +97,10 @@ const BooksContent = () => {
           <input
             type="text"
             className={classes["search--field"]}
-            placeholder="Könyv keresése..."
+            placeholder="Search..."
             ref={searchInputRef}
           />
-          <button className={classes["search--button"]}>Keresés</button>
+          <button className={classes["search--button"]}>Search</button>
         </form>
         {content}
       </div>
