@@ -1,0 +1,37 @@
+.container {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  margin-top: 30px;
+  gap: 30px;
+  padding: 20px;
+}
+
+.list-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background-color: #b05b3b;
+  margin-left: 20%;
+  align-items: baseline;
+}
+
+.center {
+  text-align: center;
+}
+
+.sort-container {
+  width: 200px;
+  padding: 10px;
+  background-color: violet;
+}
+
+.sort-title {
+  padding: 10px;
+  background-color: yellow;
+}
+
+.sort-items {
+  padding: 10px;
+  background-color: green;
+}

@@ -39,7 +39,7 @@ const NewComment = (props) => {
       ", " +
       date.getHours() +
       ":" +
-      date.getMinutes();
+      ((date.getMinutes() < 10 ? "0" : "") + date.getMinutes());
 
     const comment = {
       bookid: props.currentBook,
@@ -49,7 +49,10 @@ const NewComment = (props) => {
     };
     addCommentHandler(comment);
     commentInputRef.current.value = "";
-    setSuccesMessage("Comment submitted! Refresh to be able to see it!");
+    setSuccesMessage(
+      "New comment added, it will appear shortly! If you can't see your comment in a few seconds, reload the page!"
+    );
+    props.onNewComment(true);
   };
 
   return (

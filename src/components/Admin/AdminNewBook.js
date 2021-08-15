@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import classes from "./AdminNewBook.module.css";
+import { categories, years } from "../utility/Filters";
 
 const AdminNewBook = () => {
   const [newBook, setNewBook] = useState({});
@@ -17,21 +19,22 @@ const AdminNewBook = () => {
     );
   }
 
-  const handleChange = (e) => {
+  const handleChange = (event) => {
     setNewBook({
       ...newBook,
-      [e.target.name]: e.target.value.trim(),
+      [event.target.name]: event.target.value.trim(),
     });
   };
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
-    console.log(newBook);
     addBookHandler(newBook);
+    categories.push();
+    years.push();
   };
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} spellCheck={"false"}>
       <form className={classes["new-book"]} onSubmit={onSubmitHandler}>
         <div className={classes["new-book--double"]}>
           <label>Title</label>
@@ -43,7 +46,11 @@ const AdminNewBook = () => {
         </div>
         <div className={classes["new-book--double"]}>
           <label>Description</label>
-          <input name="description" type="text" onChange={handleChange} />
+          <textarea
+            name="description"
+            className={classes["description"]}
+            onChange={handleChange}
+          ></textarea>
         </div>
         <div className={classes["new-book--single"]}>
           <label>Pages</label>

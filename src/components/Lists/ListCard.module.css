@@ -1,22 +1,35 @@
 .container {
-  background-color: red;
-  display: flex;
-  align-items: baseline;
-  justify-content: flex-start;
-  margin-top: 30px;
-  margin-left: 100px;
-  padding: 20px;
-}
-
-.title {
-  background-color: yellow;
-}
-
-.miscellaneous {
   display: flex;
   flex-direction: column;
-  background-color: green;
-  row-gap: 30px;
-  margin-left: 20px;
-  width: 25rem;
+  align-items: center;
+}
+
+.list-container {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  margin-top: 2rem;
+}
+
+.list-card {
+  width: 40rem;
+  background-color: #d79771;
+  border: 2px solid black;
+  padding: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 2rem 2rem 2rem;
+  gap: 1rem;
+  justify-items: center;
+  align-items: center;
+}
+
+.title,
+.description {
+  grid-column: 1/3;
+}
+
+.center {
+  text-align: center;
 }

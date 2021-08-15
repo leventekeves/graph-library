@@ -1,41 +1,57 @@
+import { Fragment, useState } from "react";
 import classes from "./ListsContent.module.css";
+import BrowseLists from "./BrowseLists";
+import AddBookToList from "./AddBookToList";
+import NewList from "./NewList";
 
 const ListsContent = () => {
-  return (
-    <div className={classes.container}>
-      <div className={classes["sort-container"]}>
-        <div className={classes["sort-title"]}>Sorrend</div>
-        <div className={classes["sort-items"]}>
-          <p>Legújabb</p>
-          <p>Legrégebbi</p>
-          <p>Ajánlások</p>
-        </div>
-      </div>
+  const [listFunction, setListFunction] = useState("List Page");
 
-      <div className={classes["list-container"]}>
-        <div className={classes["list-item"]}>
-          <div>
-            <p>Listanév</p>
-            <p>Könyvek száma</p>
-          </div>
-          <div>Ajánlások</div>
-        </div>
-        <div className={classes["list-item"]}>
-          <div>
-            <p>Listanév</p>
-            <p>Könyvek száma</p>
-          </div>
-          <div>Ajánlások</div>
-        </div>
-        <div className={classes["list-item"]}>
-          <div>
-            <p>Listanév</p>
-            <p>Könyvek száma</p>
-          </div>
-          <div>Ajánlások</div>
-        </div>
+  const loadBrowseListsFunction = () => {
+    setListFunction("Browse Lists");
+  };
+
+  const loadNewListFunction = () => {
+    setListFunction("New List");
+  };
+
+  const loadModifyList = () => {
+    setListFunction("Add Books To List");
+  };
+
+  let content;
+
+  if (listFunction === "Browse Lists") {
+    content = <BrowseLists />;
+  }
+  if (listFunction === "New List") {
+    content = <NewList />;
+  }
+  if (listFunction === "Add Books To List") {
+    content = <AddBookToList />;
+  }
+
+  return (
+    <Fragment>
+      <div className={classes["admin-panel"]}>
+        <button
+          className={classes["admin-button"]}
+          onClick={loadBrowseListsFunction}
+        >
+          Browse Lists
+        </button>
+        <button
+          className={classes["admin-button"]}
+          onClick={loadNewListFunction}
+        >
+          New List
+        </button>
+        <button className={classes["admin-button"]} onClick={loadModifyList}>
+          Add Books To List
+        </button>
       </div>
-    </div>
+      {content}
+    </Fragment>
   );
 };
 

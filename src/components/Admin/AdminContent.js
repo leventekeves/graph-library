@@ -8,12 +8,10 @@ const AdminContent = () => {
 
   const loadNewBookFunction = () => {
     setAdminFunction("New Book");
-    console.log(adminFunction);
   };
 
   const loadUserList = () => {
     setAdminFunction("User List");
-    console.log(adminFunction);
   };
 
   let content;

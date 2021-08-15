@@ -7,7 +7,7 @@
   background-color: #d79771;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 2rem 2rem 2rem 2rem;
+  grid-template-rows: 2rem 2rem 1fr 2rem;
   width: 30rem;
   gap: 20px;
   padding: 1rem;
@@ -52,4 +52,9 @@
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+}
+
+.description {
+  height: 10rem;
+  padding: 5px;
 }

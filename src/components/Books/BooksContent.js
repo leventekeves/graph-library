@@ -1,17 +1,17 @@
 import classes from "./BooksContent.module.css";
 import BookList from "./BookList";
 import { useState, useRef } from "react";
+import LoadingSpinner from "../utility/LoadingSpinner";
+import BookFilters from "./BookFilters";
 
-const BooksContent = () => {
+const BooksContent = (props) => {
   const [books, setBooks] = useState([]);
   const [searchItem, setSearchItem] = useState("");
   const [yearFilter, setYearFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const searchInputRef = useRef();
-  const yearInputRef = useRef();
-
-  let content;
 
   async function fetchBooksHandler(event) {
     const response = await fetch(
@@ -34,94 +34,33 @@ const BooksContent = () => {
       transformedBooks.push(bookObj);
     }
     setBooks(transformedBooks);
+    setIsLoading(false);
   }
-
-  content = (
-    <BookList
-      books={books}
-      search={searchItem}
-      year={yearFilter}
-      category={categoryFilter}
-    />
-  );
 
   const submitHandler = (event) => {
     event.preventDefault();
     setSearchItem(searchInputRef.current.value);
-    setYearFilter(yearInputRef.current.value);
 
+    setIsLoading(true);
     fetchBooksHandler();
   };
 
-  const categoryFilterHandler = (props) => {
-    if (props.target.innerText === "Remove filter") {
-      setCategoryFilter("");
-    } else {
-      setCategoryFilter(props.target.innerText);
-    }
+  const onYearSelectHandler = (value) => {
+    setYearFilter(value);
   };
 
-  let startYear = 1990;
-  const currentYear = new Date().getFullYear();
-  const years = [];
-
-  while (startYear < currentYear) {
-    years.push(startYear);
-    startYear++;
-  }
+  const onCategorySelectHandler = (value) => {
+    setCategoryFilter(value);
+  };
 
   return (
     <div className={classes.container}>
       <div className={classes.search}>
         <form className={classes["search--input"]} onSubmit={submitHandler}>
-          <div className={classes["filter-container"]}>
-            <div className={classes["filter-title"]}>Filter</div>
-
-            <div className={classes["year-filter--title"]}>Year</div>
-            <select
-              name="testname"
-              id="testid"
-              ref={yearInputRef}
-              defaultValue={"Select year"}
-            >
-              <option key={"Select year"} value={"Select year"}>
-                {"Select year"}
-              </option>
-              {years.map((year, index) => {
-                return (
-                  <option key={`year${index}`} value={year}>
-                    {year}
-                  </option>
-                );
-              })}
-            </select>
-            {/* <input type="number" placeholder="Year..." ref={yearInputRef} /> */}
-            <div className={classes["category-filter--title"]}>Categories</div>
-            <div
-              onClick={categoryFilterHandler}
-              className={classes["category-item"]}
-            >
-              Remove filter
-            </div>
-            <div
-              onClick={categoryFilterHandler}
-              className={classes["category-item"]}
-            >
-              Category 1
-            </div>
-            <div
-              onClick={categoryFilterHandler}
-              className={classes["category-item"]}
-            >
-              Category 2
-            </div>
-            <div
-              onClick={categoryFilterHandler}
-              className={classes["category-item"]}
-            >
-              Category 3
-            </div>
-          </div>
+          <BookFilters
+            onYearSelect={onYearSelectHandler}
+            onCategorySelect={onCategorySelectHandler}
+          />
           <input
             type="text"
             className={classes["search--field"]}
@@ -130,7 +69,19 @@ const BooksContent = () => {
           />
           <button className={classes["search--button"]}>Search</button>
         </form>
-        {content}
+        {isLoading ? (
+          <div className={classes.center}>
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <BookList
+            books={books}
+            search={searchItem}
+            year={yearFilter}
+            category={categoryFilter}
+            list={props.listId}
+          />
+        )}
       </div>
     </div>
   );

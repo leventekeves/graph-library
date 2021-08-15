@@ -4,6 +4,7 @@ import classes from "./CommentList.module.css";
 
 const CommentList = (props) => {
   const [comments, setComments] = useState([]);
+  const [firstRender, setFirstRender] = useState(true);
 
   async function getComments() {
     const response = await fetch(
@@ -29,8 +30,17 @@ const CommentList = (props) => {
   }
 
   useEffect(() => {
-    getComments();
-  }, []);
+    if (firstRender) {
+      getComments();
+      setFirstRender(false);
+    }
+    if (props.newCommentAdded) {
+      setTimeout(() => {
+        getComments();
+        props.onNewComment(false);
+      }, 3000);
+    }
+  }, [props, firstRender]);
 
   return (
     <div className={classes["comment-container"]}>

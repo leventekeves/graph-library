@@ -6,3 +6,23 @@
   width: 600px;
   color: black;
 }
+
+.container {
+  display: flex;
+}
+
+.add {
+  background-color: #753422;
+  border: none;
+  color: white;
+  text-align: center;
+  justify-self: center;
+  align-self: center;
+  text-decoration: none;
+  cursor: pointer;
+  grid-column: 1/3;
+  width: 3rem;
+  height: 2rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
