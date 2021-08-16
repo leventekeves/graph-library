@@ -1,14 +1,14 @@
 import { Fragment, useState } from "react";
 
-import BooksContent from "../Books/BooksContent";
 import ListSelector from "./ListSelector";
 import classes from "./AddBookToList.module.css";
+import ListCard from "./ListCard";
 
-const AddBookToList = () => {
+const RemoveBookFromList = () => {
   const [bookContent, setBookContent] = useState(<div></div>);
 
   const onListSelectHandler = (value) => {
-    setBookContent(<BooksContent listId={value} action="add" />);
+    setBookContent(<ListCard listId={value} action="remove" />);
   };
 
   return (
@@ -24,4 +24,4 @@ const AddBookToList = () => {
   );
 };
 
-export default AddBookToList;
+export default RemoveBookFromList;

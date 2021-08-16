@@ -5,15 +5,19 @@ import classes from "./ListCard.module.css";
 import BookList from "../Books/BookList";
 import LoadingSpinner from "../utility/LoadingSpinner";
 
-const ListCard = () => {
-  const { listID } = useParams();
-  const [list, setList] = useState({});
+const ListCard = (props) => {
+  let { listId } = useParams();
+  const [list, setList] = useState();
   const [numberOfBooks, setNumberOfBooks] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
+  if (!listId) {
+    listId = props.listId;
+  }
+
   const fetchBooksHandler = useCallback(async () => {
     const response = await fetch(
-      `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listID}.json`
+      `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listId}.json`
     );
     const data = await response.json();
 
@@ -21,13 +25,26 @@ const ListCard = () => {
       throw new Error(data.message || "Could not fetch books.");
     }
 
-    setList({
-      ...data,
-      books: Object.values(data.books),
-    });
-    setNumberOfBooks(Object.values(data.books).length);
+    const transformedBooks = [];
+    for (const key in data.books) {
+      const bookObj = {
+        inListId: key,
+        ...data.books[key],
+      };
+
+      transformedBooks.push(bookObj);
+    }
+
+    if (data) {
+      setList({
+        ...data,
+        books: transformedBooks,
+      });
+      setNumberOfBooks(transformedBooks.length);
+    }
+
     setIsLoading(false);
-  }, [listID]);
+  }, [listId]);
 
   useEffect(() => {
     fetchBooksHandler();
@@ -39,7 +56,7 @@ const ListCard = () => {
         <LoadingSpinner />
       </div>
     );
-  } else {
+  } else if (list) {
     return (
       <div className={classes.container}>
         <div className={classes["list-container"]}>
@@ -50,9 +67,15 @@ const ListCard = () => {
             <div>Recommendations:{list.recommendations || 0}</div>
           </div>
         </div>
-        <BookList books={list.books} />
+        <BookList
+          books={list.books}
+          listId={props.listId}
+          action={props.action}
+        />
       </div>
     );
+  } else {
+    return <div>List Not Found!</div>;
   }
 };
 

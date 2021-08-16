@@ -1,9 +1,7 @@
 .container {
   display: flex;
   align-items: baseline;
-  justify-content: flex-start;
   margin-top: 30px;
-  gap: 30px;
   padding: 20px;
 }
 
@@ -21,17 +19,30 @@
 }
 
 .sort-container {
-  width: 200px;
   padding: 10px;
-  background-color: violet;
+  color: white;
 }
 
 .sort-title {
   padding: 10px;
-  background-color: yellow;
+  background-color: #b05b3b;
+  text-align: center;
+  font-size: large;
+  font-weight: bold;
 }
 
 .sort-items {
-  padding: 10px;
-  background-color: green;
+  background-color: #d79771;
+  padding: 1rem;
+}
+
+.sort-item {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+.sort-item:hover {
+  color: rgb(199, 195, 195);
+  cursor: pointer;
 }

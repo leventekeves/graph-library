@@ -1,53 +1,66 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import classes from "./ListsContent.module.css";
 import BrowseLists from "./BrowseLists";
 import AddBookToList from "./AddBookToList";
 import NewList from "./NewList";
+import { useHistory, useLocation } from "react-router-dom";
+import RemoveBookFromList from "./RemoveBookFromList";
 
 const ListsContent = () => {
-  const [listFunction, setListFunction] = useState("List Page");
+  const history = useHistory();
+  const location = useLocation();
 
-  const loadBrowseListsFunction = () => {
-    setListFunction("Browse Lists");
-  };
+  const queryParams = new URLSearchParams(location.search);
 
-  const loadNewListFunction = () => {
-    setListFunction("New List");
-  };
-
-  const loadModifyList = () => {
-    setListFunction("Add Books To List");
+  const changeSortHangler = (props) => {
+    history.push("/lists?function=" + props.target.value);
   };
 
   let content;
 
-  if (listFunction === "Browse Lists") {
+  if (queryParams.get("function") === "browse") {
     content = <BrowseLists />;
   }
-  if (listFunction === "New List") {
+  if (queryParams.get("function") === "new") {
     content = <NewList />;
   }
-  if (listFunction === "Add Books To List") {
+  if (queryParams.get("function") === "add") {
     content = <AddBookToList />;
+  }
+  if (queryParams.get("function") === "remove") {
+    content = <RemoveBookFromList />;
   }
 
   return (
     <Fragment>
       <div className={classes["admin-panel"]}>
         <button
+          value={"browse"}
           className={classes["admin-button"]}
-          onClick={loadBrowseListsFunction}
+          onClick={changeSortHangler}
         >
           Browse Lists
         </button>
         <button
+          value={"new"}
           className={classes["admin-button"]}
-          onClick={loadNewListFunction}
+          onClick={changeSortHangler}
         >
           New List
         </button>
-        <button className={classes["admin-button"]} onClick={loadModifyList}>
+        <button
+          value={"add"}
+          className={classes["admin-button"]}
+          onClick={changeSortHangler}
+        >
           Add Books To List
+        </button>
+        <button
+          value={"remove"}
+          className={classes["admin-button"]}
+          onClick={changeSortHangler}
+        >
+          Remove Book From List
         </button>
       </div>
       {content}

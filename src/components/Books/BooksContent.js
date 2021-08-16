@@ -24,7 +24,6 @@ const BooksContent = (props) => {
     }
 
     const transformedBooks = [];
-
     for (const key in data) {
       const bookObj = {
         id: key,
@@ -79,7 +78,8 @@ const BooksContent = (props) => {
             search={searchItem}
             year={yearFilter}
             category={categoryFilter}
-            list={props.listId}
+            listId={props.listId}
+            action={props.action}
           />
         )}
       </div>

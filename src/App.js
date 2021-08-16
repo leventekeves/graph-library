@@ -31,7 +31,7 @@ function App() {
         <Route path="/lists" exact>
           <ListsPage />
         </Route>
-        <Route path="/lists/:listID">
+        <Route path="/lists/:listId">
           <ListDetail />
         </Route>
         <Route path="/expand">

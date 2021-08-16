@@ -46,10 +46,10 @@ const ListSelector = (props) => {
         <option key={"Select list"} value={"Select list"}>
           {"Select list"}
         </option>
-        {transformedLists.map((year) => {
+        {transformedLists.map((list) => {
           return (
-            <option key={year.id} value={year.id}>
-              {year.name}
+            <option key={list.id} value={list.id}>
+              {list.name}
             </option>
           );
         })}

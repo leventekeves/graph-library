@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import classes from "./AdminNewBook.module.css";
-import { categories, years } from "../utility/Filters";
 
 const AdminNewBook = () => {
   const [newBook, setNewBook] = useState({});
@@ -29,8 +28,6 @@ const AdminNewBook = () => {
   const onSubmitHandler = (event) => {
     event.preventDefault();
     addBookHandler(newBook);
-    categories.push();
-    years.push();
   };
 
   return (

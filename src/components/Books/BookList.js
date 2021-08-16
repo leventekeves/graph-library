@@ -29,7 +29,9 @@ const BookList = (props) => {
                   pages={book.pages}
                   year={book.year}
                   category={book.category}
-                  listId={props.list}
+                  listId={props.listId}
+                  action={props.action}
+                  inListId={book.inListId}
                 />
               );
             } else {
@@ -45,7 +47,9 @@ const BookList = (props) => {
                 pages={book.pages}
                 year={book.year}
                 category={book.category}
-                listId={props.list}
+                listId={props.listId}
+                action={props.action}
+                inListId={book.inListId}
               />
             );
           }
