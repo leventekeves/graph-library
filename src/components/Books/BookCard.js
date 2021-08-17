@@ -1,5 +1,6 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
 import CommentList from "../Comments/CommentList";
 import NewComment from "../Comments/NewComment";
 import LoadingSpinner from "../utility/LoadingSpinner";
@@ -10,6 +11,7 @@ const BookCard = () => {
   const [book, setBook] = useState([]);
   const [newCommentAdded, setNewCommentAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRented, setIsRented] = useState(false);
 
   const fetchBooksHandler = useCallback(async () => {
     const response = await fetch(
@@ -33,6 +35,18 @@ const BookCard = () => {
     setNewCommentAdded(value);
   };
 
+  const onRentHandler = () => {
+    setIsRented(true);
+  };
+
+  const rentContent = isRented ? (
+    <div className={classes["rent-message"]}>Book Rented!</div>
+  ) : (
+    <button className={classes["rent-button"]} onClick={onRentHandler}>
+      Rent
+    </button>
+  );
+
   if (isLoading) {
     return (
       <div className={classes.center}>
@@ -42,17 +56,28 @@ const BookCard = () => {
   }
   if (book) {
     return (
-      <Fragment>
+      <div className={classes.container}>
         <div className={classes["book-container"]}>
-          <div className={classes["book-card"]}>
+          <div>
+            {book.cover ? (
+              <img
+                className={classes["book-cover"]}
+                src={book.cover}
+                alt="cover"
+              />
+            ) : (
+              ""
+            )}
+          </div>
+          <div className={classes["book-details"]}>
             <div className={classes.title}>{book.title}</div>
-            <div className={classes.author}>{book.author}</div>
+            <div className={classes.author}>by {book.author}</div>
             <div className={classes.description}>{book.description}</div>
             <div className={classes.pages}>Pages: {book.pages}</div>
             <div className={classes.category}>Categeory: {book.category}</div>
             <div className={classes.year}>Release year: {book.year}</div>
             <div className={classes.stock}>In stock: {book.stock}</div>
-            <button className={classes["rent-button"]}>Rent</button>
+            <div className={classes["rent-container"]}>{rentContent}</div>
           </div>
         </div>
         <NewComment
@@ -64,7 +89,7 @@ const BookCard = () => {
           newCommentAdded={newCommentAdded}
           onNewComment={newCommentAddedHandler}
         />
-      </Fragment>
+      </div>
     );
   } else {
     return <div className={classes["not-found"]}>Book Not Found!</div>;

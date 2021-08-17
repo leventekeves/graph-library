@@ -1,14 +1,21 @@
+.container {
+  display: flex;
+}
+
+.cover {
+  height: 6rem;
+  padding-right: 1rem;
+}
+
 .book-item {
   background-color: #ffdea4;
   border: 3px solid black;
-  padding: 10px;
+  padding: 0.5rem;
   margin-bottom: -3px;
   width: 600px;
   color: black;
-}
-
-.container {
   display: flex;
+  align-items: center;
 }
 
 .add {

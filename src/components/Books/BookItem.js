@@ -53,17 +53,18 @@ const BookItem = (props) => {
   if (!isRemoved) {
     return (
       <div className={classes.container}>
-        <Link
-          replace
-          to={`/books/${props.id}`}
-          style={{ textDecoration: "none" }}
-        >
+        <Link to={`/books/${props.id}`} style={{ textDecoration: "none" }}>
           <div className={classes["book-item"]}>
-            <div>{props.title}</div>
-            <div>{props.author}</div>
-            <div>{props.pages} pages</div>
-            <div>{props.category}</div>
-            <div>Released in {props.year}</div>
+            <div>
+              <img className={classes.cover} src={props.cover} alt="cover" />
+            </div>
+            <div>
+              <div>{props.title}</div>
+              <div>{props.author}</div>
+              <div>{props.pages} pages</div>
+              <div>{props.category}</div>
+              <div>Released in {props.year}</div>
+            </div>
           </div>
         </Link>
         {button}

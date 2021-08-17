@@ -1,6 +1,8 @@
+import { useState, useRef, useEffect, useMemo } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+
 import classes from "./BooksContent.module.css";
 import BookList from "./BookList";
-import { useState, useRef } from "react";
 import LoadingSpinner from "../utility/LoadingSpinner";
 import BookFilters from "./BookFilters";
 
@@ -12,6 +14,22 @@ const BooksContent = (props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const searchInputRef = useRef();
+  const history = useHistory();
+  const location = useLocation();
+
+  const queryParams = useMemo(() => {
+    return new URLSearchParams(location.search);
+  }, [location]);
+
+  const addQuery = (key, value) => {
+    let pathname = location.pathname;
+    let searchParams = new URLSearchParams(location.search);
+    searchParams.set(key, value);
+    history.push({
+      pathname: pathname,
+      search: searchParams.toString(),
+    });
+  };
 
   async function fetchBooksHandler(event) {
     const response = await fetch(
@@ -36,6 +54,12 @@ const BooksContent = (props) => {
     setIsLoading(false);
   }
 
+  useEffect(() => {
+    fetchBooksHandler();
+    setYearFilter(queryParams.get("year"));
+    setCategoryFilter(queryParams.get("category"));
+  }, [queryParams]);
+
   const submitHandler = (event) => {
     event.preventDefault();
     setSearchItem(searchInputRef.current.value);
@@ -45,11 +69,17 @@ const BooksContent = (props) => {
   };
 
   const onYearSelectHandler = (value) => {
-    setYearFilter(value);
+    addQuery("year", value);
   };
 
   const onCategorySelectHandler = (value) => {
-    setCategoryFilter(value);
+    addQuery("category", value);
+  };
+
+  const removeFilterHandler = () => {
+    setCategoryFilter("");
+    setYearFilter("");
+    history.push("/books");
   };
 
   return (
@@ -59,7 +89,9 @@ const BooksContent = (props) => {
           <BookFilters
             onYearSelect={onYearSelectHandler}
             onCategorySelect={onCategorySelectHandler}
+            onRemoveFilter={removeFilterHandler}
           />
+
           <input
             type="text"
             className={classes["search--field"]}

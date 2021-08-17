@@ -92,54 +92,57 @@ const BrowseLists = () => {
     return 0;
   }
 
-  const content = (
-    <div className={classes.container}>
-      <div className={classes["sort-container"]}>
-        <div className={classes["sort-title"]}>Sorrend</div>
-        <div className={classes["sort-items"]}>
-          <option
-            className={classes["sort-item"]}
-            value="recommendations"
-            onClick={changeSortHangler}
-          >
-            Most recommended
-          </option>
-          <option
-            className={classes["sort-item"]}
-            value="newest"
-            onClick={changeSortHangler}
-          >
-            Newest
-          </option>
-          <option
-            className={classes["sort-item"]}
-            value="oldest"
-            onClick={changeSortHangler}
-          >
-            Oldest
-          </option>
+  const content =
+    lists.length > 0 ? (
+      <div className={classes.container}>
+        <div className={classes["sort-container"]}>
+          <div className={classes["sort-title"]}>Sorrend</div>
+          <div className={classes["sort-items"]}>
+            <option
+              className={classes["sort-item"]}
+              value="recommendations"
+              onClick={changeSortHangler}
+            >
+              Most recommended
+            </option>
+            <option
+              className={classes["sort-item"]}
+              value="newest"
+              onClick={changeSortHangler}
+            >
+              Newest
+            </option>
+            <option
+              className={classes["sort-item"]}
+              value="oldest"
+              onClick={changeSortHangler}
+            >
+              Oldest
+            </option>
+          </div>
+        </div>
+        <div className={classes["list-container"]}>
+          {lists.map((list) => {
+            if (!list.books) {
+              return "";
+            } else {
+              return (
+                <ListItem
+                  key={list.id}
+                  id={list.id}
+                  name={list.name}
+                  books={list.books}
+                  recommendations={list.recommendations}
+                  date={list.date}
+                />
+              );
+            }
+          })}
         </div>
       </div>
-      <div className={classes["list-container"]}>
-        {lists.map((list) => {
-          if (!list.books) {
-            return "";
-          } else {
-            return (
-              <ListItem
-                key={list.id}
-                id={list.id}
-                name={list.name}
-                books={list.books}
-                recommendations={list.recommendations}
-                date={list.date}
-              />
-            );
-          }
-        })}
-      </div>
-    </div>
-  );
+    ) : (
+      <div className={classes.nolist}>No list found!</div>
+    );
 
   return isLoading ? (
     <div className={classes.center}>

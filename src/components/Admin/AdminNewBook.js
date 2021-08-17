@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { app } from "../../base";
 
 import classes from "./AdminNewBook.module.css";
 
 const AdminNewBook = () => {
   const [newBook, setNewBook] = useState({});
+  let file;
 
   async function addBookHandler(book) {
     await fetch(
@@ -27,7 +29,19 @@ const AdminNewBook = () => {
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
-    addBookHandler(newBook);
+
+    const storageRef = app.storage().ref();
+    const fileRef = storageRef.child(`covers/${file.name}`);
+    fileRef.put(file);
+
+    addBookHandler({
+      ...newBook,
+      cover: `https://firebasestorage.googleapis.com/v0/b/graph-library-kl.appspot.com/o/covers%2F${file.name}?alt=media`,
+    });
+  };
+
+  const fileSelectedHandler = (event) => {
+    file = event.target.files[0];
   };
 
   return (
@@ -64,6 +78,10 @@ const AdminNewBook = () => {
         <div className={classes["new-book--single"]}>
           <label>Release Year:</label>
           <input name="year" type="text" onChange={handleChange} />
+        </div>
+        <div className={classes["new-book--double"]}>
+          <label>Cover:</label>
+          <input type="file" onChange={fileSelectedHandler} />
         </div>
         <button className={classes["add-book"]}>Add Book</button>
       </form>

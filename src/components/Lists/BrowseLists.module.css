@@ -18,6 +18,13 @@
   text-align: center;
 }
 
+.nolist {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 24px;
+  font-weight: bold;
+}
+
 .sort-container {
   padding: 10px;
   color: white;
