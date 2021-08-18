@@ -25,11 +25,32 @@
   align-items: center;
 }
 
-.title,
-.description {
+.double {
   grid-column: 1/3;
 }
 
 .center {
   text-align: center;
+}
+
+.button {
+  margin-top: 0.5rem;
+  height: 40px;
+  background-color: #753422;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:active {
+  background-color: #d79771;
+}
+
+.feedback-message {
+  grid-column: 1/3;
+  font-size: large;
+  font-weight: bold;
 }

@@ -31,7 +31,7 @@ const BooksContent = (props) => {
     });
   };
 
-  async function fetchBooksHandler(event) {
+  async function getBooks(event) {
     const response = await fetch(
       "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books.json"
     );
@@ -55,7 +55,7 @@ const BooksContent = (props) => {
   }
 
   useEffect(() => {
-    fetchBooksHandler();
+    getBooks();
     setYearFilter(queryParams.get("year"));
     setCategoryFilter(queryParams.get("category"));
   }, [queryParams]);
@@ -65,7 +65,7 @@ const BooksContent = (props) => {
     setSearchItem(searchInputRef.current.value);
 
     setIsLoading(true);
-    fetchBooksHandler();
+    getBooks();
   };
 
   const onYearSelectHandler = (value) => {

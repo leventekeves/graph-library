@@ -11,12 +11,13 @@ const ListCard = (props) => {
   const [list, setList] = useState();
   const [numberOfBooks, setNumberOfBooks] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRecommended, setIsRecommended] = useState(false);
 
   if (!listId) {
     listId = props.listId;
   }
 
-  const fetchBooksHandler = useCallback(async () => {
+  const getBooks = useCallback(async () => {
     const response = await fetch(
       `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listId}.json`
     );
@@ -36,10 +37,16 @@ const ListCard = (props) => {
       transformedBooks.push(bookObj);
     }
 
+    let recommendations = 0;
+    if (data.recommendations) {
+      recommendations = Object.entries(data.recommendations).length;
+    }
+
     if (data) {
       setList({
         ...data,
         books: transformedBooks,
+        recommendations: recommendations,
       });
       setNumberOfBooks(transformedBooks.length);
     }
@@ -47,9 +54,37 @@ const ListCard = (props) => {
     setIsLoading(false);
   }, [listId]);
 
+  async function addRecommendation(username) {
+    await fetch(
+      `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listId}/recommendations.json`,
+      {
+        method: "POST",
+        body: JSON.stringify(username),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
   useEffect(() => {
-    fetchBooksHandler();
-  }, [fetchBooksHandler]);
+    getBooks();
+  }, [getBooks]);
+
+  const onRecommendHandler = () => {
+    setIsRecommended(true);
+    addRecommendation("Guest");
+  };
+
+  const recommendButton = isRecommended ? (
+    <div className={classes["feedback-message"]}>Recommended</div>
+  ) : (
+    <div className={classes.double}>
+      <button className={classes.button} onClick={onRecommendHandler}>
+        Recommend
+      </button>
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -79,10 +114,11 @@ const ListCard = (props) => {
           <div className={classes.container}>
             <div className={classes["list-container"]}>
               <div className={classes["list-card"]}>
-                <div className={classes.title}>{list.name}</div>
-                <div className={classes.description}>{list.description}</div>
+                <div className={classes.double}>{list.name}</div>
+                <div className={classes.double}>{list.description}</div>
                 <div>Number of books: {numberOfBooks}</div>
-                <div>Recommendations:{list.recommendations || 0}</div>
+                <div>Recommendations: {list.recommendations}</div>
+                {recommendButton}
               </div>
             </div>
             <BookList

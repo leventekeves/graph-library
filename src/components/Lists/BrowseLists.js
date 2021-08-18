@@ -41,13 +41,20 @@ const BrowseLists = () => {
     const transformedLists = [];
 
     for (const key in data) {
+      let recommendations = 0;
+      if (data[key].recommendations) {
+        recommendations = Object.entries(data[key].recommendations).length;
+      }
+
       const listObj = {
         id: key,
         ...data[key],
+        recommendations: recommendations,
       };
 
       transformedLists.push(listObj);
     }
+
     setLists(transformedLists);
     setIsLoading(false);
   }, []);

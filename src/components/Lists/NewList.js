@@ -3,7 +3,7 @@ import classes from "./NewList.module.css";
 
 const NewList = () => {
   const date = new Date();
-  const [newList, setNewList] = useState({ date: date, recommendations: 0 });
+  const [newList, setNewList] = useState({ date: date });
 
   async function newListHandler(list) {
     await fetch(

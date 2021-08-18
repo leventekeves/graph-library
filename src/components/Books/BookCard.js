@@ -13,8 +13,9 @@ const BookCard = () => {
   const [newCommentAdded, setNewCommentAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRented, setIsRented] = useState(false);
+  const [isRated, setisRated] = useState(false);
 
-  const fetchBooksHandler = useCallback(async () => {
+  const getBooks = useCallback(async () => {
     const response = await fetch(
       `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${bookId}.json`
     );
@@ -42,8 +43,8 @@ const BookCard = () => {
   }
 
   useEffect(() => {
-    fetchBooksHandler();
-  }, [fetchBooksHandler]);
+    getBooks();
+  }, [getBooks]);
 
   const newCommentAddedHandler = (value) => {
     setNewCommentAdded(value);
@@ -54,11 +55,14 @@ const BookCard = () => {
   };
 
   const onRateHandler = (event) => {
-    if (isFinite(event.target.value)) addRateHandler(event.target.value);
+    if (isFinite(event.target.value)) {
+      addRateHandler(event.target.value);
+      setisRated(true);
+    }
   };
 
   const rentContent = isRented ? (
-    <div className={classes["rent-message"]}>Book Rented!</div>
+    <div className={classes["feedback-message"]}>Book Rented!</div>
   ) : (
     <button className={classes["rent-button"]} onClick={onRentHandler}>
       Rent
@@ -106,6 +110,12 @@ const BookCard = () => {
     rating = (ratingSum / numberOfRatings).toFixed(2);
   }
 
+  const rateContent = isRated ? (
+    <div className={classes["feedback-message"]}>Rated!</div>
+  ) : (
+    <div>Rate: {rateSelector}</div>
+  );
+
   if (isLoading) {
     return (
       <div className={classes.center}>
@@ -144,7 +154,7 @@ const BookCard = () => {
               <div className={classes.year}>Release year: {book.year}</div>
               <div className={classes.rating}>Rating: {rating}</div>
               <div className={classes.stock}>In stock: {book.stock}</div>
-              <div className={classes.rate}>Rate: {rateSelector}</div>
+              <div className={classes.rate}>{rateContent}</div>
               <div className={classes["rent-container"]}>{rentContent}</div>
             </div>
           </div>
