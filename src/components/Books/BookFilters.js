@@ -2,7 +2,7 @@ import classes from "./BookFilters.module.css";
 import YearSelector from "./YearSelector";
 
 const BookFilters = (props) => {
-  const categories = ["Fantasy", "Crime", "Fiction"];
+  const categories = ["Fantasy", "Crime", "Fiction", "Horror"];
 
   const categoryFilterHandler = (event) => {
     props.onCategorySelect(event.target.value);

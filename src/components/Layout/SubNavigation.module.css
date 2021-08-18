@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  width: fit-content;
+  gap: 0.5rem;
+  margin-top: -6rem;
+  padding: 1rem 2rem;
+  background-color: #b05b3b;
+  color: white;
+}
+
+.link {
+  text-decoration: none;
+  color: inherit;
+  font-weight: bolder;
+}

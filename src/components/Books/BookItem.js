@@ -50,6 +50,20 @@ const BookItem = (props) => {
       </button>
     );
 
+  let rating = "No ratings yet!";
+  let ratingSum = 0;
+  let numberOfRatings = 0;
+  if (props.ratings) {
+    for (const key in props.ratings) {
+      const ratingObj = {
+        ...props.ratings[key],
+      };
+      ratingSum += +ratingObj[0];
+      numberOfRatings++;
+    }
+    rating = (ratingSum / numberOfRatings).toFixed(2);
+  }
+
   if (!isRemoved) {
     return (
       <div className={classes.container}>
@@ -64,6 +78,7 @@ const BookItem = (props) => {
               <div>{props.pages} pages</div>
               <div>{props.category}</div>
               <div>Released in {props.year}</div>
+              <div>Rating: {rating}</div>
             </div>
           </div>
         </Link>

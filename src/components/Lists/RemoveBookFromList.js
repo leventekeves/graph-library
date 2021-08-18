@@ -8,7 +8,9 @@ const RemoveBookFromList = () => {
   const [bookContent, setBookContent] = useState(<div></div>);
 
   const onListSelectHandler = (value) => {
-    setBookContent(<ListCard listId={value} action="remove" />);
+    if (value !== "Select list") {
+      setBookContent(<ListCard listId={value} action="remove" />);
+    }
   };
 
   return (
@@ -19,7 +21,7 @@ const RemoveBookFromList = () => {
           <ListSelector onListSelect={onListSelectHandler} />
         </div>
       </div>
-      <div>{bookContent}</div>
+      <div className={classes.container}>{bookContent}</div>
     </Fragment>
   );
 };

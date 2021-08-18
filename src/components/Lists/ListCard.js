@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import classes from "./ListCard.module.css";
 import BookList from "../Books/BookList";
 import LoadingSpinner from "../utility/LoadingSpinner";
+import SubNavigation from "../Layout/SubNavigation";
 
 const ListCard = (props) => {
   let { listId } = useParams();
@@ -57,23 +58,42 @@ const ListCard = (props) => {
       </div>
     );
   } else if (list) {
-    return (
-      <div className={classes.container}>
-        <div className={classes["list-container"]}>
-          <div className={classes["list-card"]}>
-            <div className={classes.title}>{list.name}</div>
-            <div className={classes.description}>{list.description}</div>
-            <div>Number of books: {numberOfBooks}</div>
-            <div>Recommendations:{list.recommendations || 0}</div>
-          </div>
-        </div>
+    if (props.listId) {
+      return (
         <BookList
           books={list.books}
           listId={props.listId}
           action={props.action}
         />
-      </div>
-    );
+      );
+    } else {
+      return (
+        <Fragment>
+          <SubNavigation
+            location={[
+              { name: "Lists", link: "/lists" },
+              { name: "Browse Lists", link: "/lists?function=browse" },
+              { name: `${list.name}`, link: "" },
+            ]}
+          />
+          <div className={classes.container}>
+            <div className={classes["list-container"]}>
+              <div className={classes["list-card"]}>
+                <div className={classes.title}>{list.name}</div>
+                <div className={classes.description}>{list.description}</div>
+                <div>Number of books: {numberOfBooks}</div>
+                <div>Recommendations:{list.recommendations || 0}</div>
+              </div>
+            </div>
+            <BookList
+              books={list.books}
+              listId={props.listId}
+              action={props.action}
+            />
+          </div>
+        </Fragment>
+      );
+    }
   } else {
     return <div>List Not Found!</div>;
   }

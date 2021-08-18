@@ -29,6 +29,7 @@ const BookList = (props) => {
                   pages={book.pages}
                   year={book.year}
                   category={book.category}
+                  ratings={book.ratings}
                   cover={book.cover}
                   listId={props.listId}
                   action={props.action}
@@ -49,6 +50,7 @@ const BookList = (props) => {
                 year={book.year}
                 category={book.category}
                 cover={book.cover}
+                ratings={book.ratings}
                 listId={props.listId}
                 action={props.action}
                 inListId={book.inListId}

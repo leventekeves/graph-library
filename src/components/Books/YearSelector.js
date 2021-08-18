@@ -1,3 +1,5 @@
+import classes from "./YearSelector.module.css";
+
 const YearSelector = (props) => {
   let startYear = 1940;
   const currentYear = new Date().getFullYear();
@@ -14,10 +16,9 @@ const YearSelector = (props) => {
 
   return (
     <select
-      name="testname"
-      id="testid"
       onChange={onChangeHandler}
       defaultValue={"Select year"}
+      className={classes["year-select"]}
     >
       <option key={"Select year"} value={"Select year"}>
         {"Select year"}

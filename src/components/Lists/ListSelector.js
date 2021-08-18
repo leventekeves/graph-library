@@ -4,7 +4,7 @@ import classes from "./ListSelector.module.css";
 
 const ListSelector = (props) => {
   const [dropdown, setDropdown] = useState(
-    <select defaultValue={"Select list"} className={classes.select}>
+    <select defaultValue={"Select list"} className={classes["list-select"]}>
       <option key={"Select list"} value={"Select list"}>
         {"Select  list"}
       </option>
@@ -42,6 +42,7 @@ const ListSelector = (props) => {
         defaultValue={"Select list"}
         ref={listRef}
         onChange={onListSelectHandler}
+        className={classes["list-select"]}
       >
         <option key={"Select list"} value={"Select list"}>
           {"Select list"}

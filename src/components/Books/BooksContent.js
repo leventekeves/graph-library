@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, Fragment } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
 import classes from "./BooksContent.module.css";
@@ -83,39 +83,41 @@ const BooksContent = (props) => {
   };
 
   return (
-    <div className={classes.container}>
-      <div className={classes.search}>
-        <form className={classes["search--input"]} onSubmit={submitHandler}>
-          <BookFilters
-            onYearSelect={onYearSelectHandler}
-            onCategorySelect={onCategorySelectHandler}
-            onRemoveFilter={removeFilterHandler}
-          />
+    <Fragment>
+      <div className={classes.container}>
+        <div className={classes.search}>
+          <form className={classes["search--input"]} onSubmit={submitHandler}>
+            <BookFilters
+              onYearSelect={onYearSelectHandler}
+              onCategorySelect={onCategorySelectHandler}
+              onRemoveFilter={removeFilterHandler}
+            />
 
-          <input
-            type="text"
-            className={classes["search--field"]}
-            placeholder="Search..."
-            ref={searchInputRef}
-          />
-          <button className={classes["search--button"]}>Search</button>
-        </form>
-        {isLoading ? (
-          <div className={classes.center}>
-            <LoadingSpinner />
-          </div>
-        ) : (
-          <BookList
-            books={books}
-            search={searchItem}
-            year={yearFilter}
-            category={categoryFilter}
-            listId={props.listId}
-            action={props.action}
-          />
-        )}
+            <input
+              type="text"
+              className={classes["search--field"]}
+              placeholder="Search..."
+              ref={searchInputRef}
+            />
+            <button className={classes["search--button"]}>Search</button>
+          </form>
+          {isLoading ? (
+            <div className={classes.center}>
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <BookList
+              books={books}
+              search={searchItem}
+              year={yearFilter}
+              category={categoryFilter}
+              listId={props.listId}
+              action={props.action}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </Fragment>
   );
 };
 
