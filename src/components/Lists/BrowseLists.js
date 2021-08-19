@@ -103,7 +103,7 @@ const BrowseLists = () => {
     lists.length > 0 ? (
       <div className={classes.container}>
         <div className={classes["sort-container"]}>
-          <div className={classes["sort-title"]}>Sorrend</div>
+          <div className={classes["sort-title"]}>Order</div>
           <div className={classes["sort-items"]}>
             <option
               className={classes["sort-item"]}
