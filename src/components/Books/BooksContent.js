@@ -72,8 +72,8 @@ const BooksContent = (props) => {
     const searchFilter = queryParams.get("search");
     const yearFilter = queryParams.get("year");
     const categoryFilter = queryParams.get("category");
-    const filteredBooks = books.filter((book) => {
-      if (
+    const filteredBooks = books.filter(
+      (book) =>
         (searchFilter
           ? book.author.toLowerCase().includes(searchFilter.toLowerCase()) ||
             book.title.toLowerCase().includes(searchFilter.toLowerCase())
@@ -82,12 +82,7 @@ const BooksContent = (props) => {
           ? +book.year === +yearFilter
           : true) &&
         (categoryFilter ? book.category === categoryFilter : true)
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    );
     setFilteredBooks(filteredBooks);
   }, [queryParams, books]);
 
