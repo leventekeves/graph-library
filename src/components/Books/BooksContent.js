@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, Fragment } from "react";
+import { useState, useEffect, useMemo, Fragment } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
 import classes from "./BooksContent.module.css";
@@ -6,20 +6,41 @@ import BookList from "./BookList";
 import LoadingSpinner from "../utility/LoadingSpinner";
 import BookFilters from "./BookFilters";
 
+async function getBooks() {
+  const response = await fetch(
+    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books.json"
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Could not fetch books.");
+  }
+  return data;
+}
+
 const BooksContent = (props) => {
+  const [data, setData] = useState();
   const [books, setBooks] = useState([]);
-  const [searchItem, setSearchItem] = useState("");
-  const [yearFilter, setYearFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const searchInputRef = useRef();
   const history = useHistory();
   const location = useLocation();
 
-  const queryParams = useMemo(() => {
-    return new URLSearchParams(location.search);
-  }, [location]);
+  async function transformBooks(data) {
+    const transformedBooks = [];
+    for (const key in data) {
+      const bookObj = {
+        id: key,
+        ...data[key],
+      };
+
+      transformedBooks.push(bookObj);
+    }
+    setBooks(transformedBooks);
+    setFilteredBooks(transformedBooks);
+    setIsLoading(false);
+  }
 
   const addQuery = (key, value) => {
     let pathname = location.pathname;
@@ -31,41 +52,47 @@ const BooksContent = (props) => {
     });
   };
 
-  async function getBooks(event) {
-    const response = await fetch(
-      "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books.json"
-    );
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Could not fetch books.");
-    }
-
-    const transformedBooks = [];
-    for (const key in data) {
-      const bookObj = {
-        id: key,
-        ...data[key],
-      };
-
-      transformedBooks.push(bookObj);
-    }
-    setBooks(transformedBooks);
-    setIsLoading(false);
-  }
+  const queryParams = useMemo(() => {
+    return new URLSearchParams(location.search);
+  }, [location]);
 
   useEffect(() => {
-    getBooks();
-    setYearFilter(queryParams.get("year"));
-    setCategoryFilter(queryParams.get("category"));
-  }, [queryParams]);
+    async function waiter() {
+      const data = await getBooks();
+      setData(data);
+    }
+    waiter();
+  }, []);
 
-  const submitHandler = (event) => {
-    event.preventDefault();
-    setSearchItem(searchInputRef.current.value);
+  useEffect(() => {
+    transformBooks(data);
+  }, [data]);
 
-    setIsLoading(true);
-    getBooks();
+  useEffect(() => {
+    const searchFilter = queryParams.get("search");
+    const yearFilter = queryParams.get("year");
+    const categoryFilter = queryParams.get("category");
+    const filteredBooks = books.filter((book) => {
+      if (
+        (searchFilter
+          ? book.author.toLowerCase().includes(searchFilter.toLowerCase()) ||
+            book.title.toLowerCase().includes(searchFilter.toLowerCase())
+          : true) &&
+        (yearFilter && yearFilter !== "Select year"
+          ? +book.year === +yearFilter
+          : true) &&
+        (categoryFilter ? book.category === categoryFilter : true)
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    setFilteredBooks(filteredBooks);
+  }, [queryParams, books]);
+
+  const onSearchChangeHandler = (event) => {
+    addQuery("search", event.target.value);
   };
 
   const onYearSelectHandler = (value) => {
@@ -77,8 +104,6 @@ const BooksContent = (props) => {
   };
 
   const removeFilterHandler = () => {
-    setCategoryFilter("");
-    setYearFilter("");
     history.push("/books");
   };
 
@@ -86,7 +111,7 @@ const BooksContent = (props) => {
     <Fragment>
       <div className={classes.container}>
         <div className={classes.search}>
-          <form className={classes["search--input"]} onSubmit={submitHandler}>
+          <div className={classes["search--input"]}>
             <BookFilters
               onYearSelect={onYearSelectHandler}
               onCategorySelect={onCategorySelectHandler}
@@ -97,20 +122,17 @@ const BooksContent = (props) => {
               type="text"
               className={classes["search--field"]}
               placeholder="Search..."
-              ref={searchInputRef}
+              onChange={onSearchChangeHandler}
             />
             <button className={classes["search--button"]}>Search</button>
-          </form>
+          </div>
           {isLoading ? (
             <div className={classes.center}>
               <LoadingSpinner />
             </div>
           ) : (
             <BookList
-              books={books}
-              search={searchItem}
-              year={yearFilter}
-              category={categoryFilter}
+              books={filteredBooks}
               listId={props.listId}
               action={props.action}
             />
