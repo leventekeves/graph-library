@@ -124,7 +124,6 @@ const BooksContent = (props) => {
               placeholder="Search..."
               onChange={onSearchChangeHandler}
             />
-            <button className={classes["search--button"]}>Search</button>
           </div>
           {isLoading ? (
             <div className={classes.center}>
