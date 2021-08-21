@@ -1,4 +1,5 @@
 import { Switch, Route } from "react-router-dom";
+import { useContext } from "react";
 
 import Layout from "./components/Layout/Layout";
 
@@ -14,8 +15,12 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import BookDetail from "./pages/BookDetail";
 import ListDetail from "./pages/ListDetail";
+import AuthContext from "./store/auth-context";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
+  const authCtx = useContext(AuthContext);
+
   return (
     <Layout>
       <Switch>
@@ -37,26 +42,39 @@ function App() {
         <Route path="/expand">
           <ExpandPage />
         </Route>
-        <Route path="/rent">
+        <Route path="/rentals">
           <RentPage />
         </Route>
         <Route path="/bookmarks">
           <BookmarksPage />
         </Route>
-        <Route path="/admin">
-          <AdminPage />
-        </Route>
-        <Route path="/profile">
-          <ProfilePage />
-        </Route>
-        <Route path="/login">
-          <LoginPage />
-        </Route>
-        <Route path="/signup">
-          <SignupPage />
-        </Route>
+
+        {authCtx.isLoggedIn && authCtx.access === "admin" && (
+          <Route path="/admin">
+            <AdminPage />
+          </Route>
+        )}
+
+        {authCtx.isLoggedIn && (
+          <Route path="/profile">
+            <ProfilePage />
+          </Route>
+        )}
+
+        {!authCtx.isLoggedIn && (
+          <Route path="/login">
+            <LoginPage />
+          </Route>
+        )}
+
+        {!authCtx.isLoggedIn && (
+          <Route path="/signup">
+            <SignupPage />
+          </Route>
+        )}
+
         <Route path="*">
-          <HomePage />
+          <NotFoundPage />
         </Route>
       </Switch>
     </Layout>

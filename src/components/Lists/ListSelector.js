@@ -1,4 +1,12 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import AuthContext from "../../store/auth-context";
 
 import classes from "./ListSelector.module.css";
 
@@ -11,6 +19,7 @@ const ListSelector = (props) => {
     </select>
   );
 
+  const authCtx = useContext(AuthContext);
   const listRef = useRef();
 
   const fetchLists = useCallback(async () => {
@@ -29,12 +38,14 @@ const ListSelector = (props) => {
     };
 
     for (const key in data) {
-      const listObj = {
-        id: key,
-        ...data[key],
-      };
+      if (authCtx.id === data[key].creator) {
+        const listObj = {
+          id: key,
+          ...data[key],
+        };
 
-      transformedLists.push(listObj);
+        transformedLists.push(listObj);
+      }
     }
 
     const dropdownMapped = (
@@ -58,7 +69,7 @@ const ListSelector = (props) => {
     );
 
     setDropdown(dropdownMapped);
-  }, [props]);
+  }, [props, authCtx.id]);
 
   useEffect(() => {
     fetchLists();

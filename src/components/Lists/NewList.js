@@ -1,9 +1,11 @@
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useState } from "react";
+import AuthContext from "../../store/auth-context";
 import classes from "./NewList.module.css";
 
 const NewList = () => {
   const date = new Date();
-  const [newList, setNewList] = useState({ date: date });
+  const authCtx = useContext(AuthContext);
+  const [newList, setNewList] = useState({ date: date, creator: authCtx.id });
 
   async function newListHandler(list) {
     await fetch(

@@ -19,9 +19,10 @@ const BookList = (props) => {
               category={book.category}
               ratings={book.ratings}
               cover={book.cover}
+              inListId={book.inListId}
               listId={props.listId}
               action={props.action}
-              inListId={book.inListId}
+              location={props.location}
             />
           );
         })}

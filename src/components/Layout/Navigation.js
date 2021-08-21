@@ -1,8 +1,16 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 
 import classes from "./Navigaton.module.css";
+import AuthContext from "../../store/auth-context";
 
 const Navigation = () => {
+  const authCtx = useContext(AuthContext);
+
+  const onLogoutHandler = () => {
+    authCtx.logout();
+  };
+
   return (
     <header className={classes.header}>
       <nav className={classes.container}>
@@ -21,7 +29,7 @@ const Navigation = () => {
               <Link to="/expand">Expand</Link>
             </li>
             <li>
-              <Link to="/rent">Rentals</Link>
+              <Link to="/rentals">Rentals</Link>
             </li>
             <li>
               <Link to="/bookmarks">Bookmarks</Link>
@@ -30,18 +38,33 @@ const Navigation = () => {
         </div>
         <div className={classes["right-container"]}>
           <ul>
-            <li>
-              <Link to="/admin">Admin</Link>
-            </li>
-            <li>
-              <Link to="/profile">Profil</Link>
-            </li>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-            <li>
-              <Link to="/signup">Signup</Link>
-            </li>
+            {authCtx.isLoggedIn && authCtx.access === "admin" && (
+              <li>
+                <Link to="/admin">Admin</Link>
+              </li>
+            )}
+
+            {authCtx.isLoggedIn && (
+              <li>
+                <Link to="/profile">Profil</Link>
+              </li>
+            )}
+
+            {!authCtx.isLoggedIn && (
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
+            )}
+
+            {!authCtx.isLoggedIn && (
+              <li>
+                <Link to="/signup">Signup</Link>
+              </li>
+            )}
+
+            {authCtx.isLoggedIn && (
+              <button onClick={onLogoutHandler}>Logout</button>
+            )}
           </ul>
         </div>
       </nav>

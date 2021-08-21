@@ -57,11 +57,14 @@ const BooksContent = (props) => {
   }, [location]);
 
   useEffect(() => {
-    async function waiter() {
-      const data = await getBooks();
+    // async function waiter() {
+    //   const data = await getBooks();
+    //   setData(data);
+    // }
+    // waiter();
+    getBooks().then((data) => {
       setData(data);
-    }
-    waiter();
+    });
   }, []);
 
   useEffect(() => {

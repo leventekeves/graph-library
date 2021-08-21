@@ -24,3 +24,10 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.error-message {
+  margin-top: 2rem;
+  text-align: center;
+  font-weight: bold;
+  font-size: large;
+}

@@ -1,5 +1,6 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import AuthContext from "../../store/auth-context";
 
 import CommentList from "../Comments/CommentList";
 import NewComment from "../Comments/NewComment";
@@ -13,7 +14,10 @@ const BookCard = () => {
   const [newCommentAdded, setNewCommentAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRented, setIsRented] = useState(false);
+  const [rating, setRating] = useState("");
   const [isRated, setisRated] = useState(false);
+
+  const authCtx = useContext(AuthContext);
 
   const getBooks = useCallback(async () => {
     const response = await fetch(
@@ -58,6 +62,7 @@ const BookCard = () => {
     if (isFinite(event.target.value)) {
       addRateHandler(event.target.value);
       setisRated(true);
+      calcRate(event.target.value);
     }
   };
 
@@ -96,19 +101,33 @@ const BookCard = () => {
     </select>
   );
 
-  let rating = "No ratings yet!";
-  let ratingSum = 0;
-  let numberOfRatings = 0;
-  if (!isLoading && book.ratings) {
-    for (const key in book.ratings) {
-      const ratingObj = {
-        ...book.ratings[key],
-      };
-      ratingSum += +ratingObj[0];
-      numberOfRatings++;
-    }
-    rating = (ratingSum / numberOfRatings).toFixed(2);
-  }
+  const calcRate = useCallback(
+    (newRating) => {
+      let ratingSum = 0;
+      let numberOfRatings = 0;
+      if (newRating) {
+        ratingSum += +newRating;
+        numberOfRatings++;
+        console.log("NEWRATING");
+      }
+
+      if (!isLoading && book && book.ratings) {
+        for (const key in book.ratings) {
+          const ratingObj = {
+            ...book.ratings[key],
+          };
+          ratingSum += +ratingObj[0];
+          numberOfRatings++;
+        }
+      }
+      setRating((ratingSum / numberOfRatings).toFixed(2));
+    },
+    [book, isLoading]
+  );
+
+  useEffect(() => {
+    calcRate();
+  }, [calcRate]);
 
   const rateContent = isRated ? (
     <div className={classes["feedback-message"]}>Rated!</div>
@@ -154,7 +173,14 @@ const BookCard = () => {
               <div className={classes.year}>Release year: {book.year}</div>
               <div className={classes.rating}>Rating: {rating}</div>
               <div className={classes.stock}>In stock: {book.stock}</div>
-              <div className={classes.rate}>{rateContent}</div>
+              {authCtx.isLoggedIn ? (
+                <div className={classes.rate}>{rateContent}</div>
+              ) : (
+                <div className={classes["feedback-message"]}>
+                  Login to rate!
+                </div>
+              )}
+
               <div className={classes["rent-container"]}>{rentContent}</div>
             </div>
           </div>
