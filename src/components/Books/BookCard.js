@@ -4,9 +4,35 @@ import AuthContext from "../../store/auth-context";
 
 import CommentList from "../Comments/CommentList";
 import NewComment from "../Comments/NewComment";
+import Button from "../Layout/Button";
 import SubNavigation from "../Layout/SubNavigation";
 import LoadingSpinner from "../utility/LoadingSpinner";
 import classes from "./BookCard.module.css";
+
+async function getBooks(bookId) {
+  const response = await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${bookId}.json`
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Could not fetch the book.");
+  }
+  return data;
+}
+
+async function addRateHandler(bookId, rating) {
+  await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${bookId}/ratings.json`,
+    {
+      method: "POST",
+      body: JSON.stringify(rating),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+}
 
 const BookCard = () => {
   const { bookId } = useParams();
@@ -19,36 +45,12 @@ const BookCard = () => {
 
   const authCtx = useContext(AuthContext);
 
-  const getBooks = useCallback(async () => {
-    const response = await fetch(
-      `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${bookId}.json`
-    );
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Could not fetch the book.");
-    }
-
-    setBook(data);
-    setIsLoading(false);
-  }, [bookId]);
-
-  async function addRateHandler(rating) {
-    await fetch(
-      `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${bookId}/ratings.json`,
-      {
-        method: "POST",
-        body: JSON.stringify(rating),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  }
-
   useEffect(() => {
-    getBooks();
-  }, [getBooks]);
+    getBooks(bookId).then((data) => {
+      setBook(data);
+      setIsLoading(false);
+    });
+  }, [bookId]);
 
   const newCommentAddedHandler = (value) => {
     setNewCommentAdded(value);
@@ -60,7 +62,7 @@ const BookCard = () => {
 
   const onRateHandler = (event) => {
     if (isFinite(event.target.value)) {
-      addRateHandler(event.target.value);
+      addRateHandler(book.id, event.target.value);
       setisRated(true);
       calcRate(event.target.value);
     }
@@ -69,9 +71,7 @@ const BookCard = () => {
   const rentContent = isRented ? (
     <div className={classes["feedback-message"]}>Book Rented!</div>
   ) : (
-    <button className={classes["rent-button"]} onClick={onRentHandler}>
-      Rent
-    </button>
+    <Button onClick={onRentHandler}>Rent</Button>
   );
 
   const rateSelector = (
@@ -108,7 +108,6 @@ const BookCard = () => {
       if (newRating) {
         ratingSum += +newRating;
         numberOfRatings++;
-        console.log("NEWRATING");
       }
 
       if (!isLoading && book && book.ratings) {

@@ -54,22 +54,6 @@
   height: 1rem;
 }
 
-.rent-button {
-  background-color: #753422;
-  border: none;
-  color: white;
-  padding: 0.6rem 1rem;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  width: 6rem;
-}
-
-.rent-button:active {
-  background-color: #ffdea4;
-  color: black;
-}
-
 .feedback-message {
   font-size: large;
   font-weight: bold;

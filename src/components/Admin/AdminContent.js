@@ -1,4 +1,5 @@
 import { Fragment, useState } from "react";
+import Button from "../Layout/Button";
 import classes from "./AdminContent.module.css";
 import AdminNewBook from "./AdminNewBook";
 import AdminUserList from "./AdminUserList";
@@ -26,15 +27,8 @@ const AdminContent = () => {
   return (
     <Fragment>
       <div className={classes["admin-panel"]}>
-        <button
-          className={classes["admin-button"]}
-          onClick={loadNewBookFunction}
-        >
-          Add New Book
-        </button>
-        <button className={classes["admin-button"]} onClick={loadUserList}>
-          User List
-        </button>
+        <Button onClick={loadNewBookFunction}>Add New Book</Button>
+        <Button onClick={loadUserList}>User List</Button>
       </div>
       {content}
     </Fragment>

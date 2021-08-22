@@ -1,3 +1,4 @@
+import Button from "../Layout/Button";
 import classes from "./BookFilters.module.css";
 import YearSelector from "./YearSelector";
 
@@ -20,9 +21,7 @@ const BookFilters = (props) => {
     <div className={classes["filter-container"]}>
       <div className={classes["filter-title"]}>Filter</div>
       <div className={classes.center}>
-        <button className={classes.button} onClick={removeFilterHandler}>
-          Reset Filters
-        </button>
+        <Button onClick={removeFilterHandler}>Reset Filters</Button>
       </div>
 
       <div className={classes["year-filter--title"]}>Year</div>

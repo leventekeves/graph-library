@@ -1,9 +1,22 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
 import LoadingSpinner from "../utility/LoadingSpinner";
 import classes from "./BrowseLists.module.css";
 import ListItem from "./ListItem";
+
+async function fetchLists() {
+  const response = await fetch(
+    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists.json"
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Could not fetch lists!.");
+  }
+
+  return data;
+}
 
 const BrowseLists = () => {
   const [lists, setLists] = useState([]);
@@ -28,40 +41,29 @@ const BrowseLists = () => {
     history.push("/lists?function=browse&sort=" + props.target.value);
   };
 
-  const fetchLists = useCallback(async () => {
-    const response = await fetch(
-      "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists.json"
-    );
-    const data = await response.json();
+  useEffect(() => {
+    fetchLists().then((data) => {
+      const transformedLists = [];
 
-    if (!response.ok) {
-      throw new Error(data.message || "Could not fetch books.");
-    }
+      for (const key in data) {
+        let recommendations = 0;
+        if (data[key].recommendations) {
+          recommendations = Object.entries(data[key].recommendations).length;
+        }
 
-    const transformedLists = [];
+        const listObj = {
+          id: key,
+          ...data[key],
+          recommendations: recommendations,
+        };
 
-    for (const key in data) {
-      let recommendations = 0;
-      if (data[key].recommendations) {
-        recommendations = Object.entries(data[key].recommendations).length;
+        transformedLists.push(listObj);
       }
 
-      const listObj = {
-        id: key,
-        ...data[key],
-        recommendations: recommendations,
-      };
-
-      transformedLists.push(listObj);
-    }
-
-    setLists(transformedLists);
-    setIsLoading(false);
+      setLists(transformedLists);
+      setIsLoading(false);
+    });
   }, []);
-
-  useEffect(() => {
-    fetchLists();
-  }, [fetchLists]);
 
   function sortByRecommendations(a, b) {
     if (+a.recommendations < +b.recommendations) {

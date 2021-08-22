@@ -31,22 +31,6 @@
   height: 40px;
 }
 
-.search--button {
-  width: 80px;
-  height: 40px;
-  background-color: #753422;
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.search--button:active {
-  background-color: #d79771;
-}
-
 .center {
   align-self: center;
 }

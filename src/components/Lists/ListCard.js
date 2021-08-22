@@ -6,6 +6,33 @@ import BookList from "../Books/BookList";
 import LoadingSpinner from "../utility/LoadingSpinner";
 import SubNavigation from "../Layout/SubNavigation";
 import AuthContext from "../../store/auth-context";
+import Button from "../Layout/Button";
+
+async function addRecommendation(id, listId) {
+  await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listId}/recommendations.json`,
+    {
+      method: "POST",
+      body: JSON.stringify(id),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+}
+
+async function getBooks(listId) {
+  const response = await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listId}.json`
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Could not fetch books.");
+  }
+
+  return data;
+}
 
 const ListCard = (props) => {
   let { listId } = useParams();
@@ -30,80 +57,53 @@ const ListCard = (props) => {
       );
       if (loggedInRecommendations.length > 0) {
         setCanRecommend(false);
-        console.log("false");
       } else {
         setCanRecommend(true);
-        console.log("true");
       }
     } else {
       setCanRecommend(true);
-      console.log("true");
     }
   }, [authCtx.id, list]);
 
-  const getBooks = useCallback(async () => {
-    const response = await fetch(
-      `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listId}.json`
-    );
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Could not fetch books.");
-    }
-
-    const transformedBooks = [];
-    if (data) {
-      for (const key in data.books) {
-        const bookObj = {
-          inListId: key,
-          ...data.books[key],
-        };
-
-        transformedBooks.push(bookObj);
-      }
-    }
-
-    if (data && data.recommendations) {
-      setRecommendations(Object.entries(data.recommendations).length);
-    }
-
-    let transformedRecommendations;
-    if (data && data.recommendations) {
-      transformedRecommendations = Object.values(data.recommendations);
-    }
-
-    if (data) {
-      setList({
-        ...data,
-        books: transformedBooks,
-        recommendations: transformedRecommendations,
-      });
-      setNumberOfBooks(transformedBooks.length);
-    }
-
-    setIsLoading(false);
-  }, [listId]);
-
-  async function addRecommendation(id) {
-    await fetch(
-      `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listId}/recommendations.json`,
-      {
-        method: "POST",
-        body: JSON.stringify(id),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  }
-
   useEffect(() => {
-    getBooks();
-  }, [getBooks]);
+    getBooks(listId).then((data) => {
+      const transformedBooks = [];
+      if (data) {
+        for (const key in data.books) {
+          const bookObj = {
+            inListId: key,
+            ...data.books[key],
+          };
+
+          transformedBooks.push(bookObj);
+        }
+      }
+
+      if (data && data.recommendations) {
+        setRecommendations(Object.entries(data.recommendations).length);
+      }
+
+      let transformedRecommendations;
+      if (data && data.recommendations) {
+        transformedRecommendations = Object.values(data.recommendations);
+      }
+
+      if (data) {
+        setList({
+          ...data,
+          books: transformedBooks,
+          recommendations: transformedRecommendations,
+        });
+        setNumberOfBooks(transformedBooks.length);
+      }
+
+      setIsLoading(false);
+    });
+  }, [listId]);
 
   const onRecommendHandler = () => {
     setIsRecommended(true);
-    addRecommendation({ id: authCtx.id });
+    addRecommendation({ id: authCtx.id }, listId);
     setRecommendations(numberOfRecommendations + 1);
   };
 
@@ -117,9 +117,7 @@ const ListCard = (props) => {
       <div className={classes["feedback-message"]}>Recommended!</div>
     ) : (
       <div className={classes.double}>
-        <button className={classes.button} onClick={onRecommendHandler}>
-          Recommend
-        </button>
+        <Button onClick={onRecommendHandler}>Recommend</Button>
       </div>
     );
   } else {

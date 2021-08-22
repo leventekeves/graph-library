@@ -1,24 +1,26 @@
 import { Fragment, useContext, useState } from "react";
 import AuthContext from "../../store/auth-context";
+import Button from "../Layout/Button";
 import classes from "./NewList.module.css";
+
+async function newListHandler(list) {
+  await fetch(
+    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists.json",
+    {
+      method: "POST",
+      body: JSON.stringify(list),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+}
 
 const NewList = () => {
   const date = new Date();
   const authCtx = useContext(AuthContext);
   const [newList, setNewList] = useState({ date: date, creator: authCtx.id });
 
-  async function newListHandler(list) {
-    await fetch(
-      "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists.json",
-      {
-        method: "POST",
-        body: JSON.stringify(list),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  }
   const handleChange = (event) => {
     setNewList({
       ...newList,
@@ -39,7 +41,7 @@ const NewList = () => {
         <input name="name" type="text" onChange={handleChange} />
         <label>Description</label>
         <input name="description" type="text" onChange={handleChange} />
-        <button>Create New List</button>
+        <Button>Create New List</Button>
       </form>
     </Fragment>
   );

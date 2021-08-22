@@ -14,26 +14,6 @@
   padding: 5px;
 }
 
-.new-comment--button {
-  background-color: #753422;
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.new-comment--button:active {
-  background-color: #d79771;
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-}
-
 .new-comment--success {
   margin-top: 1rem;
   text-align: center;

@@ -1,7 +1,8 @@
 import classes from "./BookItem.module.css";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import LoadingSpinner from "../utility/LoadingSpinner";
+import Button from "../Layout/Button";
 
 async function getBooks(bookId) {
   const response = await fetch(
@@ -15,64 +16,70 @@ async function getBooks(bookId) {
   return data;
 }
 
+async function addBookToList(book) {
+  await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${book.listId}/books.json`,
+    {
+      method: "POST",
+      body: JSON.stringify(book),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+}
+
+async function removeBookFromList(listId, inListId) {
+  await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listId}/books/${inListId}.json`,
+    {
+      method: "DELETE",
+    }
+  );
+}
+
 const BookItem = (props) => {
   const [isRemoved, setIsRemoved] = useState(false);
   const [book, setBook] = useState();
   const [isLoading, setIsLoading] = useState(true);
-
-  async function addBookToList(book) {
-    await fetch(
-      `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${props.listId}/books.json`,
-      {
-        method: "POST",
-        body: JSON.stringify(book),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  }
-
-  async function removeBookFromList(book) {
-    await fetch(
-      `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${props.listId}/books/${props.inListId}.json`,
-      {
-        method: "DELETE",
-      }
-    );
-  }
+  const [button, setButton] = useState("");
 
   useEffect(() => {
     if (props.location === "list") {
       getBooks(props.id).then((data) => {
-        setBook(data);
+        setBook({ id: props.id, ...data });
         setIsLoading(false);
       });
     }
   }, [props.id, props.location]);
 
-  const addBookToListHandler = () => {
+  const addBookToListHandler = useCallback(() => {
     addBookToList(props);
-  };
+    const feedbackMessage = (
+      <div className={classes["feedback-message"]}>Added!</div>
+    );
+    setButton(feedbackMessage);
+  }, [props]);
 
-  const removeBookFromListHandler = () => {
-    removeBookFromList(props);
+  const removeBookFromListHandler = useCallback(() => {
+    removeBookFromList(props.listId, props.inListId);
     setIsRemoved(true);
-  };
+  }, [props.listId, props.inListId]);
 
-  let button = "";
-  if (props.action === "add")
-    button = (
-      <button className={classes.add} onClick={addBookToListHandler}>
-        ADD
-      </button>
-    );
-  if (props.action === "remove")
-    button = (
-      <button className={classes.add} onClick={removeBookFromListHandler}>
-        REMOVE
-      </button>
-    );
+  useEffect(() => {
+    if (props.action === "add")
+      setButton(
+        <Button className={classes.add} onClick={addBookToListHandler}>
+          ADD
+        </Button>
+      );
+    if (props.action === "remove")
+      setButton(
+        <Button className={classes.add} onClick={removeBookFromListHandler}>
+          REMOVE
+        </Button>
+      );
+  }, [addBookToListHandler, removeBookFromListHandler, props.action]);
 
   if (props.location === "list") {
     if (!isLoading) {

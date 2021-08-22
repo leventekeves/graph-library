@@ -8,6 +8,7 @@ import NewList from "./NewList";
 import RemoveBookFromList from "./RemoveBookFromList";
 import SubNavigation from "../Layout/SubNavigation";
 import AuthContext from "../../store/auth-context";
+import Button from "../Layout/Button";
 
 const ListsContent = () => {
   const history = useHistory();
@@ -86,35 +87,19 @@ const ListsContent = () => {
   return (
     <Fragment>
       {subNavigation}
-      <div className={classes["admin-panel"]}>
-        <button
-          value={"browse"}
-          className={classes["admin-button"]}
-          onClick={changeSortHangler}
-        >
+      <div className={classes["list-panel"]}>
+        <Button value={"browse"} onClick={changeSortHangler}>
           Browse Lists
-        </button>
-        <button
-          value={"new"}
-          className={classes["admin-button"]}
-          onClick={changeSortHangler}
-        >
+        </Button>
+        <Button value={"new"} onClick={changeSortHangler}>
           New List
-        </button>
-        <button
-          value={"add"}
-          className={classes["admin-button"]}
-          onClick={changeSortHangler}
-        >
+        </Button>
+        <Button value={"add"} onClick={changeSortHangler}>
           Add Books To List
-        </button>
-        <button
-          value={"remove"}
-          className={classes["admin-button"]}
-          onClick={changeSortHangler}
-        >
+        </Button>
+        <Button value={"remove"} onClick={changeSortHangler}>
           Remove Book From List
-        </button>
+        </Button>
       </div>
       {content}
     </Fragment>

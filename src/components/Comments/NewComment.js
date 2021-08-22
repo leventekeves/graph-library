@@ -1,23 +1,26 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useContext, useRef, useState } from "react";
 
 import classes from "./NewComment.module.css";
+import AuthContext from "../../store/auth-context";
+import Button from "../Layout/Button";
+
+async function addCommentHandler(comment, currentBook) {
+  await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${currentBook}/comments.json`,
+    {
+      method: "POST",
+      body: JSON.stringify(comment),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+}
 
 const NewComment = (props) => {
   const commentInputRef = useRef();
   const [succesMessage, setSuccesMessage] = useState("");
-
-  async function addCommentHandler(comment) {
-    await fetch(
-      "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Comments.json",
-      {
-        method: "POST",
-        body: JSON.stringify(comment),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  }
+  const authCtx = useContext(AuthContext);
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
@@ -43,11 +46,11 @@ const NewComment = (props) => {
 
     const comment = {
       bookid: props.currentBook,
-      commenter: "Guest",
+      commenter: authCtx.name,
       date: formatedDate,
       message: commentInputRef.current.value,
     };
-    addCommentHandler(comment);
+    addCommentHandler(comment, props.currentBook);
     commentInputRef.current.value = "";
     setSuccesMessage(
       "New comment added, it will appear shortly! If you can't see your comment in a few seconds, reload the page!"
@@ -63,9 +66,7 @@ const NewComment = (props) => {
             className={classes["new-comment--input"]}
             ref={commentInputRef}
           ></textarea>
-          <button className={classes["new-comment--button"]}>
-            New Comment
-          </button>
+          <Button>New Comment</Button>
         </form>
       </div>
       <div className={classes["new-comment--success"]}>{succesMessage}</div>

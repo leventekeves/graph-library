@@ -2,41 +2,55 @@ import { useEffect, useState } from "react";
 import CommentItem from "./CommentItem";
 import classes from "./CommentList.module.css";
 
+async function getComments(currentBook) {
+  const response = await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${currentBook}/comments.json`
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Could not fetch comments.");
+  }
+
+  return data;
+}
+
 const CommentList = (props) => {
   const [comments, setComments] = useState([]);
   const [firstRender, setFirstRender] = useState(true);
 
-  async function getComments() {
-    const response = await fetch(
-      "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Comments.json"
-    );
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Could not fetch books.");
-    }
-
-    const transformedComments = [];
-
-    for (const key in data) {
-      const commentObj = {
-        id: key,
-        ...data[key],
-      };
-
-      transformedComments.push(commentObj);
-    }
-    setComments(transformedComments);
-  }
-
   useEffect(() => {
     if (firstRender) {
-      getComments();
+      getComments(props.currentBook).then((data) => {
+        const transformedComments = [];
+
+        for (const key in data) {
+          const commentObj = {
+            id: key,
+            ...data[key],
+          };
+
+          transformedComments.push(commentObj);
+        }
+        setComments(transformedComments);
+      });
       setFirstRender(false);
     }
     if (props.newCommentAdded) {
       setTimeout(() => {
-        getComments();
+        getComments(props.currentBook).then((data) => {
+          const transformedComments = [];
+
+          for (const key in data) {
+            const commentObj = {
+              id: key,
+              ...data[key],
+            };
+
+            transformedComments.push(commentObj);
+          }
+          setComments(transformedComments);
+        });
         props.onNewComment(false);
       }, 3000);
     }
