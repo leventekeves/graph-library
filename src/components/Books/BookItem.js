@@ -91,7 +91,7 @@ const BookItem = (props) => {
           const ratingObj = {
             ...book.ratings[key],
           };
-          ratingSum += +ratingObj[0];
+          ratingSum += +ratingObj.rating;
           numberOfRatings++;
         }
         rating = (ratingSum / numberOfRatings).toFixed(2);
@@ -132,7 +132,7 @@ const BookItem = (props) => {
         const ratingObj = {
           ...props.ratings[key],
         };
-        ratingSum += +ratingObj[0];
+        ratingSum += +ratingObj.rating;
         numberOfRatings++;
       }
       rating = (ratingSum / numberOfRatings).toFixed(2);

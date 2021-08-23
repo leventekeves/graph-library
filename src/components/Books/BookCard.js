@@ -40,14 +40,19 @@ const BookCard = () => {
   const [newCommentAdded, setNewCommentAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRented, setIsRented] = useState(false);
-  const [rating, setRating] = useState("");
   const [isRated, setisRated] = useState(false);
+  const [canRate, setCanRate] = useState(false);
+  const [rating, setRating] = useState("No ratings yet!");
 
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
     getBooks(bookId).then((data) => {
-      setBook(data);
+      let transformedRatings;
+      if (data && data.ratings) {
+        transformedRatings = Object.values(data.ratings);
+      }
+      setBook({ ...data, ratings: transformedRatings });
       setIsLoading(false);
     });
   }, [bookId]);
@@ -62,7 +67,7 @@ const BookCard = () => {
 
   const onRateHandler = (event) => {
     if (isFinite(event.target.value)) {
-      addRateHandler(book.id, event.target.value);
+      addRateHandler(bookId, { id: authCtx.id, rating: event.target.value });
       setisRated(true);
       calcRate(event.target.value);
     }
@@ -105,34 +110,63 @@ const BookCard = () => {
     (newRating) => {
       let ratingSum = 0;
       let numberOfRatings = 0;
+
       if (newRating) {
         ratingSum += +newRating;
         numberOfRatings++;
+        setRating((ratingSum / numberOfRatings).toFixed(2));
       }
 
       if (!isLoading && book && book.ratings) {
-        for (const key in book.ratings) {
-          const ratingObj = {
-            ...book.ratings[key],
-          };
-          ratingSum += +ratingObj[0];
+        console.log(book.ratings);
+        book.ratings.forEach((ratingObj) => {
+          console.log(rating);
+          ratingSum += +ratingObj.rating;
           numberOfRatings++;
-        }
+        });
+
+        setRating((ratingSum / numberOfRatings).toFixed(2));
       }
-      setRating((ratingSum / numberOfRatings).toFixed(2));
     },
-    [book, isLoading]
+    [book, isLoading, rating]
   );
 
   useEffect(() => {
     calcRate();
   }, [calcRate]);
 
-  const rateContent = isRated ? (
-    <div className={classes["feedback-message"]}>Rated!</div>
-  ) : (
-    <div>Rate: {rateSelector}</div>
-  );
+  const alreadyRated = useCallback(() => {
+    let loggedInRatings;
+    if (book.ratings) {
+      loggedInRatings = book.ratings.filter(
+        (rating) => rating.id === authCtx.id
+      );
+      if (loggedInRatings.length > 0) {
+        setCanRate(false);
+      } else {
+        setCanRate(true);
+      }
+    } else {
+      setCanRate(true);
+    }
+  }, [authCtx.id, book]);
+
+  useEffect(() => {
+    if (!isLoading) alreadyRated();
+  }, [alreadyRated, isLoading]);
+
+  let rateContent;
+  if (canRate) {
+    rateContent = isRated ? (
+      <div className={classes["feedback-message"]}>Rated!</div>
+    ) : (
+      <div>Rate: {rateSelector}</div>
+    );
+  } else {
+    rateContent = (
+      <div className={classes["feedback-message"]}>Already rated!</div>
+    );
+  }
 
   if (isLoading) {
     return (

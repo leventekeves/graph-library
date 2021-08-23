@@ -21,7 +21,6 @@
 .search--input {
   display: flex;
   width: 600px;
-  margin-left: px;
   gap: 30px;
   padding: 20px;
 }

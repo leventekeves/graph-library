@@ -1,8 +1,8 @@
 .filter-container {
-  padding: 10px;
+  padding: 1rem;
   background-color: #d79771;
   position: absolute;
-  width: 12rem;
+  width: 13rem;
   top: 0rem;
   left: -25rem;
 }
@@ -11,14 +11,8 @@
   color: white;
   text-align: center;
   font-weight: bold;
-  font-size: 25px;
-}
-
-.year-filter {
-  display: flex;
-  background-color: #b05b3b;
-  padding: 10px;
-  gap: 20px;
+  font-size: 24px;
+  margin-bottom: 0.5rem;
 }
 
 .year-filter--title {
@@ -26,8 +20,8 @@
   padding: 10px;
   text-align: center;
   background-color: #b05b3b;
-  margin-bottom: 10px;
-  margin-top: 20px;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .year-filter--selector {
@@ -39,8 +33,8 @@
   padding: 10px;
   text-align: center;
   background-color: #b05b3b;
-  margin-bottom: 10px;
-  margin-top: 30px;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
 }
 
 .category-item {
