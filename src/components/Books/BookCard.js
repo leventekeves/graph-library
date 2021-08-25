@@ -34,6 +34,48 @@ async function addRateHandler(bookId, rating) {
   );
 }
 
+async function addBookmark(book, userId) {
+  await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}/bookmarks.json`,
+    {
+      method: "POST",
+      body: JSON.stringify(book),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  const response = await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}/bookmarks.json`
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Could not fetch bookmarks.");
+  }
+  const bookmarks = data;
+  const transformedBookmarks = [];
+  for (const key in bookmarks) {
+    const BookmarkObj = {
+      id: key,
+      ...bookmarks[key],
+    };
+    transformedBookmarks.push(BookmarkObj);
+  }
+
+  return transformedBookmarks;
+}
+
+async function removeBookmark(userId, bookmarkId) {
+  await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}/bookmarks/${bookmarkId}.json`,
+    {
+      method: "DELETE",
+    }
+  );
+}
+
 const BookCard = () => {
   const { bookId } = useParams();
   const [book, setBook] = useState([]);
@@ -43,6 +85,8 @@ const BookCard = () => {
   const [isRated, setisRated] = useState(false);
   const [canRate, setCanRate] = useState(false);
   const [rating, setRating] = useState("No ratings yet!");
+  const [bookmarkButtonActive, setBookmarkButtonActive] = useState(true);
+  const [bookmarkButton, setBookmarkButton] = useState();
 
   const authCtx = useContext(AuthContext);
 
@@ -118,9 +162,7 @@ const BookCard = () => {
       }
 
       if (!isLoading && book && book.ratings) {
-        console.log(book.ratings);
         book.ratings.forEach((ratingObj) => {
-          console.log(rating);
           ratingSum += +ratingObj.rating;
           numberOfRatings++;
         });
@@ -128,7 +170,7 @@ const BookCard = () => {
         setRating((ratingSum / numberOfRatings).toFixed(2));
       }
     },
-    [book, isLoading, rating]
+    [book, isLoading]
   );
 
   useEffect(() => {
@@ -168,6 +210,62 @@ const BookCard = () => {
     );
   }
 
+  const addBookmarkHandler = useCallback(() => {
+    addBookmark({ bookId: bookId }, authCtx.id).then((transformedBookmarks) => {
+      authCtx.bookmarks = transformedBookmarks;
+    });
+    authCtx.bookmarks.push();
+    setBookmarkButtonActive(false);
+    setBookmarkButton(<div className={classes["bookmark-message"]}>ADDED</div>);
+  }, [authCtx, bookId]);
+
+  const removeBookmarkHandler = useCallback(() => {
+    const bookmarksArray = authCtx.bookmarks.map((bookmark) => {
+      return bookmark.bookId;
+    });
+
+    const removeIndex = bookmarksArray.findIndex((bookmarkId) => {
+      return bookmarkId === bookId;
+    });
+
+    removeBookmark(authCtx.id, authCtx.bookmarks[removeIndex].id);
+    authCtx.bookmarks.splice(removeIndex, 1);
+    setBookmarkButtonActive(false);
+    setBookmarkButton(
+      <div className={classes["bookmark-message"]}>REMOVED</div>
+    );
+  }, [authCtx.bookmarks, authCtx.id, bookId]);
+
+  useEffect(() => {
+    if (!isLoading && bookmarkButtonActive && authCtx.isLoggedIn) {
+      const bookmarksArray = authCtx.bookmarks.map(
+        (bookmark) => bookmark.bookId
+      );
+
+      if (bookmarksArray.includes(bookId)) {
+        setBookmarkButton(
+          <div className={classes.bookmarker} onClick={removeBookmarkHandler}>
+            Remove from bookmarks
+          </div>
+        );
+      } else {
+        setBookmarkButton(
+          <div className={classes.bookmarker} onClick={addBookmarkHandler}>
+            Add to bookmarks
+          </div>
+        );
+      }
+    }
+  }, [
+    removeBookmarkHandler,
+    addBookmarkHandler,
+    isLoading,
+    bookmarkButtonActive,
+    authCtx.bookmarks,
+    authCtx.isLoggedIn,
+    bookId,
+  ]);
+
   if (isLoading) {
     return (
       <div className={classes.center}>
@@ -187,6 +285,7 @@ const BookCard = () => {
         <div className={classes.container}>
           <div className={classes["book-container"]}>
             <div>
+              {bookmarkButton}
               {book.cover ? (
                 <img
                   className={classes["book-cover"]}

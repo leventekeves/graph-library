@@ -6,23 +6,36 @@ const AuthContext = React.createContext({
   name: "",
   access: "",
   isLoggedIn: false,
-  login: (token, id, name, access) => {},
+  bookmarks: [],
+  login: (token, id, name, access, bookmarks) => {},
   logout: () => {},
 });
 
 export const AuthContextProvider = (props) => {
-  const [token, setToken] = useState("123456789");
-  const [id, setId] = useState("-MhZLH44xLPw8jpO9lGP");
-  const [name, setName] = useState("Admin");
-  const [access, setAccess] = useState("admin");
+  // const [token, setToken] = useState("123456789");
+  // const [id, setId] = useState("-MhZLH44xLPw8jpO9lGP");
+  // const [name, setName] = useState("Admin");
+  // const [access, setAccess] = useState("admin");
+  // const [bookmarks, setBookmarks] = useState([
+  //   { bookId: "-Mh3YyK70IfId0ebhkSR" },
+  //   { bookId: "-Mh3_Doh9YeOmg4GJHj8" },
+  //   { bookId: "-Mh3_L3aa9rpFY4wROSK" },
+  // ]);
+
+  const [token, setToken] = useState("");
+  const [id, setId] = useState("");
+  const [name, setName] = useState("");
+  const [access, setAccess] = useState("");
+  const [bookmarks, setBookmarks] = useState([]);
 
   const userIsLoggedIn = !!token;
 
-  const loginHandler = (token, id, name, access) => {
+  const loginHandler = (token, id, name, access, bookmarks) => {
     setToken(token);
     setId(id);
     setName(name);
     setAccess(access);
+    setBookmarks(bookmarks);
   };
 
   const logoutHandler = () => {
@@ -30,6 +43,7 @@ export const AuthContextProvider = (props) => {
     setId(null);
     setName(null);
     setAccess(null);
+    setBookmarks(null);
   };
 
   const contextValue = {
@@ -37,6 +51,7 @@ export const AuthContextProvider = (props) => {
     id: id,
     name: name,
     access: access,
+    bookmarks: bookmarks,
     isLoggedIn: userIsLoggedIn,
     login: loginHandler,
     logout: logoutHandler,

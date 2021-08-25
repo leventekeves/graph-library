@@ -1,4 +1,6 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import Button from "../Layout/Button";
+import authClasses from "./Authentication.module.css";
 import classes from "./Signup.module.css";
 
 async function addNewUser(userData) {
@@ -15,6 +17,7 @@ async function addNewUser(userData) {
 }
 
 const Signup = () => {
+  const [signedUp, setSignedUp] = useState(false);
   const nameInputRef = useRef();
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
@@ -27,24 +30,48 @@ const Signup = () => {
       password: passwordInputRef.current.value,
     };
     addNewUser({ ...userData, access: "user" });
+    setSignedUp(true);
   };
 
-  return (
-    <div className={classes.container}>
-      <div>Signup</div>
-      <form onSubmit={onSubmitHandler}>
-        <div>Name</div>
-        <input type="text" ref={nameInputRef} />
-        <div>E-mail</div>
-        <input type="email" ref={emailInputRef} />
-        <div>Password</div>
-        <input type="password" ref={passwordInputRef} />
-        <div>
-          <button>Submit</button>
+  let content;
+  if (signedUp) {
+    content = (
+      <div className={classes["feedback-message"]}>Account created!</div>
+    );
+  } else {
+    content = (
+      <div className={authClasses.container}>
+        <div className={authClasses["form-container"]}>
+          <div className={authClasses.title}>Signup</div>
+          <form onSubmit={onSubmitHandler}>
+            <div className={authClasses.label}>Name</div>
+            <input
+              type="text"
+              ref={nameInputRef}
+              className={authClasses.input}
+            />
+            <div className={authClasses.label}>E-mail</div>
+            <input
+              type="email"
+              ref={emailInputRef}
+              className={authClasses.input}
+            />
+            <div className={authClasses.label}>Password</div>
+            <input
+              type="password"
+              ref={passwordInputRef}
+              className={authClasses.input}
+            />
+            <div className={authClasses["button-container"]}>
+              <Button>Submit</Button>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-  );
+      </div>
+    );
+  }
+
+  return content;
 };
 
 export default Signup;

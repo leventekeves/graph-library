@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
 import classes from "./NewList.module.css";
@@ -35,15 +35,30 @@ const NewList = () => {
   };
 
   return (
-    <Fragment>
-      <form className={classes.container} onSubmit={onSubmitHandler}>
-        <label>List Name</label>
-        <input name="name" type="text" onChange={handleChange} />
-        <label>Description</label>
-        <input name="description" type="text" onChange={handleChange} />
-        <Button>Create New List</Button>
-      </form>
-    </Fragment>
+    <div className={classes.container}>
+      <div className={classes["form-container"]}>
+        <div className={classes.title}>New List</div>
+        <form onSubmit={onSubmitHandler}>
+          <div className={classes.label}>List Name</div>
+          <input
+            name="name"
+            type="text"
+            onChange={handleChange}
+            className={classes.input}
+          />
+          <div className={classes.label}>Description</div>
+          <input
+            name="description"
+            type="text"
+            onChange={handleChange}
+            className={classes.input}
+          />
+          <div className={classes["button-container"]}>
+            <Button>Create New List</Button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 

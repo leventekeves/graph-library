@@ -1,14 +1,16 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import classes from "./Navigaton.module.css";
 import AuthContext from "../../store/auth-context";
 
 const Navigation = () => {
   const authCtx = useContext(AuthContext);
+  const history = useHistory();
 
   const onLogoutHandler = () => {
     authCtx.logout();
+    history.replace("/");
   };
 
   return (
@@ -63,7 +65,9 @@ const Navigation = () => {
             )}
 
             {authCtx.isLoggedIn && (
-              <button onClick={onLogoutHandler}>Logout</button>
+              <button onClick={onLogoutHandler} className={classes.button}>
+                Logout
+              </button>
             )}
           </ul>
         </div>

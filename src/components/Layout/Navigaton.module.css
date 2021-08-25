@@ -40,8 +40,25 @@
   text-decoration: none;
   color: white;
   font-weight: bold;
+  font-size: 16px;
 }
 
 .header a:hover {
+  color: rgb(199, 195, 195);
+}
+
+.button {
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #753422;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
   color: rgb(199, 195, 195);
 }
