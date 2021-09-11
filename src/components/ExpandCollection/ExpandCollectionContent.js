@@ -1,11 +1,11 @@
 import { Fragment, useContext } from "react";
 import { useHistory, useLocation } from "react-router";
 
+import classes from "./ExpandCollectionContent.module.css";
 import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
 import SubNavigation from "../Layout/SubNavigation";
 import ExpandCollectionAdd from "./ExpandCollectionAdd";
-import classes from "./ExpandCollectionContent.module.css";
 import ExpandCollectionVote from "./ExpandCollectionVote";
 
 const ExpandCollectionContent = () => {

@@ -42,6 +42,8 @@ const ExpandCollectionAdd = () => {
         const transformedBooks = [];
         data.items.forEach((fetchedBook) => {
           const releaseYear = new Date(fetchedBook.volumeInfo.publishedDate);
+          const slicedURL =
+            fetchedBook.volumeInfo.imageLinks.thumbnail.slice(7);
 
           const bookObj = {
             id: fetchedBook.id,
@@ -51,7 +53,7 @@ const ExpandCollectionAdd = () => {
             category: "Uncategorized",
             year: releaseYear.getFullYear(),
             description: fetchedBook.volumeInfo.description,
-            cover: fetchedBook.volumeInfo.imageLinks.thumbnail,
+            cover: `https://${slicedURL}`,
           };
 
           if (fetchedBook.volumeInfo.authors) {
