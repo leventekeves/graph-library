@@ -3,7 +3,7 @@ import { useHistory, useLocation } from "react-router-dom";
 
 import classes from "./BooksContent.module.css";
 import BookList from "./BookList";
-import LoadingSpinner from "../utility/LoadingSpinner";
+import LoadingSpinner from "../../utility/LoadingSpinner";
 import BookFilters from "./BookFilters";
 
 async function getBooks() {

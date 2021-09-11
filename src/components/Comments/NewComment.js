@@ -46,7 +46,7 @@ const NewComment = (props) => {
 
     const comment = {
       bookid: props.currentBook,
-      commenter: authCtx.name,
+      commenter: authCtx.name || "Guest",
       date: formatedDate,
       message: commentInputRef.current.value,
     };

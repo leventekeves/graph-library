@@ -24,10 +24,6 @@
   grid-column: 1/3;
 }
 
-.title {
-  color: green;
-}
-
 .add-book {
   width: 7rem;
   justify-self: center;

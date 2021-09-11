@@ -6,8 +6,8 @@ import Layout from "./components/Layout/Layout";
 import HomePage from "./pages/HomePage";
 import BooksPage from "./pages/BooksPage";
 import ListsPage from "./pages/ListsPage";
-import ExpandPage from "./pages/ExpandPage";
-import RentPage from "./pages/RentPage";
+import ExpandCollectionPage from "./pages/ExpandCollectionPage";
+import BorrowingsPage from "./pages/BorrowingsPage";
 import BookmarksPage from "./pages/BookmarksPage";
 import AdminPage from "./pages/AdminPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -40,10 +40,10 @@ function App() {
           <ListDetail />
         </Route>
         <Route path="/expand">
-          <ExpandPage />
+          <ExpandCollectionPage />
         </Route>
-        <Route path="/rentals">
-          <RentPage />
+        <Route path="/borrowings">
+          <BorrowingsPage />
         </Route>
         <Route path="/bookmarks">
           <BookmarksPage />

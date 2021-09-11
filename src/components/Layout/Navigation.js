@@ -31,7 +31,7 @@ const Navigation = () => {
               <Link to="/expand">Expand</Link>
             </li>
             <li>
-              <Link to="/rentals">Rentals</Link>
+              <Link to="/borrowings">Borrowings</Link>
             </li>
             <li>
               <Link to="/bookmarks">Bookmarks</Link>

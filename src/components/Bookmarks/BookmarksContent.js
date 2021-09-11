@@ -3,7 +3,7 @@ import { Fragment, useContext, useEffect, useState } from "react";
 import AuthContext from "../../store/auth-context";
 import BookItem from "../Books/BookItem";
 import SubNavigation from "../Layout/SubNavigation";
-import LoadingSpinner from "../utility/LoadingSpinner";
+import LoadingSpinner from "../../utility/LoadingSpinner";
 import classes from "./BookmarksContent.module.css";
 
 async function getBookmarks(userId) {
@@ -37,7 +37,7 @@ const BookmarksContent = () => {
       authCtx.bookmarks = transformedBookmarks;
       setIsLoading(false);
     });
-  });
+  }, [authCtx]);
 
   if (!authCtx.isLoggedIn) {
     return (

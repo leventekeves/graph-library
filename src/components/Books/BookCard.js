@@ -6,7 +6,7 @@ import CommentList from "../Comments/CommentList";
 import NewComment from "../Comments/NewComment";
 import Button from "../Layout/Button";
 import SubNavigation from "../Layout/SubNavigation";
-import LoadingSpinner from "../utility/LoadingSpinner";
+import LoadingSpinner from "../../utility/LoadingSpinner";
 import classes from "./BookCard.module.css";
 
 async function getBooks(bookId) {
@@ -76,12 +76,36 @@ async function removeBookmark(userId, bookmarkId) {
   );
 }
 
+async function addBorrow(book, userId, newStock) {
+  await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}/borrowings.json`,
+    {
+      method: "POST",
+      body: JSON.stringify(book),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  await fetch(
+    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${book.bookId}/stock.json`,
+    {
+      method: "PUT",
+      body: JSON.stringify(newStock),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+}
+
 const BookCard = () => {
   const { bookId } = useParams();
   const [book, setBook] = useState([]);
   const [newCommentAdded, setNewCommentAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRented, setIsRented] = useState(false);
+  const [borrowButtonActive, setBorrowButtonActive] = useState(true);
+  const [borrowButton, setBorrowButton] = useState();
   const [isRated, setisRated] = useState(false);
   const [canRate, setCanRate] = useState(false);
   const [rating, setRating] = useState("No ratings yet!");
@@ -105,9 +129,22 @@ const BookCard = () => {
     setNewCommentAdded(value);
   };
 
-  const onRentHandler = () => {
-    setIsRented(true);
-  };
+  const onBorrowHandler = useCallback(() => {
+    const newStock = +book.stock - 1;
+    const date = new Date();
+    date.setDate(date.getDate() + 30);
+    addBorrow(
+      { bookId: bookId, date: date, remainingExtensions: 2 },
+      authCtx.id,
+      newStock
+    );
+    authCtx.borrowings.push({ bookId: bookId });
+    book.stock = newStock;
+    setBorrowButtonActive(false);
+    setBorrowButton(
+      <div className={classes["feedback-message"]}>Book borrowed!</div>
+    );
+  }, [authCtx, bookId, book]);
 
   const onRateHandler = (event) => {
     if (isFinite(event.target.value)) {
@@ -117,11 +154,33 @@ const BookCard = () => {
     }
   };
 
-  const rentContent = isRented ? (
-    <div className={classes["feedback-message"]}>Book Rented!</div>
-  ) : (
-    <Button onClick={onRentHandler}>Rent</Button>
-  );
+  useEffect(() => {
+    if (!isLoading && borrowButtonActive && authCtx.isLoggedIn) {
+      const borrowingsArray = authCtx.borrowings.map(
+        (borrowing) => borrowing.bookId
+      );
+
+      if (+book.stock === 0) {
+        setBorrowButton(
+          <div className={classes["feedback-message"]}>Out of stock!</div>
+        );
+      } else if (!borrowingsArray.includes(bookId)) {
+        setBorrowButton(<Button onClick={onBorrowHandler}>Borrow</Button>);
+      } else {
+        setBorrowButton(
+          <div className={classes["feedback-message"]}>Already borrowed!</div>
+        );
+      }
+    }
+  }, [
+    isLoading,
+    borrowButtonActive,
+    authCtx.isLoggedIn,
+    authCtx.borrowings,
+    bookId,
+    book.stock,
+    onBorrowHandler,
+  ]);
 
   const rateSelector = (
     <select
@@ -214,7 +273,6 @@ const BookCard = () => {
     addBookmark({ bookId: bookId }, authCtx.id).then((transformedBookmarks) => {
       authCtx.bookmarks = transformedBookmarks;
     });
-    authCtx.bookmarks.push();
     setBookmarkButtonActive(false);
     setBookmarkButton(<div className={classes["bookmark-message"]}>ADDED</div>);
   }, [authCtx, bookId]);
@@ -313,7 +371,7 @@ const BookCard = () => {
                 </div>
               )}
 
-              <div className={classes["rent-container"]}>{rentContent}</div>
+              <div className={classes["borrow-container"]}>{borrowButton}</div>
             </div>
           </div>
           <NewComment

@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  gap: 15rem;
+}
+
+.search {
+  display: flex;
+  padding: 1rem;
+  background-color: #d79771;
+  height: fit-content;
+  width: 13rem;
+  margin-left: 5rem;
+  text-align: center;
+}
+
+.input-fields {
+  margin-bottom: 1rem;
+}
+
+.center {
+  text-align: center;
+}
+
+.error {
+  text-align: center;
+  color: red;
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 0.5rem;
+}

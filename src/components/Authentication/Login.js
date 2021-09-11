@@ -27,8 +27,8 @@ const Login = () => {
   const onSubmitHandler = (event) => {
     event.preventDefault();
     fetchUsers().then((data) => {
-      // emailInputRef.current.value = "user@user.com";
-      // passwordInputRef.current.value = "user";
+      emailInputRef.current.value = "user@user.com";
+      passwordInputRef.current.value = "user";
       for (const key in data) {
         if (
           emailInputRef.current.value === data[key].email &&
@@ -44,13 +44,25 @@ const Login = () => {
             transformedBookmarks.push(BookmarkObj);
           }
 
+          const borrowing = data[key].borrowings;
+          const transformedBorrowings = [];
+          for (const key in borrowing) {
+            const BorrowingObj = {
+              id: key,
+              ...borrowing[key],
+            };
+            transformedBorrowings.push(BorrowingObj);
+          }
+
           authCtx.login(
             "123456789",
             key,
             data[key].name,
             data[key].access,
-            transformedBookmarks
+            transformedBookmarks,
+            transformedBorrowings
           );
+
           history.replace("/");
           break;
         }
