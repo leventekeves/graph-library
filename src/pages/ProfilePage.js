@@ -1,5 +1,7 @@
+import UserProfileContent from "../components/UserProfile/UserProfileContent";
+
 const ProfilePage = () => {
-  return <div>ProfilePage</div>;
+  return <UserProfileContent />;
 };
 
 export default ProfilePage;

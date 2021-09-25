@@ -50,7 +50,6 @@ async function updateVotes(bookId, newVotes) {
     }
   );
 }
-console.log("yo");
 
 const ExpandCollectionItem = (props) => {
   document.cookie = "cookie1=value1; SameSite=Lax";

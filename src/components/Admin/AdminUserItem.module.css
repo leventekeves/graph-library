@@ -1,0 +1,37 @@
+.container {
+  display: grid;
+  width: 45rem;
+  grid-template-columns: 15rem 15rem 15rem;
+  background-color: #d79771;
+}
+
+.hidden {
+  height: 0px;
+  visibility: hidden;
+}
+
+.label {
+  display: flex;
+  padding: 0.5rem;
+  font-weight: bold;
+}
+
+.label-border {
+  display: flex;
+  border-right: black 2px solid;
+  padding: 0.5rem;
+}
+
+.ban {
+  padding: 0.5rem;
+  font-weight: bold;
+}
+
+.ban:hover {
+  cursor: pointer;
+  color: white;
+}
+
+.ban:active {
+  color: black;
+}

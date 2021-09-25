@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3rem;
+}
+
+.labels {
+  display: grid;
+  width: 45rem;
+  grid-template-columns: 15rem 15rem 15rem;
+  background-color: #b05b3b;
+}
+
+.label {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem;
+  font-weight: bold;
+}
+
+.label-border {
+  display: flex;
+  justify-content: center;
+  border-right: black 2px solid;
+  padding: 0.5rem;
+  font-weight: bold;
+}

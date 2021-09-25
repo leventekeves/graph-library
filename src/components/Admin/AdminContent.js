@@ -2,7 +2,7 @@ import { Fragment, useState } from "react";
 import Button from "../Layout/Button";
 import classes from "./AdminContent.module.css";
 import AdminNewBook from "./AdminNewBook";
-import AdminUserList from "./AdminUserList";
+import AdminManageUsers from "./AdminManageUsers";
 
 const AdminContent = () => {
   const [adminFunction, setAdminFunction] = useState("Admin Page");
@@ -21,7 +21,7 @@ const AdminContent = () => {
     content = <AdminNewBook />;
   }
   if (adminFunction === "User List") {
-    content = <AdminUserList />;
+    content = <AdminManageUsers />;
   }
 
   return (
