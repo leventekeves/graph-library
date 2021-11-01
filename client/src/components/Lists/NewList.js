@@ -3,23 +3,20 @@ import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
 import classes from "./NewList.module.css";
 
-async function newListHandler(list) {
-  await fetch(
-    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists.json",
-    {
-      method: "POST",
-      body: JSON.stringify(list),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+async function newListHandler(newlist) {
+  await fetch("/list", {
+    method: "POST",
+    body: JSON.stringify(newlist),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 const NewList = () => {
   const date = new Date();
   const authCtx = useContext(AuthContext);
-  const [newList, setNewList] = useState({ date: date, creator: authCtx.id });
+  const [newList, setNewList] = useState({ date: date, userId: authCtx.id });
 
   const handleChange = (event) => {
     setNewList({

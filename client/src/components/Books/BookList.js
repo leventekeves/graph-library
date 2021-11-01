@@ -3,6 +3,8 @@ import { Fragment } from "react";
 import classes from "./BookList.module.css";
 import BookItem from "./BookItem";
 
+//TODO: Rewrite this component
+
 const BookList = (props) => {
   return (
     <Fragment>
@@ -17,12 +19,14 @@ const BookList = (props) => {
               pages={book.pages}
               year={book.year}
               category={book.category}
-              ratings={book.ratings}
+              rating={book.rating}
               cover={book.cover}
               inListId={book.inListId}
               listId={props.listId}
               action={props.action}
               location={props.location}
+              remainingExtensions={book.remainingExtensions}
+              date={book.date}
             />
           );
         })}

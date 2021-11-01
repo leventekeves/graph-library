@@ -6,15 +6,12 @@ import classes from "./BrowseLists.module.css";
 import ListItem from "./ListItem";
 
 async function fetchLists() {
-  const response = await fetch(
-    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists.json"
-  );
+  const response = await fetch("/list");
   const data = await response.json();
 
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch lists!.");
   }
-
   return data;
 }
 
@@ -46,15 +43,9 @@ const BrowseLists = () => {
       const transformedLists = [];
 
       for (const key in data) {
-        let recommendations = 0;
-        if (data[key].recommendations) {
-          recommendations = Object.entries(data[key].recommendations).length;
-        }
-
         const listObj = {
           id: key,
           ...data[key],
-          recommendations: recommendations,
         };
 
         transformedLists.push(listObj);
@@ -132,7 +123,7 @@ const BrowseLists = () => {
         </div>
         <div className={classes["list-container"]}>
           {lists.map((list) => {
-            if (!list.books) {
+            if (list.books) {
               return "";
             } else {
               return (
@@ -140,7 +131,7 @@ const BrowseLists = () => {
                   key={list.id}
                   id={list.id}
                   name={list.name}
-                  books={list.books}
+                  numberOfBooks={list.numberOfBooks}
                   recommendations={list.recommendations}
                   date={list.date}
                 />

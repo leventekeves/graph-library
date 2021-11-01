@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react/cjs/react.development";
+import { useEffect, useState } from "react";
+
 import AdminUserList from "./AdminUserList";
+import LoadingSpinner from "../../utility/LoadingSpinner";
 
 async function getUsers() {
-  const response = await fetch(
-    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users.json"
-  );
+  const response = await fetch("/user");
   const data = await response.json();
 
   if (!response.ok) {
@@ -33,7 +33,11 @@ const AdminManageUsers = () => {
     });
   }, []);
 
-  return <div>{isLoading ? "Yo" : <AdminUserList users={users} />}</div>;
+  return (
+    <div>
+      {isLoading ? <LoadingSpinner /> : <AdminUserList users={users} />}
+    </div>
+  );
 };
 
 export default AdminManageUsers;

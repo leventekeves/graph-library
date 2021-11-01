@@ -1,42 +1,44 @@
 import { Fragment, useContext, useEffect, useState } from "react";
 
 import AuthContext from "../../store/auth-context";
-import BookItem from "../Books/BookItem";
 import SubNavigation from "../Layout/SubNavigation";
 import LoadingSpinner from "../../utility/LoadingSpinner";
 import classes from "./BorrowingsContent.module.css";
+import BookList from "../Books/BookList";
 
 async function getBorrowings(userId) {
-  const response = await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}/borrowings.json`
-  );
+  const response = await fetch(`/borrow/${userId}`);
   const data = await response.json();
 
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch bookmarks.");
   }
+
   return data;
 }
 
 const BorrowingsContent = () => {
+  const [borrowings, setBorrowings] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
-    getBorrowings(authCtx.id).then((data) => {
-      const borrowing = data;
-      const transformedBorrowings = [];
-      for (const key in borrowing) {
-        const BorrowingObj = {
-          id: key,
-          ...borrowing[key],
-        };
-        transformedBorrowings.push(BorrowingObj);
-      }
+    if (authCtx.token) {
+      getBorrowings(authCtx.id).then((data) => {
+        const borrowing = data;
+        const transformedBorrowings = [];
+        for (const key in borrowing) {
+          const BorrowingObj = {
+            id: key,
+            ...borrowing[key],
+          };
+          transformedBorrowings.push(BorrowingObj);
+        }
 
-      authCtx.borrowings = transformedBorrowings;
-      setIsLoading(false);
-    });
+        setBorrowings(transformedBorrowings);
+        setIsLoading(false);
+      });
+    }
   }, [authCtx]);
 
   if (!authCtx.isLoggedIn) {
@@ -57,22 +59,13 @@ const BorrowingsContent = () => {
       </div>
     );
   } else {
-    if (authCtx.borrowings.length > 0) {
+    if (borrowings.length > 0) {
       return (
         <Fragment>
           <SubNavigation location={[{ name: "Borrowings", link: "" }]} />
           <div className={classes.container}>
             <div className={classes.container1}>
-              {authCtx.borrowings.map((bookmark) => {
-                return (
-                  <BookItem
-                    key={bookmark.bookId}
-                    id={bookmark.bookId}
-                    location="list"
-                    action="borrow"
-                  />
-                );
-              })}
+              <BookList books={borrowings} action="borrow" location="list" />
             </div>
           </div>
         </Fragment>

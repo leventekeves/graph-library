@@ -6,42 +6,47 @@ const AuthContext = React.createContext({
   name: "",
   access: "",
   isLoggedIn: false,
+  ratings: [],
   bookmarks: [],
   borrowings: [],
+  recommendations: [],
   login: (token, id, name, access, bookmarks) => {},
   logout: () => {},
 });
 
 export const AuthContextProvider = (props) => {
-  const [token, setToken] = useState("123456789");
-  const [id, setId] = useState("-MhZLH44xLPw8jpO9lGP");
-  const [name, setName] = useState("Admin");
-  const [access, setAccess] = useState("admin");
-  const [bookmarks, setBookmarks] = useState([
-    { bookId: "-Mh3YyK70IfId0ebhkSR" },
-    { bookId: "-Mh3_Doh9YeOmg4GJHj8" },
-    { bookId: "-Mh3_L3aa9rpFY4wROSK" },
-  ]);
-  const [borrowings, setBorrowings] = useState([
-    { bookId: "-Mh3YyK70IfId0ebhkSR" },
-    { bookId: "-Mh3_Doh9YeOmg4GJHj8" },
-  ]);
-
-  // const [token, setToken] = useState("");
-  // const [id, setId] = useState("");
-  // const [name, setName] = useState("");
-  // const [access, setAccess] = useState("");
-  // const [bookmarks, setBookmarks] = useState([]);
+  const [token, setToken] = useState("");
+  const [id, setId] = useState("");
+  const [name, setName] = useState("");
+  const [access, setAccess] = useState("");
+  const [ratings, setRatings] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
+  const [borrowings, setBorrowings] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
+  const [votes, setVotes] = useState([]);
 
   const userIsLoggedIn = !!token;
 
-  const loginHandler = (token, id, name, access, bookmarks, borrowings) => {
+  const loginHandler = (
+    token,
+    id,
+    name,
+    access,
+    ratings,
+    bookmarks,
+    borrowings,
+    recommendations,
+    votes
+  ) => {
     setToken(token);
     setId(id);
     setName(name);
     setAccess(access);
+    setRatings(ratings);
     setBookmarks(bookmarks);
     setBorrowings(borrowings);
+    setRecommendations(recommendations);
+    setVotes(votes);
   };
 
   const logoutHandler = () => {
@@ -49,8 +54,11 @@ export const AuthContextProvider = (props) => {
     setId(null);
     setName(null);
     setAccess(null);
+    setRatings(null);
     setBookmarks(null);
     setBorrowings(null);
+    setRecommendations(null);
+    setVotes(null);
   };
 
   const contextValue = {
@@ -58,8 +66,11 @@ export const AuthContextProvider = (props) => {
     id: id,
     name: name,
     access: access,
+    ratings: ratings,
     bookmarks: bookmarks,
     borrowings: borrowings,
+    recommendations: recommendations,
+    votes: votes,
     isLoggedIn: userIsLoggedIn,
     login: loginHandler,
     logout: logoutHandler,

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import classes from "./ListItem.module.css";
 
 const ListItem = (props) => {
-  const transformedBooks = Object.values(props.books);
+  //const transformedBooks = Object.values(props.books);
 
   let formatedDate;
   const date = new Date(props.date);
@@ -28,10 +28,10 @@ const ListItem = (props) => {
       <div className={classes["list-item"]}>
         <div>
           <p>{props.name}</p>
-          {+transformedBooks.length === 1 ? (
-            <p>{transformedBooks.length} book</p>
+          {+props.numberOfBooks === 1 ? (
+            <p>{props.numberOfBooks} book</p>
           ) : (
-            <p>{transformedBooks.length} books</p>
+            <p>{props.numberOfBooks} books</p>
           )}
         </div>
         <div>{props.recommendations || 0} recommendations</div>

@@ -8,29 +8,23 @@ import SubNavigation from "../Layout/SubNavigation";
 import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
 
-async function addRecommendation(id, listId) {
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listId}/recommendations.json`,
-    {
-      method: "POST",
-      body: JSON.stringify(id),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+async function addRecommendation(userId, listId) {
+  await fetch(`/list/recommendation`, {
+    method: "POST",
+    body: JSON.stringify({ userId: userId, listId: listId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
-async function getBooks(listId) {
-  const response = await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists/${listId}.json`
-  );
+async function getList(listId) {
+  const response = await fetch(`/list/${listId}`);
   const data = await response.json();
 
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch books.");
   }
-
   return data;
 }
 
@@ -43,58 +37,27 @@ const ListCard = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [numberOfRecommendations, setRecommendations] = useState(0);
   const [isRecommended, setIsRecommended] = useState(false);
-  const [canRecommend, setCanRecommend] = useState();
+  const [canRecommend, setCanRecommend] = useState(true);
 
   if (!listId) {
     listId = props.listId;
   }
 
   const alreadyRecommended = useCallback(() => {
-    let loggedInRecommendations;
-    if (list.recommendations) {
-      loggedInRecommendations = list.recommendations.filter(
-        (rec) => rec.id === authCtx.id
-      );
-      if (loggedInRecommendations.length > 0) {
-        setCanRecommend(false);
-      } else {
-        setCanRecommend(true);
-      }
-    } else {
-      setCanRecommend(true);
+    if (!isLoading) {
+      authCtx.recommendations.forEach((recommendation) => {
+        if (recommendation.listId === list.id) {
+          setCanRecommend(false);
+        }
+      });
     }
-  }, [authCtx.id, list]);
+  }, [isLoading, authCtx.recommendations, list?.id]);
 
   useEffect(() => {
-    getBooks(listId).then((data) => {
-      const transformedBooks = [];
+    getList(listId).then((data) => {
       if (data) {
-        for (const key in data.books) {
-          const bookObj = {
-            inListId: key,
-            ...data.books[key],
-          };
-
-          transformedBooks.push(bookObj);
-        }
-      }
-
-      if (data && data.recommendations) {
-        setRecommendations(Object.entries(data.recommendations).length);
-      }
-
-      let transformedRecommendations;
-      if (data && data.recommendations) {
-        transformedRecommendations = Object.values(data.recommendations);
-      }
-
-      if (data) {
-        setList({
-          ...data,
-          books: transformedBooks,
-          recommendations: transformedRecommendations,
-        });
-        setNumberOfBooks(transformedBooks.length);
+        setList(data[0]);
+        setNumberOfBooks(data[0].books.length);
       }
 
       setIsLoading(false);
@@ -103,7 +66,7 @@ const ListCard = (props) => {
 
   const onRecommendHandler = () => {
     setIsRecommended(true);
-    addRecommendation({ id: authCtx.id }, listId);
+    addRecommendation(authCtx.id, listId);
     setRecommendations(numberOfRecommendations + 1);
   };
 
@@ -158,7 +121,7 @@ const ListCard = (props) => {
                 <div className={classes.double}>{list.name}</div>
                 <div className={classes.double}>{list.description}</div>
                 <div>Number of books: {numberOfBooks}</div>
-                <div>Recommendations: {numberOfRecommendations}</div>
+                <div>Recommendations: {list.recommendations}</div>
                 {authCtx.isLoggedIn ? (
                   recommendButton
                 ) : (

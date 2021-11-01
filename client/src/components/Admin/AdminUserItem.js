@@ -1,13 +1,10 @@
-import { useState } from "react/cjs/react.development";
+import { useState } from "react";
 import classes from "./AdminUserItem.module.css";
 
 async function banUser(userId) {
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}.json`,
-    {
-      method: "DELETE",
-    }
-  );
+  await fetch(`/user/${userId}`, {
+    method: "DELETE",
+  });
 }
 
 const AdminUserItem = (props) => {

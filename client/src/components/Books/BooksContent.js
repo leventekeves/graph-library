@@ -6,10 +6,24 @@ import BookList from "./BookList";
 import LoadingSpinner from "../../utility/LoadingSpinner";
 import BookFilters from "./BookFilters";
 
-async function getBooks() {
-  const response = await fetch(
-    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books.json"
-  );
+async function getBooks(listId) {
+  let response;
+  if (listId) {
+    const listResponse = await fetch(`/list/${listId}`);
+    const listData = await listResponse.json();
+
+    if (listData[0]?.books) {
+      const listIdArray = [];
+      listData[0].books.forEach((book) => {
+        listIdArray.push(book.id);
+      });
+      response = await fetch(`/book/list/${listIdArray.join("-")}`);
+    } else {
+      response = await fetch("/book");
+    }
+  } else {
+    response = await fetch("/book");
+  }
   const data = await response.json();
 
   if (!response.ok) {
@@ -37,6 +51,7 @@ const BooksContent = (props) => {
 
       transformedBooks.push(bookObj);
     }
+
     setBooks(transformedBooks);
     setFilteredBooks(transformedBooks);
     setIsLoading(false);
@@ -57,10 +72,10 @@ const BooksContent = (props) => {
   }, [location]);
 
   useEffect(() => {
-    getBooks().then((data) => {
+    getBooks(props.listId).then((data) => {
       setData(data);
     });
-  }, []);
+  }, [props.listId]);
 
   useEffect(() => {
     transformBooks(data);

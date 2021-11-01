@@ -1,15 +1,13 @@
 import { Fragment, useContext, useEffect, useState } from "react";
 
 import AuthContext from "../../store/auth-context";
-import BookItem from "../Books/BookItem";
 import SubNavigation from "../Layout/SubNavigation";
 import LoadingSpinner from "../../utility/LoadingSpinner";
 import classes from "./BookmarksContent.module.css";
+import BookList from "../Books/BookList";
 
 async function getBookmarks(userId) {
-  const response = await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}/bookmarks.json`
-  );
+  const response = await fetch(`/bookmarks/${userId}`);
   const data = await response.json();
 
   if (!response.ok) {
@@ -20,23 +18,25 @@ async function getBookmarks(userId) {
 
 const BookmarksContent = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [bookmarks, setBookmarks] = useState();
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
-    getBookmarks(authCtx.id).then((data) => {
-      const bookmarks = data;
-      const transformedBookmarks = [];
-      for (const key in bookmarks) {
-        const BookmarkObj = {
-          id: key,
-          ...bookmarks[key],
-        };
-        transformedBookmarks.push(BookmarkObj);
-      }
+    if (authCtx.token) {
+      getBookmarks(authCtx.id).then((bookmarks) => {
+        const transformedBookmarks = [];
+        for (const key in bookmarks) {
+          const BookmarkObj = {
+            id: key,
+            ...bookmarks[key],
+          };
+          transformedBookmarks.push(BookmarkObj);
+        }
 
-      authCtx.bookmarks = transformedBookmarks;
-      setIsLoading(false);
-    });
+        setBookmarks(transformedBookmarks);
+        setIsLoading(false);
+      });
+    }
   }, [authCtx]);
 
   if (!authCtx.isLoggedIn) {
@@ -57,20 +57,12 @@ const BookmarksContent = () => {
       </div>
     );
   } else {
-    if (authCtx.bookmarks.length > 0) {
+    if (bookmarks.length > 0) {
       return (
         <Fragment>
           <SubNavigation location={[{ name: "Bookmarks", link: "" }]} />
           <div className={classes.container}>
-            {authCtx.bookmarks.map((bookmark) => {
-              return (
-                <BookItem
-                  key={bookmark.bookId}
-                  id={bookmark.bookId}
-                  location="list"
-                />
-              );
-            })}
+            <BookList books={bookmarks} />
           </div>
         </Fragment>
       );

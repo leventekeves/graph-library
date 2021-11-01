@@ -10,9 +10,7 @@ import LoadingSpinner from "../../utility/LoadingSpinner";
 import classes from "./BookCard.module.css";
 
 async function getBooks(bookId) {
-  const response = await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${bookId}.json`
-  );
+  const response = await fetch(`/book/${bookId}`);
   const data = await response.json();
 
   if (!response.ok) {
@@ -21,82 +19,44 @@ async function getBooks(bookId) {
   return data;
 }
 
-async function addRateHandler(bookId, rating) {
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${bookId}/ratings.json`,
-    {
-      method: "POST",
-      body: JSON.stringify(rating),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+async function addRateHandler(userId, bookId, rating) {
+  await fetch(`/book/rate`, {
+    method: "POST",
+    body: JSON.stringify({ rating, userId, bookId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
-async function addBookmark(book, userId) {
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}/bookmarks.json`,
-    {
-      method: "POST",
-      body: JSON.stringify(book),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  const response = await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}/bookmarks.json`
-  );
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Could not fetch bookmarks.");
-  }
-  const bookmarks = data;
-  const transformedBookmarks = [];
-  for (const key in bookmarks) {
-    const BookmarkObj = {
-      id: key,
-      ...bookmarks[key],
-    };
-    transformedBookmarks.push(BookmarkObj);
-  }
-
-  return transformedBookmarks;
+async function addBookmark(bookId, userId) {
+  await fetch(`/bookmarks`, {
+    method: "POST",
+    body: JSON.stringify({ bookId, userId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
-async function removeBookmark(userId, bookmarkId) {
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}/bookmarks/${bookmarkId}.json`,
-    {
-      method: "DELETE",
-    }
-  );
+async function removeBookmark(bookId, userId) {
+  await fetch(`/bookmarks`, {
+    method: "DELETE",
+    body: JSON.stringify({ bookId, userId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
-async function addBorrow(book, userId, newStock) {
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users/${userId}/borrowings.json`,
-    {
-      method: "POST",
-      body: JSON.stringify(book),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${book.bookId}/stock.json`,
-    {
-      method: "PUT",
-      body: JSON.stringify(newStock),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+async function addBorrow(data) {
+  await fetch(`/borrow`, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 const BookCard = () => {
@@ -107,7 +67,7 @@ const BookCard = () => {
   const [borrowButtonActive, setBorrowButtonActive] = useState(true);
   const [borrowButton, setBorrowButton] = useState();
   const [isRated, setisRated] = useState(false);
-  const [canRate, setCanRate] = useState(false);
+  const [canRate, setCanRate] = useState(true);
   const [rating, setRating] = useState("No ratings yet!");
   const [bookmarkButtonActive, setBookmarkButtonActive] = useState(true);
   const [bookmarkButton, setBookmarkButton] = useState();
@@ -116,11 +76,7 @@ const BookCard = () => {
 
   useEffect(() => {
     getBooks(bookId).then((data) => {
-      let transformedRatings;
-      if (data && data.ratings) {
-        transformedRatings = Object.values(data.ratings);
-      }
-      setBook({ ...data, ratings: transformedRatings });
+      setBook(data);
       setIsLoading(false);
     });
   }, [bookId]);
@@ -133,12 +89,12 @@ const BookCard = () => {
     const newStock = +book.stock - 1;
     const date = new Date();
     date.setDate(date.getDate() + 30);
-    addBorrow(
-      { bookId: bookId, date: date, remainingExtensions: 2 },
-      authCtx.id,
-      newStock
-    );
-    authCtx.borrowings.push({ bookId: bookId });
+    addBorrow({
+      userId: authCtx.id,
+      bookId: bookId,
+      date: date,
+    });
+    authCtx.borrowings.push({ bookId: +bookId });
     book.stock = newStock;
     setBorrowButtonActive(false);
     setBorrowButton(
@@ -148,7 +104,11 @@ const BookCard = () => {
 
   const onRateHandler = (event) => {
     if (isFinite(event.target.value)) {
-      addRateHandler(bookId, { id: authCtx.id, rating: event.target.value });
+      addRateHandler(authCtx.id, bookId, event.target.value);
+      authCtx.ratings.push({
+        bookId: +bookId,
+        rating: +event.target.value,
+      });
       setisRated(true);
       calcRate(event.target.value);
     }
@@ -164,7 +124,7 @@ const BookCard = () => {
         setBorrowButton(
           <div className={classes["feedback-message"]}>Out of stock!</div>
         );
-      } else if (!borrowingsArray.includes(bookId)) {
+      } else if (!borrowingsArray.includes(+bookId)) {
         setBorrowButton(<Button onClick={onBorrowHandler}>Borrow</Button>);
       } else {
         setBorrowButton(
@@ -211,22 +171,18 @@ const BookCard = () => {
 
   const calcRate = useCallback(
     (newRating) => {
-      let ratingSum = 0;
-      let numberOfRatings = 0;
-
       if (newRating) {
-        ratingSum += +newRating;
-        numberOfRatings++;
-        setRating((ratingSum / numberOfRatings).toFixed(2));
+        if (book.rating) {
+          setRating(
+            ((book.rating + +newRating) / (book.numberOfRatings + 1)).toFixed(2)
+          );
+        } else {
+          setRating(newRating);
+        }
       }
 
-      if (!isLoading && book && book.ratings) {
-        book.ratings.forEach((ratingObj) => {
-          ratingSum += +ratingObj.rating;
-          numberOfRatings++;
-        });
-
-        setRating((ratingSum / numberOfRatings).toFixed(2));
+      if (!isLoading && book?.rating && !newRating) {
+        setRating(book.rating);
       }
     },
     [book, isLoading]
@@ -237,25 +193,21 @@ const BookCard = () => {
   }, [calcRate]);
 
   const alreadyRated = useCallback(() => {
-    let loggedInRatings;
-    if (book.ratings) {
-      loggedInRatings = book.ratings.filter(
-        (rating) => rating.id === authCtx.id
-      );
-      if (loggedInRatings.length > 0) {
+    for (let i = 0; i < authCtx.ratings.length; i++) {
+      if (+authCtx.ratings[i].bookId === +bookId) {
         setCanRate(false);
+        break;
       } else {
         setCanRate(true);
       }
-    } else {
-      setCanRate(true);
     }
-  }, [authCtx.id, book]);
+  }, [authCtx.ratings, bookId]);
 
   useEffect(() => {
     if (!isLoading) alreadyRated();
   }, [alreadyRated, isLoading]);
 
+  //useeffect?
   let rateContent;
   if (canRate) {
     rateContent = isRated ? (
@@ -270,8 +222,8 @@ const BookCard = () => {
   }
 
   const addBookmarkHandler = useCallback(() => {
-    addBookmark({ bookId: bookId }, authCtx.id).then((transformedBookmarks) => {
-      authCtx.bookmarks = transformedBookmarks;
+    addBookmark(bookId, authCtx.id).then(() => {
+      authCtx.bookmarks.push({ bookId: +bookId });
     });
     setBookmarkButtonActive(false);
     setBookmarkButton(<div className={classes["bookmark-message"]}>ADDED</div>);
@@ -283,10 +235,10 @@ const BookCard = () => {
     });
 
     const removeIndex = bookmarksArray.findIndex((bookmarkId) => {
-      return bookmarkId === bookId;
+      return +bookmarkId === +bookId;
     });
 
-    removeBookmark(authCtx.id, authCtx.bookmarks[removeIndex].id);
+    removeBookmark(bookId, authCtx.id);
     authCtx.bookmarks.splice(removeIndex, 1);
     setBookmarkButtonActive(false);
     setBookmarkButton(
@@ -300,7 +252,7 @@ const BookCard = () => {
         (bookmark) => bookmark.bookId
       );
 
-      if (bookmarksArray.includes(bookId)) {
+      if (bookmarksArray.includes(+bookId)) {
         setBookmarkButton(
           <div className={classes.bookmarker} onClick={removeBookmarkHandler}>
             Remove from bookmarks

@@ -5,16 +5,13 @@ import Button from "../Layout/Button";
 import classes from "./AdminNewBook.module.css";
 
 async function addBookHandler(book) {
-  await fetch(
-    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books.json",
-    {
-      method: "POST",
-      body: JSON.stringify(book),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  await fetch("/book", {
+    method: "POST",
+    body: JSON.stringify(book),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 const AdminNewBook = () => {

@@ -4,9 +4,7 @@ import ExpandCollectionList from "./ExpandCollectionList";
 import classes from "./ExpandCollectionVote.module.css";
 
 async function getBooks() {
-  const response = await fetch(
-    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/VoteList.json"
-  );
+  const response = await fetch("/expand");
   const data = await response.json();
 
   if (!response.ok) {
@@ -24,7 +22,7 @@ const ExpandCollectionVote = () => {
       const transformedBooks = [];
       for (const key in data) {
         const bookObj = {
-          idfirebase: key,
+          id: key,
           ...data[key],
         };
 

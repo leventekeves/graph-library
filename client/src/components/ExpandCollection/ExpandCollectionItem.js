@@ -1,54 +1,44 @@
-import { useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
 import classes from "./ExpandCollectionItem.module.css";
 
-async function addBookToVoteListPost(book) {
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/VoteList.json`,
-    {
-      method: "POST",
-      body: JSON.stringify({ ...book, votes: 1 }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+async function addBookToVoteListPost(book, userId) {
+  await fetch(`/expand`, {
+    method: "POST",
+    body: JSON.stringify({ ...book, userId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 async function addBookToLibrary(book) {
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/VoteList/${book.idfirebase}.json`,
-    {
-      method: "DELETE",
-    }
-  );
+  await fetch(`/expand`, {
+    method: "DELETE",
+    body: JSON.stringify({ bookId: book.id }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-  delete book.id;
-  delete book.idfirebase;
-
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books.json`,
-    {
-      method: "POST",
-      body: JSON.stringify({ ...book, stock: 3 }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  await fetch(`/book`, {
+    method: "POST",
+    body: JSON.stringify({ ...book, stock: 3 }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
-async function updateVotes(bookId, newVotes) {
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/VoteList/${bookId}/votes.json`,
-    {
-      method: "PUT",
-      body: JSON.stringify(newVotes),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+async function updateVotes(bookId, userId) {
+  await fetch(`/expand/vote`, {
+    method: "POST",
+    body: JSON.stringify({ bookId: bookId, userId: userId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 const ExpandCollectionItem = (props) => {
@@ -57,27 +47,54 @@ const ExpandCollectionItem = (props) => {
   const [showDescription, setShowDescription] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
+  const [canVote, setCanVote] = useState(true);
+
+  const authCtx = useContext(AuthContext);
 
   const onShowDescriptionHandler = () => {
     setShowDescription(!showDescription);
   };
 
   const addBookToVoteListHandler = () => {
-    addBookToVoteListPost(...Object.values(props));
+    addBookToVoteListPost(props.book, authCtx.id);
     setIsPressed(true);
   };
 
+  const alreadyVoted = useCallback(() => {
+    for (let i = 0; i < authCtx.votes.length; i++) {
+      if (+authCtx.votes[i].bookId === +props.book.id) {
+        console.log("cant vote");
+        setCanVote(false);
+        break;
+      } else {
+        console.log("can vote");
+        setCanVote(true);
+      }
+    }
+  }, [authCtx.votes, props.book.id]);
+
+  useEffect(() => {
+    alreadyVoted();
+  }, [alreadyVoted]);
+
   const voteHandler = () => {
-    if (props.book.votes > 1) {
+    if (props.book.votes > 2) {
       addBookToLibrary(props.book);
       setIsAdded(true);
     } else {
-      updateVotes(props.book.idfirebase, +props.book.votes + 1);
+      updateVotes(props.book.id, authCtx.id);
     }
     setIsPressed(true);
+    authCtx.votes.push({ bookId: +props.book.id });
   };
 
-  if (!isAdded) {
+  if (isAdded) {
+    return (
+      <div className={classes["added-message"]}>Book added to library!</div>
+    );
+  }
+
+  if (canVote && !isAdded) {
     return (
       <div className={classes.container}>
         <div
@@ -127,12 +144,8 @@ const ExpandCollectionItem = (props) => {
         )}
       </div>
     );
-  }
-
-  if (isAdded) {
-    return (
-      <div className={classes["added-message"]}>Book added to library!</div>
-    );
+  } else {
+    return "";
   }
 };
 

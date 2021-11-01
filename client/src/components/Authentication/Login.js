@@ -5,10 +5,14 @@ import { useHistory } from "react-router-dom";
 import authClasses from "./Authentication.module.css";
 import Button from "../Layout/Button";
 
-async function fetchUsers() {
-  const response = await fetch(
-    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users.json"
-  );
+async function fetchUsers(email, password) {
+  const response = await fetch("/user/login", {
+    method: "POST",
+    body: JSON.stringify({ email: email, password: password }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   const data = await response.json();
 
   if (!response.ok) {
@@ -26,46 +30,26 @@ const Login = () => {
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
-    fetchUsers().then((data) => {
-      emailInputRef.current.value = "user@user.com";
-      passwordInputRef.current.value = "user";
-      for (const key in data) {
-        if (
-          emailInputRef.current.value === data[key].email &&
-          passwordInputRef.current.value === data[key].password
-        ) {
-          const bookmarks = data[key].bookmarks;
-          const transformedBookmarks = [];
-          for (const key in bookmarks) {
-            const BookmarkObj = {
-              id: key,
-              ...bookmarks[key],
-            };
-            transformedBookmarks.push(BookmarkObj);
-          }
 
-          const borrowing = data[key].borrowings;
-          const transformedBorrowings = [];
-          for (const key in borrowing) {
-            const BorrowingObj = {
-              id: key,
-              ...borrowing[key],
-            };
-            transformedBorrowings.push(BorrowingObj);
-          }
-
-          authCtx.login(
-            "123456789",
-            key,
-            data[key].name,
-            data[key].access,
-            transformedBookmarks,
-            transformedBorrowings
-          );
-
-          history.replace("/");
-          break;
-        }
+    fetchUsers(
+      // emailInputRef.current.value,
+      // passwordInputRef.current.value
+      "admin@admin.com",
+      "admin"
+    ).then((data) => {
+      if (data.credentialsCorrect === true) {
+        authCtx.login(
+          "123456789",
+          data.id,
+          data.name,
+          data.access,
+          data.ratings,
+          data.bookmarks,
+          data.borrowings,
+          data.recommendations,
+          data.votes
+        );
+        history.replace("/");
       }
     });
   };

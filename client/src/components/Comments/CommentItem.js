@@ -4,10 +4,10 @@ const CommentItem = (props) => {
   return (
     <div className={classes["comment-item"]}>
       <div className={classes["comment-item--header"]}>
-        <p>{props.commenter}</p>
+        <p>{props.userId}</p>
         <p>{props.date}</p>
       </div>
-      <div className={classes["comment-item--content"]}>{props.message}</div>
+      <div className={classes["comment-item--content"]}>{props.comment}</div>
     </div>
   );
 };

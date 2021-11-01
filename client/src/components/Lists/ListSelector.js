@@ -3,10 +3,8 @@ import AuthContext from "../../store/auth-context";
 
 import classes from "./ListSelector.module.css";
 
-async function fetchLists() {
-  const response = await fetch(
-    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Lists.json"
-  );
+async function fetchLists(userId) {
+  const response = await fetch(`/list/user/${userId}`);
   const data = await response.json();
 
   if (!response.ok) {
@@ -29,21 +27,19 @@ const ListSelector = (props) => {
   const listRef = useRef();
 
   useEffect(() => {
-    fetchLists().then((data) => {
+    fetchLists(authCtx.id).then((data) => {
       const transformedLists = [];
       const onListSelectHandler = (event) => {
         props.onListSelect(event.target.value);
       };
 
       for (const key in data) {
-        if (authCtx.id === data[key].creator) {
-          const listObj = {
-            id: key,
-            ...data[key],
-          };
+        const listObj = {
+          id: key,
+          ...data[key],
+        };
 
-          transformedLists.push(listObj);
-        }
+        transformedLists.push(listObj);
       }
 
       const dropdownMapped = (

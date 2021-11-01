@@ -4,16 +4,13 @@ import authClasses from "./Authentication.module.css";
 import classes from "./Signup.module.css";
 
 async function addNewUser(userData) {
-  await fetch(
-    "https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Users.json",
-    {
-      method: "POST",
-      body: JSON.stringify(userData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  await fetch("/user", {
+    method: "POST",
+    body: JSON.stringify(userData),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 const Signup = () => {
@@ -29,7 +26,7 @@ const Signup = () => {
       email: emailInputRef.current.value,
       password: passwordInputRef.current.value,
     };
-    addNewUser({ ...userData, access: "user" });
+    addNewUser(userData);
     setSignedUp(true);
   };
 

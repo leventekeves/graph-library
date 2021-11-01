@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import CommentItem from "./CommentItem";
 import classes from "./CommentList.module.css";
 
-async function getComments(currentBook) {
-  const response = await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${currentBook}/comments.json`
-  );
+async function getComments(bookId) {
+  const response = await fetch(`/book/comment/${bookId}`);
   const data = await response.json();
 
   if (!response.ok) {
@@ -60,12 +58,12 @@ const CommentList = (props) => {
     <div className={classes["comment-container"]}>
       {comments
         .map((comment) => {
-          if (props.currentBook === comment.bookid) {
+          if (true) {
             return (
               <CommentItem
                 key={comment.id}
-                message={comment.message}
-                commenter={comment.commenter}
+                comment={comment.comment}
+                userId={comment.userId}
                 date={comment.date}
               />
             );

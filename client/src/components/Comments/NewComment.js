@@ -4,17 +4,14 @@ import classes from "./NewComment.module.css";
 import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
 
-async function addCommentHandler(comment, currentBook) {
-  await fetch(
-    `https://graph-library-kl-default-rtdb.europe-west1.firebasedatabase.app/Books/${currentBook}/comments.json`,
-    {
-      method: "POST",
-      body: JSON.stringify(comment),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+async function addCommentHandler(comment) {
+  await fetch("/book/comment", {
+    method: "POST",
+    body: JSON.stringify(comment),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 const NewComment = (props) => {
@@ -45,10 +42,10 @@ const NewComment = (props) => {
       ((date.getMinutes() < 10 ? "0" : "") + date.getMinutes());
 
     const comment = {
-      bookid: props.currentBook,
-      commenter: authCtx.name || "Guest",
+      userId: authCtx.id,
+      bookId: props.currentBook,
       date: formatedDate,
-      message: commentInputRef.current.value,
+      comment: commentInputRef.current.value,
     };
     addCommentHandler(comment, props.currentBook);
     commentInputRef.current.value = "";
