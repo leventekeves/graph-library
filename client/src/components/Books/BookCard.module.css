@@ -79,15 +79,23 @@
   width: 5rem;
 }
 
-.bookmarker {
+.button-container {
   position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  align-items: flex-end;
+}
+
+.bookmarker {
   font-size: 16px;
   padding: 0.3rem;
   color: white;
   background-color: #753422;
-  top: 0.5rem;
-  right: 0.5rem;
   cursor: pointer;
+  width: fit-content;
 }
 
 .bookmark-message {

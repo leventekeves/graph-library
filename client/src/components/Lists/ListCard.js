@@ -55,7 +55,7 @@ const ListCard = (props) => {
 
   useEffect(() => {
     getList(listId).then((data) => {
-      if (data) {
+      if (data[0]) {
         setList(data[0]);
         setNumberOfBooks(data[0].books.length);
       }
@@ -142,7 +142,7 @@ const ListCard = (props) => {
       );
     }
   } else {
-    return <div>List Not Found!</div>;
+    return <div>This list is empty!</div>;
   }
 };
 

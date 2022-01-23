@@ -182,7 +182,7 @@ const BookItem = (props) => {
         <div className={classes["misc-container"]}>
           <div className={classes["button-container"]}>
             <div>{button}</div>
-            <div> Borrowed until: {props.date}</div>
+            <div> Borrowed until: {expirationDate.toLocaleDateString()}</div>
           </div>
           <div>{extendContent}</div>
         </div>

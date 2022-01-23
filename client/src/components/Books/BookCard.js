@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import AuthContext from "../../store/auth-context";
 
 import CommentList from "../Comments/CommentList";
@@ -7,6 +7,7 @@ import NewComment from "../Comments/NewComment";
 import Button from "../Layout/Button";
 import SubNavigation from "../Layout/SubNavigation";
 import LoadingSpinner from "../../utility/LoadingSpinner";
+import AdminNewBook from "../Admin/AdminNewBook";
 import classes from "./BookCard.module.css";
 
 async function getBooks(bookId) {
@@ -59,6 +60,16 @@ async function addBorrow(data) {
   });
 }
 
+async function deleteBook(bookId) {
+  await fetch(`/book`, {
+    method: "DELETE",
+    body: JSON.stringify({ bookId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 const BookCard = () => {
   const { bookId } = useParams();
   const [book, setBook] = useState([]);
@@ -71,8 +82,12 @@ const BookCard = () => {
   const [rating, setRating] = useState("No ratings yet!");
   const [bookmarkButtonActive, setBookmarkButtonActive] = useState(true);
   const [bookmarkButton, setBookmarkButton] = useState();
+  const [deleteBookButton, setDeleteBookButton] = useState();
+  const [editBookButton, setEditBookButton] = useState();
+  const [editing, setEditing] = useState(false);
 
   const authCtx = useContext(AuthContext);
+  const history = useHistory();
 
   useEffect(() => {
     getBooks(bookId).then((data) => {
@@ -246,6 +261,16 @@ const BookCard = () => {
     );
   }, [authCtx.bookmarks, authCtx.id, bookId]);
 
+  const deleteBookHandler = useCallback(() => {
+    deleteBook(book.id);
+    history.replace("/books");
+  }, [book.id, history]);
+
+  const editBookHandler = useCallback(() => {
+    console.log("Book edited!");
+    setEditing(true);
+  }, []);
+
   useEffect(() => {
     if (!isLoading && bookmarkButtonActive && authCtx.isLoggedIn) {
       const bookmarksArray = authCtx.bookmarks.map(
@@ -266,13 +291,31 @@ const BookCard = () => {
         );
       }
     }
+    if (!isLoading && authCtx.access === "admin") {
+      console.log(authCtx.access);
+      console.log(book);
+      setDeleteBookButton(
+        <div className={classes.bookmarker} onClick={deleteBookHandler}>
+          Delete Book
+        </div>
+      );
+      setEditBookButton(
+        <div className={classes.bookmarker} onClick={editBookHandler}>
+          Edit Book
+        </div>
+      );
+    }
   }, [
     removeBookmarkHandler,
     addBookmarkHandler,
+    deleteBookHandler,
+    editBookHandler,
     isLoading,
     bookmarkButtonActive,
     authCtx.bookmarks,
     authCtx.isLoggedIn,
+    authCtx.access,
+    book,
     bookId,
   ]);
 
@@ -284,60 +327,75 @@ const BookCard = () => {
     );
   }
   if (book) {
-    return (
-      <Fragment>
-        <SubNavigation
-          location={[
-            { name: "Books", link: "/books" },
-            { name: `${book.title}`, link: "" },
-          ]}
-        />
-        <div className={classes.container}>
-          <div className={classes["book-container"]}>
-            <div>
-              {bookmarkButton}
-              {book.cover ? (
-                <img
-                  className={classes["book-cover"]}
-                  src={book.cover}
-                  alt="cover"
-                />
-              ) : (
-                ""
-              )}
-            </div>
-            <div className={classes["book-details"]}>
-              <div className={classes.title}>{book.title}</div>
-              <div className={classes.author}>by {book.author}</div>
-              <div className={classes.description}>{book.description}</div>
-              <div className={classes.pages}>Pages: {book.pages}</div>
-              <div className={classes.category}>Categeory: {book.category}</div>
-              <div className={classes.year}>Release year: {book.year}</div>
-              <div className={classes.rating}>Rating: {rating}</div>
-              <div className={classes.stock}>In stock: {book.stock}</div>
-              {authCtx.isLoggedIn ? (
-                <div className={classes.rate}>{rateContent}</div>
-              ) : (
-                <div className={classes["feedback-message"]}>
-                  Login to rate!
+    if (!editing) {
+      return (
+        <Fragment>
+          <SubNavigation
+            location={[
+              { name: "Books", link: "/books" },
+              { name: `${book.title}`, link: "" },
+            ]}
+          />
+          <div className={classes.container}>
+            <div className={classes["book-container"]}>
+              <div>
+                <div className={classes["button-container"]}>
+                  {bookmarkButton}
+                  {editBookButton}
+                  {deleteBookButton}
                 </div>
-              )}
 
-              <div className={classes["borrow-container"]}>{borrowButton}</div>
+                {book.cover ? (
+                  <img
+                    className={classes["book-cover"]}
+                    src={book.cover}
+                    alt="cover"
+                  />
+                ) : (
+                  ""
+                )}
+              </div>
+              <div className={classes["book-details"]}>
+                <div className={classes.title}>{book.title}</div>
+                <div className={classes.author}>by {book.author}</div>
+                <div className={classes.description}>{book.description}</div>
+                <div className={classes.pages}>Pages: {book.pages}</div>
+                <div className={classes.category}>
+                  Categeory: {book.category}
+                </div>
+                <div className={classes.year}>Release year: {book.year}</div>
+                <div className={classes.rating}>Rating: {rating}</div>
+                <div className={classes.stock}>In stock: {book.stock}</div>
+                {authCtx.isLoggedIn ? (
+                  <div className={classes.rate}>{rateContent}</div>
+                ) : (
+                  <div className={classes["feedback-message"]}>
+                    Login to rate!
+                  </div>
+                )}
+
+                <div className={classes["borrow-container"]}>
+                  {borrowButton}
+                </div>
+              </div>
             </div>
+            <NewComment
+              currentBook={bookId}
+              onNewComment={newCommentAddedHandler}
+            />
+            <CommentList
+              currentBook={bookId}
+              newCommentAdded={newCommentAdded}
+              onNewComment={newCommentAddedHandler}
+            />
           </div>
-          <NewComment
-            currentBook={bookId}
-            onNewComment={newCommentAddedHandler}
-          />
-          <CommentList
-            currentBook={bookId}
-            newCommentAdded={newCommentAdded}
-            onNewComment={newCommentAddedHandler}
-          />
-        </div>
-      </Fragment>
-    );
+        </Fragment>
+      );
+    }
+    if (editing) {
+      console.log("yo");
+      return <AdminNewBook book={book} />;
+    }
   } else {
     return <div className={classes["not-found"]}>Book Not Found!</div>;
   }

@@ -9,6 +9,7 @@ import RemoveBookFromList from "./RemoveBookFromList";
 import SubNavigation from "../Layout/SubNavigation";
 import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
+import DeleteList from "./DeleteList";
 
 const ListsContent = () => {
   const history = useHistory();
@@ -46,6 +47,19 @@ const ListsContent = () => {
           location={[
             { name: "Lists", link: "/lists" },
             { name: "New List", link: "" },
+          ]}
+        />
+      );
+    }
+
+    if (queryParams.get("function") === "delete") {
+      content = <div>yo</div>;
+      content = <DeleteList />;
+      subNavigation = (
+        <SubNavigation
+          location={[
+            { name: "Lists", link: "/lists" },
+            { name: "Delete List", link: "" },
           ]}
         />
       );
@@ -93,6 +107,9 @@ const ListsContent = () => {
         </Button>
         <Button value={"new"} onClick={changeSortHangler}>
           New List
+        </Button>
+        <Button value={"delete"} onClick={changeSortHangler}>
+          Delete List
         </Button>
         <Button value={"add"} onClick={changeSortHangler}>
           Add Books To List

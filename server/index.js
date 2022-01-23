@@ -139,7 +139,7 @@ app.post("/book", function (req, res) {
   var cover = req.body.cover;
   var description = req.body.description;
   var pages = +req.body.pages;
-  var stock = 3;
+  var stock = +req.body.stock;
   var year = +req.body.year;
 
   session
@@ -158,6 +158,57 @@ app.post("/book", function (req, res) {
     )
     .then(function (result) {
       res.redirect("/");
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+});
+
+//Delete Book Route
+app.delete("/book", function (req, res) {
+  var bookId = +req.body.bookId;
+
+  session
+    .run("MATCH (n:Book) WHERE ID(n)=$bookIdParam DETACH DELETE n", {
+      bookIdParam: bookId,
+    })
+    .then(function (result) {
+      res.json(result);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+});
+
+//Edit Book Route
+app.put("/book", function (req, res) {
+  var id = req.body.id;
+  var author = req.body.author;
+  var title = req.body.title;
+  var category = req.body.category;
+  var cover = req.body.cover;
+  var description = req.body.description;
+  var pages = +req.body.pages;
+  var stock = +req.body.stock;
+  var year = +req.body.year;
+
+  session
+    .run(
+      "MATCH (n:Book) WHERE ID(n)=4 SET n.author=$authorParam, n.title=$titleParam, n.category=$categoryParam, n.cover=$coverParam, n.description=$descriptionParam, n.pages=$pagesParam, n.stock=$stockParam, n.year=$yearParam RETURN n",
+      {
+        idParam: id,
+        authorParam: author,
+        titleParam: title,
+        categoryParam: category,
+        coverParam: cover,
+        descriptionParam: description,
+        pagesParam: pages,
+        stockParam: stock,
+        yearParam: year,
+      }
+    )
+    .then(function (result) {
+      res.json(result);
     })
     .catch(function (error) {
       console.log(error);
@@ -706,6 +757,22 @@ app.post("/list", function (req, res) {
     )
     .then(function (result) {
       res.redirect("/");
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+});
+
+//Delete List Route
+app.delete("/list", function (req, res) {
+  var listId = +req.body.listId;
+
+  session
+    .run("MATCH (n:List) WHERE ID(n)=$listIdParam DETACH DELETE n", {
+      listIdParam: listId,
+    })
+    .then(function (result) {
+      res.json(result);
     })
     .catch(function (error) {
       console.log(error);

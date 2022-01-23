@@ -54,3 +54,8 @@
   height: 10rem;
   padding: 5px;
 }
+
+.book-cover {
+  height: 15rem;
+  width: fit-content;
+}
