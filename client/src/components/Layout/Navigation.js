@@ -48,7 +48,7 @@ const Navigation = () => {
 
             {authCtx.isLoggedIn && (
               <li>
-                <Link to="/profile">Profil</Link>
+                <Link to="/profile">Profile</Link>
               </li>
             )}
 

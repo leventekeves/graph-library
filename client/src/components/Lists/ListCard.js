@@ -21,6 +21,7 @@ async function addRecommendation(userId, listId) {
 async function getList(listId) {
   const response = await fetch(`/list/${listId}`);
   const data = await response.json();
+  console.log(data);
 
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch books.");
@@ -35,7 +36,7 @@ const ListCard = (props) => {
   const [list, setList] = useState();
   const [numberOfBooks, setNumberOfBooks] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [numberOfRecommendations, setRecommendations] = useState(0);
+  const [numberOfRecommendations, setNumberOfRecommendations] = useState(0);
   const [isRecommended, setIsRecommended] = useState(false);
   const [canRecommend, setCanRecommend] = useState(true);
 
@@ -67,7 +68,8 @@ const ListCard = (props) => {
   const onRecommendHandler = () => {
     setIsRecommended(true);
     addRecommendation(authCtx.id, listId);
-    setRecommendations(numberOfRecommendations + 1);
+    setNumberOfRecommendations(list.recommendations + 1);
+    authCtx.recommendations.push({ listId: +listId });
   };
 
   useEffect(() => {
@@ -121,7 +123,12 @@ const ListCard = (props) => {
                 <div className={classes.double}>{list.name}</div>
                 <div className={classes.double}>{list.description}</div>
                 <div>Number of books: {numberOfBooks}</div>
-                <div>Recommendations: {list.recommendations}</div>
+                <div>
+                  Recommendations:
+                  {isRecommended
+                    ? numberOfRecommendations
+                    : list.recommendations}
+                </div>
                 {authCtx.isLoggedIn ? (
                   recommendButton
                 ) : (
@@ -131,6 +138,7 @@ const ListCard = (props) => {
                 )}
               </div>
             </div>
+            {console.log(list.books)}
             <BookList
               books={list.books}
               listId={props.listId}

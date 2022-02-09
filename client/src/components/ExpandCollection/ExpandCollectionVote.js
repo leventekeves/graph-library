@@ -19,31 +19,23 @@ const ExpandCollectionVote = () => {
 
   useEffect(() => {
     getBooks().then((data) => {
-      const transformedBooks = [];
-      for (const key in data) {
-        const bookObj = {
-          id: key,
-          ...data[key],
-        };
-
-        transformedBooks.push(bookObj);
-      }
-      setBooks(transformedBooks);
+      setBooks(data);
       setIsLoading(false);
     });
   }, []);
 
-  return (
-    <div className={classes.container}>
-      <div>
-        {isLoading ? (
-          ""
-        ) : (
-          <ExpandCollectionList books={books} location="vote" />
-        )}
-      </div>
-    </div>
-  );
+  let content;
+  if (!isLoading) {
+    if (books?.length > 0) {
+      content = <ExpandCollectionList books={books} location="vote" />;
+    } else {
+      content = <div>No books found!</div>;
+    }
+  } else {
+    content = "";
+  }
+
+  return <div className={classes.container}>{content}</div>;
 };
 
 export default ExpandCollectionVote;

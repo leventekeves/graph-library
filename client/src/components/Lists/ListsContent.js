@@ -18,7 +18,7 @@ const ListsContent = () => {
 
   const queryParams = new URLSearchParams(location.search);
 
-  const changeSortHangler = (props) => {
+  const changeFunctionHandler = (props) => {
     history.push("/lists?function=" + props.target.value);
   };
 
@@ -93,7 +93,7 @@ const ListsContent = () => {
   if (!authCtx.isLoggedIn && !(queryParams.get("function") === "browse")) {
     content = (
       <div className={classes["error-message"]}>
-        You must login in to use this feature!
+        Without logging in, you can only use the "Browse Lists" feature!
       </div>
     );
   }
@@ -102,19 +102,19 @@ const ListsContent = () => {
     <Fragment>
       {subNavigation}
       <div className={classes["list-panel"]}>
-        <Button value={"browse"} onClick={changeSortHangler}>
+        <Button value={"browse"} onClick={changeFunctionHandler}>
           Browse Lists
         </Button>
-        <Button value={"new"} onClick={changeSortHangler}>
+        <Button value={"new"} onClick={changeFunctionHandler}>
           New List
         </Button>
-        <Button value={"delete"} onClick={changeSortHangler}>
+        <Button value={"delete"} onClick={changeFunctionHandler}>
           Delete List
         </Button>
-        <Button value={"add"} onClick={changeSortHangler}>
+        <Button value={"add"} onClick={changeFunctionHandler}>
           Add Books To List
         </Button>
-        <Button value={"remove"} onClick={changeSortHangler}>
+        <Button value={"remove"} onClick={changeFunctionHandler}>
           Remove Book From List
         </Button>
       </div>

@@ -48,6 +48,7 @@ const ExpandCollectionItem = (props) => {
   const [isPressed, setIsPressed] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [canVote, setCanVote] = useState(true);
+  const [numberOfVotes, setNumberOfVotes] = useState(props.book.votes);
 
   const authCtx = useContext(AuthContext);
 
@@ -63,11 +64,9 @@ const ExpandCollectionItem = (props) => {
   const alreadyVoted = useCallback(() => {
     for (let i = 0; i < authCtx.votes.length; i++) {
       if (+authCtx.votes[i].bookId === +props.book.id) {
-        console.log("cant vote");
         setCanVote(false);
         break;
       } else {
-        console.log("can vote");
         setCanVote(true);
       }
     }
@@ -86,6 +85,7 @@ const ExpandCollectionItem = (props) => {
     }
     setIsPressed(true);
     authCtx.votes.push({ bookId: +props.book.id });
+    setNumberOfVotes(numberOfVotes + 1);
   };
 
   if (isAdded) {
@@ -94,7 +94,7 @@ const ExpandCollectionItem = (props) => {
     );
   }
 
-  if (canVote && !isAdded) {
+  if (!isAdded) {
     return (
       <div className={classes.container}>
         <div
@@ -110,11 +110,7 @@ const ExpandCollectionItem = (props) => {
             <div>{props.book.pages} pages</div>
             <div>Category: {props.book.category}</div>
             <div>Released in {props.book.year}</div>
-            {props.location === "vote" ? (
-              <div>Votes: {props.book.votes}</div>
-            ) : (
-              ""
-            )}
+            {props.location === "vote" ? <div>Votes: {numberOfVotes}</div> : ""}
             {showDescription ? (
               <div className={classes}>
                 Description: {props.book.description}
@@ -134,7 +130,7 @@ const ExpandCollectionItem = (props) => {
           ""
         )}
         {props.location === "vote" ? (
-          isPressed ? (
+          isPressed || !canVote ? (
             "Voted"
           ) : (
             <Button onClick={voteHandler}>Vote</Button>

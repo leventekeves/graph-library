@@ -340,35 +340,42 @@ app.post("/user/login", function (req, res) {
         const borrowingsArr = [];
         const recommendationArr = [];
         const votedArr = [];
+        const historyBorrowingsArr = [];
 
         result.records.forEach(function (record) {
-          if (record._fields[1].type === "Rated") {
+          if (record._fields[1]?.type === "Rated") {
             ratingsArr.push({
               bookId: record._fields[2].identity.low,
               rating: record._fields[1].properties.rating,
             });
           }
 
-          if (record._fields[1].type === "Bookmarked") {
+          if (record._fields[1]?.type === "Bookmarked") {
             bookmarksArr.push({
               bookId: record._fields[2].identity.low,
             });
           }
 
-          if (record._fields[1].type === "Borrowed") {
+          if (record._fields[1]?.type === "Borrowed") {
             borrowingsArr.push({
               bookId: record._fields[2].identity.low,
             });
           }
 
-          if (record._fields[1].type === "Recommended") {
+          if (record._fields[1]?.type === "Recommended") {
             recommendationArr.push({
               listId: record._fields[2].identity.low,
             });
           }
 
-          if (record._fields[1].type === "Voted") {
+          if (record._fields[1]?.type === "Voted") {
             votedArr.push({
+              bookId: record._fields[2].identity.low,
+            });
+          }
+
+          if (record._fields[1]?.type === "HistoryBorrowed") {
+            historyBorrowingsArr.push({
               bookId: record._fields[2].identity.low,
             });
           }
@@ -383,6 +390,7 @@ app.post("/user/login", function (req, res) {
           borrowings: borrowingsArr,
           recommendations: recommendationArr,
           votes: votedArr,
+          historyBorrowings: historyBorrowingsArr,
           credentialsCorrect: true,
         });
       } else {
@@ -555,7 +563,7 @@ app.post("/borrow", function (req, res) {
 
   session
     .run(
-      "MATCH (a:User), (b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam CREATE (a)-[r:Borrowed {date:$dateParam, remainingExtensions:$remainingExtensionsParam }]->(b) RETURN r",
+      "MATCH (a:User), (b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam CREATE (a)-[r:Borrowed {date:$dateParam, remainingExtensions:$remainingExtensionsParam }]->(b) CREATE (a)-[t:HistoryBorrowed {date:$dateParam}]->(b) RETURN r,t",
       {
         userIdParam: +userId,
         bookIdParam: +bookId,
@@ -693,7 +701,7 @@ app.get("/list/:listId", function (req, res) {
 
       session
         .run(
-          "MATCH (a:List)-[r:Contains]->(b:Book) WHERE ID(a)=$listIdParam OPTIONAL MATCH (c)-[d:Rated]->(e) RETURN b, avg(d.rating) AS rating",
+          "MATCH (a:List)-[r:Contains]->(b:Book) WHERE ID(a)=$listIdParam OPTIONAL MATCH (c)-[d:Rated]->(b) RETURN b, avg(d.rating) AS rating",
           {
             listIdParam: listId,
           }

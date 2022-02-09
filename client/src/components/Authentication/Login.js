@@ -15,6 +15,7 @@ async function fetchUsers(email, password) {
   });
   const data = await response.json();
 
+  console.log(data);
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch users.");
   }
@@ -34,8 +35,8 @@ const Login = () => {
     fetchUsers(
       // emailInputRef.current.value,
       // passwordInputRef.current.value
-      "admin@admin.com",
-      "admin"
+      "user@user.com",
+      "user"
     ).then((data) => {
       if (data.credentialsCorrect === true) {
         authCtx.login(
@@ -47,7 +48,8 @@ const Login = () => {
           data.bookmarks,
           data.borrowings,
           data.recommendations,
-          data.votes
+          data.votes,
+          data.historyBorrowings
         );
         history.replace("/");
       }

@@ -110,6 +110,7 @@ const BookCard = () => {
       date: date,
     });
     authCtx.borrowings.push({ bookId: +bookId });
+    //authCtx.history.push({ bookId: +bookId });
     book.stock = newStock;
     setBorrowButtonActive(false);
     setBorrowButton(

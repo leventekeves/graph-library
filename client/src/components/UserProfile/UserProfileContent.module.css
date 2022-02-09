@@ -1,0 +1,13 @@
+.options-panel {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  gap: 1rem;
+}
+
+.error-message {
+  margin-top: 2rem;
+  text-align: center;
+  font-weight: bold;
+  font-size: large;
+}

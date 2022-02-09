@@ -10,7 +10,20 @@ const AuthContext = React.createContext({
   bookmarks: [],
   borrowings: [],
   recommendations: [],
-  login: (token, id, name, access, bookmarks) => {},
+  votes: [],
+  historyBorrowings: [],
+  login: (
+    token,
+    id,
+    name,
+    access,
+    ratings,
+    bookmarks,
+    borrowings,
+    recommendations,
+    votes,
+    historyBorrowings
+  ) => {},
   logout: () => {},
 });
 
@@ -24,6 +37,7 @@ export const AuthContextProvider = (props) => {
   const [borrowings, setBorrowings] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [votes, setVotes] = useState([]);
+  const [historyBorrowings, setHistoryBorrowings] = useState([]);
 
   const userIsLoggedIn = !!token;
 
@@ -36,7 +50,8 @@ export const AuthContextProvider = (props) => {
     bookmarks,
     borrowings,
     recommendations,
-    votes
+    votes,
+    historyBorrowings
   ) => {
     setToken(token);
     setId(id);
@@ -47,6 +62,7 @@ export const AuthContextProvider = (props) => {
     setBorrowings(borrowings);
     setRecommendations(recommendations);
     setVotes(votes);
+    setHistoryBorrowings(historyBorrowings);
   };
 
   const logoutHandler = () => {
@@ -59,6 +75,7 @@ export const AuthContextProvider = (props) => {
     setBorrowings(null);
     setRecommendations(null);
     setVotes(null);
+    setHistoryBorrowings(null);
   };
 
   const contextValue = {
@@ -71,6 +88,7 @@ export const AuthContextProvider = (props) => {
     borrowings: borrowings,
     recommendations: recommendations,
     votes: votes,
+    historyBorrowings: historyBorrowings,
     isLoggedIn: userIsLoggedIn,
     login: loginHandler,
     logout: logoutHandler,
