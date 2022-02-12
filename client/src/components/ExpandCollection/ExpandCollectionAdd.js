@@ -9,10 +9,14 @@ async function getBooks(title, author, category) {
   const authorSearch = author ? `+inauthor:${author}` : "";
   const categorySearch = category ? `+subject:${category}` : "";
 
+  console.log(
+    `https://www.googleapis.com/books/v1/volumes?q=${titleSerach}${authorSearch}${categorySearch}&langRestrict=en`
+  );
   const response = await fetch(
     `https://www.googleapis.com/books/v1/volumes?q=${titleSerach}${authorSearch}${categorySearch}&langRestrict=en`
   );
   const data = await response.json();
+  console.log(data);
 
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch books.");
@@ -43,7 +47,7 @@ const ExpandCollectionAdd = () => {
         data.items.forEach((fetchedBook) => {
           const releaseYear = new Date(fetchedBook.volumeInfo.publishedDate);
           const slicedURL =
-            fetchedBook.volumeInfo.imageLinks.thumbnail.slice(7);
+            fetchedBook.volumeInfo.imageLinks?.thumbnail?.slice(7);
 
           const bookObj = {
             id: fetchedBook.id,
@@ -74,7 +78,8 @@ const ExpandCollectionAdd = () => {
         setBooks(transformedBooks);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         setSearchInputError(true);
       });
   };

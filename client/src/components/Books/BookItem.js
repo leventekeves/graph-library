@@ -5,6 +5,8 @@ import classes from "./BookItem.module.css";
 import Button from "../Layout/Button";
 import AuthContext from "../../store/auth-context";
 
+import noCover from "../../utility/nocover.png";
+
 async function addBookToList(listId, bookId) {
   await fetch(`/list/book`, {
     method: "POST",
@@ -197,13 +199,38 @@ const BookItem = (props) => {
     props.remainingExtensions,
   ]);
 
+  useEffect(() => {
+    if (props.action === "history") {
+      const borrowDate = new Date(props.date);
+      setMiscContent(
+        <div className={classes["misc-container"]}>
+          <div className={classes["button-container"]}>
+            <div>{button}</div>
+            <div> Borrowed at: {borrowDate.toLocaleDateString()}</div>
+          </div>
+        </div>
+      );
+    }
+  }, [
+    button,
+    buttonAlt,
+    extended,
+    props.action,
+    props.date,
+    props.remainingExtensions,
+  ]);
+
   if (!isRemoved) {
     return (
       <div className={classes.container}>
         <Link to={`/books/${props.id}`} style={{ textDecoration: "none" }}>
           <div className={classes["book-item"]}>
             <div>
-              <img className={classes.cover} src={props.cover} alt="cover" />
+              {props.cover === "https://undefined" ? (
+                <img className={classes.cover} src={noCover} alt="noCover" />
+              ) : (
+                <img className={classes.cover} src={props.cover} alt="cover" />
+              )}
             </div>
             <div>
               <div>{props.title}</div>
@@ -215,7 +242,7 @@ const BookItem = (props) => {
             </div>
           </div>
         </Link>
-        {props.action === "borrow" ? miscContent : button}
+        {props.action === "borrow" || "history" ? miscContent : button}
       </div>
     );
   } else {

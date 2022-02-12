@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
 import classes from "./ExpandCollectionItem.module.css";
+import noCover from "../../utility/nocover.png";
 
 async function addBookToVoteListPost(book, userId) {
   await fetch(`/expand`, {
@@ -77,6 +78,7 @@ const ExpandCollectionItem = (props) => {
   }, [alreadyVoted]);
 
   const voteHandler = () => {
+    console.log(props.book.votes);
     if (props.book.votes > 2) {
       addBookToLibrary(props.book);
       setIsAdded(true);
@@ -95,6 +97,7 @@ const ExpandCollectionItem = (props) => {
   }
 
   if (!isAdded) {
+    console.log(props.book.cover);
     return (
       <div className={classes.container}>
         <div
@@ -102,7 +105,15 @@ const ExpandCollectionItem = (props) => {
           onClick={onShowDescriptionHandler}
         >
           <div>
-            <img className={classes.cover} src={props.book.cover} alt="cover" />
+            {props.book.cover === "https://undefined" ? (
+              <img className={classes.cover} src={noCover} alt="noCover" />
+            ) : (
+              <img
+                className={classes.cover}
+                src={props.book.cover}
+                alt="cover"
+              />
+            )}
           </div>
           <div>
             <div>{props.book.title}</div>

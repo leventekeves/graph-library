@@ -35,8 +35,8 @@ const Login = () => {
     fetchUsers(
       // emailInputRef.current.value,
       // passwordInputRef.current.value
-      "user@user.com",
-      "user"
+      "admin@admin.com",
+      "admin"
     ).then((data) => {
       if (data.credentialsCorrect === true) {
         authCtx.login(

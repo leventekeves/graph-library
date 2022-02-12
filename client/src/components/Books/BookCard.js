@@ -10,6 +10,8 @@ import LoadingSpinner from "../../utility/LoadingSpinner";
 import AdminNewBook from "../Admin/AdminNewBook";
 import classes from "./BookCard.module.css";
 
+import noCover from "../../utility/nocover.png";
+
 async function getBooks(bookId) {
   const response = await fetch(`/book/${bookId}`);
   const data = await response.json();
@@ -60,6 +62,16 @@ async function addBorrow(data) {
   });
 }
 
+async function addHistoryBorrow(data) {
+  await fetch(`/historyborrow`, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 async function deleteBook(bookId) {
   await fetch(`/book`, {
     method: "DELETE",
@@ -102,15 +114,21 @@ const BookCard = () => {
 
   const onBorrowHandler = useCallback(() => {
     const newStock = +book.stock - 1;
-    const date = new Date();
-    date.setDate(date.getDate() + 30);
+    const currentDate = new Date();
+    const expirationDate = new Date();
+    expirationDate.setDate(currentDate.getDate() + 30);
     addBorrow({
       userId: authCtx.id,
       bookId: bookId,
-      date: date,
+      date: expirationDate,
+    });
+    addHistoryBorrow({
+      userId: authCtx.id,
+      bookId: bookId,
+      date: currentDate,
     });
     authCtx.borrowings.push({ bookId: +bookId });
-    //authCtx.history.push({ bookId: +bookId });
+    authCtx.historyBorrowings.push({ bookId: +bookId });
     book.stock = newStock;
     setBorrowButtonActive(false);
     setBorrowButton(
@@ -346,14 +364,10 @@ const BookCard = () => {
                   {deleteBookButton}
                 </div>
 
-                {book.cover ? (
-                  <img
-                    className={classes["book-cover"]}
-                    src={book.cover}
-                    alt="cover"
-                  />
+                {book.cover === "https://undefined" ? (
+                  <img className={classes.cover} src={noCover} alt="noCover" />
                 ) : (
-                  ""
+                  <img className={classes.cover} src={book.cover} alt="cover" />
                 )}
               </div>
               <div className={classes["book-details"]}>
