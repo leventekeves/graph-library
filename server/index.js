@@ -439,6 +439,51 @@ app.delete("/user/:userId", function (req, res) {
     });
 });
 
+// Change User Data Route
+app.put("/user", function (req, res) {
+  var userId = req.body.userId;
+  var currentPassword = req.body.currentPassword;
+
+  session
+    .run("MATCH(n:User) WHERE ID(n)=$userIdParam RETURN n", {
+      userIdParam: userId,
+    })
+    .then(function (result) {
+      if (
+        result.records[0]._fields[0].properties.password === currentPassword
+      ) {
+        var name =
+          req.body.name || result.records[0]._fields[0].properties.name;
+        var email =
+          req.body.email || result.records[0]._fields[0].properties.email;
+        var password =
+          req.body.password || result.records[0]._fields[0].properties.password;
+
+        session2
+          .run(
+            "MATCH(n:User) WHERE ID(n)=$userIdParam SET n.name=$nameParam, n.email=$emailParam, n.password=$passwordParam RETURN n",
+            {
+              userIdParam: userId,
+              nameParam: name,
+              emailParam: email,
+              passwordParam: password,
+            }
+          )
+          .then(function (result2) {
+            res.sendStatus(200);
+          })
+          .catch(function (error2) {
+            console.log(error2);
+          });
+      } else {
+        res.sendStatus(401);
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+});
+
 //Get Bookmarks Route
 app.get("/bookmarks/:userId", function (req, res) {
   var userId = req.params.userId;

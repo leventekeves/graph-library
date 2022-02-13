@@ -286,7 +286,6 @@ const BookCard = () => {
   }, [book.id, history]);
 
   const editBookHandler = useCallback(() => {
-    console.log("Book edited!");
     setEditing(true);
   }, []);
 
@@ -311,8 +310,6 @@ const BookCard = () => {
       }
     }
     if (!isLoading && authCtx.access === "admin") {
-      console.log(authCtx.access);
-      console.log(book);
       setDeleteBookButton(
         <div className={classes.bookmarker} onClick={deleteBookHandler}>
           Delete Book
@@ -408,7 +405,6 @@ const BookCard = () => {
       );
     }
     if (editing) {
-      console.log("yo");
       return <AdminNewBook book={book} />;
     }
   } else {

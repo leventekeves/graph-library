@@ -9,14 +9,10 @@ async function getBooks(title, author, category) {
   const authorSearch = author ? `+inauthor:${author}` : "";
   const categorySearch = category ? `+subject:${category}` : "";
 
-  console.log(
-    `https://www.googleapis.com/books/v1/volumes?q=${titleSerach}${authorSearch}${categorySearch}&langRestrict=en`
-  );
   const response = await fetch(
     `https://www.googleapis.com/books/v1/volumes?q=${titleSerach}${authorSearch}${categorySearch}&langRestrict=en`
   );
   const data = await response.json();
-  console.log(data);
 
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch books.");

@@ -78,7 +78,6 @@ const ExpandCollectionItem = (props) => {
   }, [alreadyVoted]);
 
   const voteHandler = () => {
-    console.log(props.book.votes);
     if (props.book.votes > 2) {
       addBookToLibrary(props.book);
       setIsAdded(true);
@@ -97,7 +96,6 @@ const ExpandCollectionItem = (props) => {
   }
 
   if (!isAdded) {
-    console.log(props.book.cover);
     return (
       <div className={classes.container}>
         <div

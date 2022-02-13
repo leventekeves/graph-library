@@ -21,7 +21,6 @@ async function addRecommendation(userId, listId) {
 async function getList(listId) {
   const response = await fetch(`/list/${listId}`);
   const data = await response.json();
-  console.log(data);
 
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch books.");
@@ -138,7 +137,6 @@ const ListCard = (props) => {
                 )}
               </div>
             </div>
-            {console.log(list.books)}
             <BookList
               books={list.books}
               listId={props.listId}

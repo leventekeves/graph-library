@@ -5,7 +5,6 @@ import classes from "./HomeContent.module.css";
 
 const HomeContent = () => {
   const authCtx = useContext(AuthContext);
-  console.log(authCtx);
   const welcomeContent = authCtx.isLoggedIn
     ? `Welcome, ${authCtx.name}!`
     : "Welcome!";
