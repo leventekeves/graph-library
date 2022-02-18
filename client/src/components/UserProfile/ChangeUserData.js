@@ -29,10 +29,10 @@ const ChangeUserData = () => {
     event.preventDefault();
     const userData = {
       userId: authCtx.id,
+      currentPassword: currentPasswordInputRef.current.value,
       name: nameInputRef.current.value,
       email: emailInputRef.current.value,
       password: passwordInputRef.current.value,
-      currentPassword: currentPasswordInputRef.current.value,
     };
     changeUserData(userData).then((response) => {
       if (response.ok) {

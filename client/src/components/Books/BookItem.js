@@ -101,10 +101,11 @@ const BookItem = (props) => {
     }
 
     removeBorrow(props.id, authCtx.id);
+    props.onDelete(true);
     authCtx.borrowings.splice(borrowingIndex, borrowingIndex);
 
     setIsRemoved(true);
-  }, [props.id, authCtx.id, authCtx.borrowings]);
+  }, [authCtx.id, authCtx.borrowings, props]);
 
   const extendBorrowHandler = useCallback(() => {
     let newDate = new Date(props.date);
@@ -118,12 +119,13 @@ const BookItem = (props) => {
   }, [authCtx, book, props]);
 
   useEffect(() => {
-    if (props.action === "add")
+    if (props.action === "add") {
       setButton(
         <Button className={classes.add} onClick={addBookToListHandler}>
           ADD
         </Button>
       );
+    }
     if (props.action === "remove")
       setButton(
         <Button className={classes.add} onClick={removeBookFromListHandler}>
@@ -178,6 +180,7 @@ const BookItem = (props) => {
       }
       if (extended) {
         extendContent = <div>EXTENDED</div>;
+        expirationDate.setDate(expirationDate.getDate() + 30);
       }
 
       setMiscContent(
@@ -242,7 +245,7 @@ const BookItem = (props) => {
             </div>
           </div>
         </Link>
-        {props.action === "borrow" || "history" ? miscContent : button}
+        {props.action === ("borrow" || "history") ? miscContent : button}
       </div>
     );
   } else {

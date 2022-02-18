@@ -74,7 +74,7 @@ const BorrowingsContent = () => {
       return (
         <Fragment>
           <SubNavigation location={[{ name: "Borrowings", link: "" }]} />{" "}
-          <div className={classes["feedback-message"]}>No books boorowed!</div>
+          <div className={classes["feedback-message"]}>No books borrowed!</div>
         </Fragment>
       );
     }
