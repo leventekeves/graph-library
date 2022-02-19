@@ -5,11 +5,9 @@ import BookItem from "./BookItem";
 
 const BookList = (props) => {
   const [bookCounter, setBookCounter] = useState(props.books.length);
-  console.log(props);
 
   const handleDelete = (value) => {
     if (value) setBookCounter(bookCounter - 1);
-    console.log(bookCounter);
   };
 
   if (bookCounter === 0 && props.action === "borrow") {

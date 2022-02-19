@@ -22,7 +22,7 @@ module.exports = function (app) {
             description: record._fields[0].properties.description,
             pages: record._fields[0].properties.pages,
             stock: record._fields[0].properties.stock,
-            year: record._fields[0].properties.year.low,
+            year: record._fields[0].properties.year,
             rating: record._fields[1],
           });
         });
@@ -65,7 +65,7 @@ module.exports = function (app) {
             description: record._fields[0].properties.description,
             pages: record._fields[0].properties.pages,
             stock: record._fields[0].properties.stock,
-            year: record._fields[0].properties.year.low,
+            year: record._fields[0].properties.year,
             rating: record._fields[1],
           });
         });
@@ -98,7 +98,7 @@ module.exports = function (app) {
             description: result.records[0]._fields[0].properties.description,
             pages: result.records[0]._fields[0].properties.pages,
             stock: result.records[0]._fields[0].properties.stock,
-            year: result.records[0]._fields[0].properties.year.low,
+            year: result.records[0]._fields[0].properties.year,
             rating: result.records[0]._fields[1],
             numberOfRatings: result.records[0]._fields[2].low,
           };
@@ -173,7 +173,7 @@ module.exports = function (app) {
 
     session
       .run(
-        "MATCH (n:Book) WHERE ID(n)=4 SET n.author=$authorParam, n.title=$titleParam, n.category=$categoryParam, n.cover=$coverParam, n.description=$descriptionParam, n.pages=$pagesParam, n.stock=$stockParam, n.year=$yearParam RETURN n",
+        "MATCH (n:Book) WHERE ID(n)=$idParam SET n.author=$authorParam, n.title=$titleParam, n.category=$categoryParam, n.cover=$coverParam, n.description=$descriptionParam, n.pages=$pagesParam, n.stock=$stockParam, n.year=$yearParam RETURN n",
         {
           idParam: id,
           authorParam: author,

@@ -3,7 +3,21 @@ import classes from "./BookFilters.module.css";
 import YearSelector from "./YearSelector";
 
 const BookFilters = (props) => {
-  const categories = ["Fantasy", "Crime", "Fiction", "Horror"];
+  const categories = [
+    "Fantasy",
+    "Crime",
+    "Drama",
+    "Horror",
+    "Mystery",
+    "Romance",
+    "Science Fiction",
+    "Thriller",
+    "Young Adult",
+    "History",
+    "Biography",
+    "True Crime",
+    "Science",
+  ].sort();
 
   const categoryFilterHandler = (event) => {
     props.onCategorySelect(event.target.value);

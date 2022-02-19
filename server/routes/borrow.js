@@ -2,6 +2,8 @@ const config = require("../config");
 
 module.exports = function (app) {
   const session = config.session;
+  const session2 = config.session2;
+
   //Get Borrowed Books Route
   app.get("/borrow/:userId", function (req, res) {
     var userId = req.params.userId;
@@ -25,7 +27,7 @@ module.exports = function (app) {
             description: record._fields[0].properties.description,
             pages: record._fields[0].properties.pages,
             stock: record._fields[0].properties.stock,
-            year: record._fields[0].properties.year.low,
+            year: record._fields[0].properties.year,
             rating: record._fields[1],
             date: record._fields[2].properties.date,
             remainingExtensions:
@@ -93,7 +95,7 @@ module.exports = function (app) {
     var userId = +req.body.userId;
     var bookId = +req.body.bookId;
 
-    session
+    session2
       .run(
         "MATCH (a:User)-[r:Borrowed]->(b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam DELETE r",
         {

@@ -1,7 +1,7 @@
 const config = require("../config");
 
 module.exports = function (app) {
-  const session = config.session;
+  const session2 = config.session;
 
   // Add Borrowed Book to History Route
   app.post("/historyborrow", function (req, res) {
@@ -9,7 +9,7 @@ module.exports = function (app) {
     var bookId = req.body.bookId;
     var date = req.body.date;
 
-    session
+    session2
       .run(
         "MATCH (a:User), (b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam CREATE (a)-[t:HistoryBorrowed {date:$dateParam}]->(b) RETURN t",
         {
@@ -29,7 +29,7 @@ module.exports = function (app) {
   //Get Borrowed Books from History Route
   app.get("/historyborrow/:userId", function (req, res) {
     var userId = req.params.userId;
-    session
+    session2
       .run(
         "MATCH (a:User)-[r:HistoryBorrowed]->(b:Book) WHERE ID(a)=$userIdParam OPTIONAL MATCH ()-[d:Rated]->(b) RETURN b, avg(d.rating) AS rating, r",
         {
@@ -49,7 +49,7 @@ module.exports = function (app) {
             description: record._fields[0].properties.description,
             pages: record._fields[0].properties.pages,
             stock: record._fields[0].properties.stock,
-            year: record._fields[0].properties.year.low,
+            year: record._fields[0].properties.year,
             rating: record._fields[1],
             date: record._fields[2].properties.date,
           });

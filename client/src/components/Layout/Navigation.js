@@ -31,10 +31,16 @@ const Navigation = () => {
               <Link to="/expand">Expand</Link>
             </li>
             <li>
-              <Link to="/borrowings">Borrowings</Link>
+              <Link to="/borrowings">
+                Borrowings{" "}
+                {authCtx.token ? `(${authCtx.borrowings?.length})` : ""}
+              </Link>
             </li>
             <li>
-              <Link to="/bookmarks">Bookmarks</Link>
+              <Link to="/bookmarks">
+                Bookmarks{" "}
+                {authCtx.token ? `(${authCtx.bookmarks?.length})` : ""}
+              </Link>
             </li>
           </ul>
         </div>

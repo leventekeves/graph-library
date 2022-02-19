@@ -104,7 +104,7 @@ module.exports = function (app) {
                   description: record._fields[0].properties.description,
                   pages: record._fields[0].properties.pages,
                   stock: record._fields[0].properties.stock,
-                  year: record._fields[0].properties.year.low,
+                  year: record._fields[0].properties.year,
                   rating: record._fields[1],
                 });
               });

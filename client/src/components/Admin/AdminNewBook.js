@@ -5,6 +5,7 @@ import Button from "../Layout/Button";
 import classes from "./AdminNewBook.module.css";
 
 async function addBookHandler(book) {
+  console.log(book);
   await fetch("/book", {
     method: "POST",
     body: JSON.stringify(book),
@@ -15,6 +16,7 @@ async function addBookHandler(book) {
 }
 
 async function editBookHandler(book) {
+  console.log(book);
   await fetch("/book", {
     method: "PUT",
     body: JSON.stringify(book),
@@ -29,6 +31,22 @@ const AdminNewBook = (props) => {
   const [newBook, setNewBook] = useState({});
   const [cover, setCover] = useState();
   const [coverChanged, setCoverChanged] = useState(false);
+
+  const categories = [
+    "Fantasy",
+    "Crime",
+    "Drama",
+    "Horror",
+    "Mystery",
+    "Romance",
+    "Science Fiction",
+    "Thriller",
+    "Young Adult",
+    "History",
+    "Biography",
+    "True Crime",
+    "Science",
+  ].sort();
 
   useEffect(() => {
     if (props?.book) {
@@ -46,6 +64,7 @@ const AdminNewBook = (props) => {
   }, [props]);
 
   const handleChange = (event) => {
+    console.log(event.target.name);
     setNewBook({
       ...newBook,
       [event.target.name]: event.target.value.trim(),
@@ -144,12 +163,20 @@ const AdminNewBook = (props) => {
           </div>
           <div className={classes["new-book--single"]}>
             <label>Category</label>
-            <input
+            <select
               name="category"
-              type="text"
               onChange={handleChange}
               defaultValue={props.book.category}
-            />
+              className={classes["category-select"]}
+            >
+              {categories.map((category, index) => {
+                return (
+                  <option key={`category${index}`} value={category}>
+                    {category}
+                  </option>
+                );
+              })}
+            </select>
           </div>
           <div className={classes["new-book--single"]}>
             <label>In Stock</label>
@@ -204,7 +231,23 @@ const AdminNewBook = (props) => {
           </div>
           <div className={classes["new-book--single"]}>
             <label>Category</label>
-            <input name="category" type="text" onChange={handleChange} />
+            <select
+              name="category"
+              onChange={handleChange}
+              defaultValue={"Select category"}
+              className={classes["category-select"]}
+            >
+              <option key={"Select category"} value={"Select category"}>
+                {"Select category"}
+              </option>
+              {categories.map((category, index) => {
+                return (
+                  <option key={`category${index}`} value={category}>
+                    {category}
+                  </option>
+                );
+              })}
+            </select>
           </div>
           <div className={classes["new-book--single"]}>
             <label>In Stock</label>

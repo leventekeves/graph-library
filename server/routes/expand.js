@@ -19,7 +19,7 @@ module.exports = function (app) {
             cover: record._fields[0].properties.cover,
             description: record._fields[0].properties.description,
             pages: record._fields[0].properties.pages,
-            year: record._fields[0].properties.year.low,
+            year: record._fields[0].properties.year,
             votes: record._fields[1].low,
           });
         });

@@ -102,10 +102,15 @@ const BookItem = (props) => {
 
     removeBorrow(props.id, authCtx.id);
     props.onDelete(true);
-    authCtx.borrowings.splice(borrowingIndex, borrowingIndex);
+
+    const updatedBorrowings = authCtx.borrowings;
+    updatedBorrowings.splice(borrowingIndex, 1);
+    authCtx.updateBorrowings(updatedBorrowings);
+
+    //authCtx.borrowings.splice(borrowingIndex, borrowingIndex);
 
     setIsRemoved(true);
-  }, [authCtx.id, authCtx.borrowings, props]);
+  }, [authCtx, props]);
 
   const extendBorrowHandler = useCallback(() => {
     let newDate = new Date(props.date);
@@ -241,7 +246,7 @@ const BookItem = (props) => {
               <div>{props.pages} pages</div>
               <div>{props.category}</div>
               <div>Released in {props.year}</div>
-              <div>Rating: {props.rating || "No Ratings Yet!"}</div>
+              <div>Rating: {props.rating?.toFixed(2) || "No Ratings Yet!"}</div>
             </div>
           </div>
         </Link>

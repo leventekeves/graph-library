@@ -29,6 +29,7 @@ async function getBooks(listId) {
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch books.");
   }
+  console.log(data);
   return data;
 }
 

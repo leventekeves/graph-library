@@ -19,6 +19,7 @@ async function getBooks(bookId) {
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch the book.");
   }
+  console.log(data);
   return data;
 }
 
@@ -121,14 +122,19 @@ const BookCard = () => {
       userId: authCtx.id,
       bookId: bookId,
       date: expirationDate,
+    }).then(() => {
+      const updatedBorrowings = authCtx.borrowings;
+      updatedBorrowings.push({ bookId: +bookId });
+      authCtx.updateBorrowings(updatedBorrowings);
     });
     addHistoryBorrow({
       userId: authCtx.id,
       bookId: bookId,
       date: currentDate,
+    }).then(() => {
+      authCtx.historyBorrowings.push({ bookId: +bookId });
     });
-    authCtx.borrowings.push({ bookId: +bookId });
-    authCtx.historyBorrowings.push({ bookId: +bookId });
+
     book.stock = newStock;
     setBorrowButtonActive(false);
     setBorrowButton(
@@ -208,15 +214,17 @@ const BookCard = () => {
       if (newRating) {
         if (book.rating) {
           setRating(
-            ((book.rating + +newRating) / (book.numberOfRatings + 1)).toFixed(2)
+            (
+              (book.rating * book.numberOfRatings + +newRating) /
+              (book.numberOfRatings + 1)
+            ).toFixed(2)
           );
         } else {
           setRating(newRating);
         }
       }
-
       if (!isLoading && book?.rating && !newRating) {
-        setRating(book.rating);
+        setRating(book.rating.toFixed(2));
       }
     },
     [book, isLoading]
@@ -257,7 +265,9 @@ const BookCard = () => {
 
   const addBookmarkHandler = useCallback(() => {
     addBookmark(bookId, authCtx.id).then(() => {
-      authCtx.bookmarks.push({ bookId: +bookId });
+      const updatedBookmarks = authCtx.bookmarks;
+      updatedBookmarks.push({ bookId: +bookId });
+      authCtx.updateBookmarks(updatedBookmarks);
     });
     setBookmarkButtonActive(false);
     setBookmarkButton(<div className={classes["bookmark-message"]}>ADDED</div>);
@@ -273,12 +283,15 @@ const BookCard = () => {
     });
 
     removeBookmark(bookId, authCtx.id);
-    authCtx.bookmarks.splice(removeIndex, 1);
+    const updatedBookmarks = authCtx.bookmarks;
+    updatedBookmarks.splice(removeIndex, 1);
+    authCtx.updateBookmarks(updatedBookmarks);
+
     setBookmarkButtonActive(false);
     setBookmarkButton(
       <div className={classes["bookmark-message"]}>REMOVED</div>
     );
-  }, [authCtx.bookmarks, authCtx.id, bookId]);
+  }, [authCtx, bookId]);
 
   const deleteBookHandler = useCallback(() => {
     deleteBook(book.id);

@@ -39,6 +39,8 @@ export const AuthContextProvider = (props) => {
   const [votes, setVotes] = useState([]);
   const [historyBorrowings, setHistoryBorrowings] = useState([]);
 
+  const [updateForced, setUpdateForced] = useState(true);
+
   const userIsLoggedIn = !!token;
 
   const loginHandler = (
@@ -78,6 +80,17 @@ export const AuthContextProvider = (props) => {
     setHistoryBorrowings(null);
   };
 
+  const updateBorrowingsHandler = (updatedBorrowings) => {
+    setBorrowings(updatedBorrowings);
+    setUpdateForced(!updateForced);
+  };
+
+  const updateBookmarksHandler = (updatedBookmarks) => {
+    setBookmarks(updatedBookmarks);
+    setUpdateForced(updateForced + 1);
+    setUpdateForced(!updateForced);
+  };
+
   const contextValue = {
     token: token,
     id: id,
@@ -92,6 +105,8 @@ export const AuthContextProvider = (props) => {
     isLoggedIn: userIsLoggedIn,
     login: loginHandler,
     logout: logoutHandler,
+    updateBorrowings: updateBorrowingsHandler,
+    updateBookmarks: updateBookmarksHandler,
   };
 
   return (
