@@ -4,41 +4,55 @@ import AuthContext from "../../store/auth-context";
 import LoadingSpinner from "../../utility/LoadingSpinner";
 import BookList from "../Books/BookList";
 import classes from "./UserBorrowingHistory.module.css";
+import Pagination from "../../utility/Pagination";
 
-async function getBorrowings(userId) {
-  const response = await fetch(`/historyborrow/${userId}`);
+async function getBorrowings(userId, pageNumber, itemsPerPage) {
+  const response = await fetch(
+    `/historyborrow/${userId}/${pageNumber}/${itemsPerPage}`
+  );
   const data = await response.json();
 
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch bookmarks.");
   }
-
   return data;
 }
 
 const UserBorrowingHistory = () => {
-  const [borrowings, setBorrowings] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const authCtx = useContext(AuthContext);
 
+  const [historyBorrowings, setHistoryBorrowings] = useState(null);
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const itemsPerPage = 10;
+
   useEffect(() => {
     if (authCtx.token) {
-      getBorrowings(authCtx.id).then((data) => {
-        const borrowing = data;
+      getBorrowings(authCtx.id, currentPage, itemsPerPage).then((data) => {
         const transformedBorrowings = [];
-        for (const key in borrowing) {
+
+        for (let i = 0; i < data.booksArr.length; i++) {
           const BorrowingObj = {
-            id: key,
-            ...borrowing[key],
+            ...data.booksArr[i],
+            id: i,
           };
           transformedBorrowings.push(BorrowingObj);
         }
 
-        setBorrowings(transformedBorrowings);
+        setHistoryBorrowings(transformedBorrowings);
+        setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
+
         setIsLoading(false);
       });
     }
-  }, [authCtx]);
+  }, [authCtx, itemsPerPage, currentPage]);
+
+  const handlePageClick = (event) => {
+    setCurrentPage(event.selected);
+    window.scrollTo(0, 0);
+  };
 
   if (isLoading) {
     return (
@@ -47,12 +61,16 @@ const UserBorrowingHistory = () => {
       </div>
     );
   } else {
-    if (borrowings.length > 0) {
+    if (historyBorrowings.length > 0) {
       return (
         <Fragment>
           <div className={classes.container}>
             <div className={classes.container1}>
-              <BookList books={borrowings} action="history" />
+              <BookList books={historyBorrowings} action="history" />
+              <Pagination
+                pageCount={pageCount}
+                handlePageClick={handlePageClick}
+              />
             </div>
           </div>
         </Fragment>

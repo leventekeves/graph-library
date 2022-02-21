@@ -20,7 +20,7 @@ const YearSelector = (props) => {
       defaultValue={"Select year"}
       className={classes["year-select"]}
     >
-      <option key={"Select year"} value={"Select year"}>
+      <option key={"Select year"} value={"Select year"} disabled>
         {"Select year"}
       </option>
       {years.map((year, index) => {

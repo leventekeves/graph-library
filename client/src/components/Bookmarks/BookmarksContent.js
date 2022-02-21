@@ -5,9 +5,12 @@ import SubNavigation from "../Layout/SubNavigation";
 import LoadingSpinner from "../../utility/LoadingSpinner";
 import classes from "./BookmarksContent.module.css";
 import BookList from "../Books/BookList";
+import Pagination from "../../utility/Pagination";
 
-async function getBookmarks(userId) {
-  const response = await fetch(`/bookmarks/${userId}`);
+async function getBookmarks(userId, pageNumber, itemsPerPage) {
+  const response = await fetch(
+    `/bookmarks/${userId}/${pageNumber}/${itemsPerPage}`
+  );
   const data = await response.json();
 
   if (!response.ok) {
@@ -19,25 +22,37 @@ async function getBookmarks(userId) {
 const BookmarksContent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [bookmarks, setBookmarks] = useState();
+
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const itemsPerPage = 3;
+
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
     if (authCtx.token) {
-      getBookmarks(authCtx.id).then((bookmarks) => {
+      getBookmarks(authCtx.id, currentPage, itemsPerPage).then((data) => {
         const transformedBookmarks = [];
-        for (const key in bookmarks) {
+        for (const key in data.bookArr) {
           const BookmarkObj = {
             id: key,
-            ...bookmarks[key],
+            ...data.bookArr[key],
           };
           transformedBookmarks.push(BookmarkObj);
         }
 
         setBookmarks(transformedBookmarks);
+        setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
         setIsLoading(false);
       });
     }
-  }, [authCtx]);
+  }, [authCtx, currentPage]);
+
+  const handlePageClick = (event) => {
+    setCurrentPage(event.selected);
+    window.scrollTo(0, 0);
+  };
 
   if (!authCtx.isLoggedIn) {
     return (
@@ -63,6 +78,10 @@ const BookmarksContent = () => {
           <SubNavigation location={[{ name: "Bookmarks", link: "" }]} />
           <div className={classes.container}>
             <BookList books={bookmarks} />
+            <Pagination
+              pageCount={pageCount}
+              handlePageClick={handlePageClick}
+            />
           </div>
         </Fragment>
       );

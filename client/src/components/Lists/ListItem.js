@@ -23,26 +23,22 @@ const ListItem = (props) => {
     ":" +
     ((date.getMinutes() < 10 ? "0" : "") + date.getMinutes());
 
-  if (props.numberOfBooks > 0) {
-    return (
-      <Link to={`/lists/${props.id}`} style={{ textDecoration: "none" }}>
-        <div className={classes["list-item"]}>
-          <div>
-            <p>{props.name}</p>
-            {+props.numberOfBooks === 1 ? (
-              <p>{props.numberOfBooks} book</p>
-            ) : (
-              <p>{props.numberOfBooks} books</p>
-            )}
-          </div>
-          <div>{props.recommendations || 0} recommendations</div>
-          <div>{formatedDate}</div>
+  return (
+    <Link to={`/lists/${props.id}`} style={{ textDecoration: "none" }}>
+      <div className={classes["list-item"]}>
+        <div>
+          <p>{props.name}</p>
+          {+props.numberOfBooks === 1 ? (
+            <p>{props.numberOfBooks} book</p>
+          ) : (
+            <p>{props.numberOfBooks} books</p>
+          )}
         </div>
-      </Link>
-    );
-  } else {
-    return "";
-  }
+        <div>{props.recommendations || 0} recommendations</div>
+        <div>{formatedDate}</div>
+      </div>
+    </Link>
+  );
 };
 
 export default ListItem;

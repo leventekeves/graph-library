@@ -44,6 +44,13 @@
   margin-top: 1rem;
 }
 
+.category-item-selected {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
 .category-item:hover {
   color: rgb(199, 195, 195);
   cursor: pointer;

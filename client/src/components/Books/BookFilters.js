@@ -1,8 +1,12 @@
+import { useState } from "react";
+
 import Button from "../Layout/Button";
 import classes from "./BookFilters.module.css";
 import YearSelector from "./YearSelector";
 
 const BookFilters = (props) => {
+  const [categorySelected, setCategorySelected] = useState();
+
   const categories = [
     "Fantasy",
     "Crime",
@@ -20,6 +24,7 @@ const BookFilters = (props) => {
   ].sort();
 
   const categoryFilterHandler = (event) => {
+    setCategorySelected(event.target.value);
     props.onCategorySelect(event.target.value);
   };
 
@@ -49,7 +54,12 @@ const BookFilters = (props) => {
             key={index}
             onClick={categoryFilterHandler}
             value={category}
-            className={classes["category-item"]}
+            className={
+              categorySelected === category
+                ? classes["category-item-selected"]
+                : classes["category-item"]
+            }
+            disabled={categorySelected === category ? true : false}
           >
             {category}
           </option>

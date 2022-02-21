@@ -7,3 +7,4 @@ const driver = neo4j.driver(
 
 module.exports.session = driver.session();
 module.exports.session2 = driver.session();
+module.exports.session3 = driver.session();

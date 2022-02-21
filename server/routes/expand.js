@@ -1,30 +1,48 @@
 const config = require("../config");
+const neo4j = require("neo4j-driver");
 
 module.exports = function (app) {
   const session = config.session;
 
   // Get ExpandBooks Route
-  app.get("/expand", function (req, res) {
+  app.get("/expand/:pageNumber/:itemsPerPage", function (req, res) {
+    var pageNumber = req.params.pageNumber;
+    var itemsPerPage = req.params.itemsPerPage;
+
     session
-      .run("MATCH ()-[r:Voted]->(b:ExpandBook) RETURN b, count(r)")
+      .run(
+        "MATCH ()-[r:Voted]->(b:ExpandBook) RETURN b, count(r) SKIP $skipParam LIMIT $limitParam",
+        {
+          skipParam: neo4j.int(pageNumber * itemsPerPage),
+          limitParam: neo4j.int(itemsPerPage),
+        }
+      )
       .then(function (result) {
-        var bookArr = [];
+        session
+          .run("MATCH ()-[r:Voted]->(b:ExpandBook) RETURN count(DISTINCT(b))")
+          .then(function (result2) {
+            var bookArr = [];
+            var numberOfBooks = result2.records[0]._fields[0].low;
 
-        result.records.forEach(function (record) {
-          bookArr.push({
-            id: record._fields[0].identity.low,
-            author: record._fields[0].properties.author,
-            title: record._fields[0].properties.title,
-            category: record._fields[0].properties.category,
-            cover: record._fields[0].properties.cover,
-            description: record._fields[0].properties.description,
-            pages: record._fields[0].properties.pages,
-            year: record._fields[0].properties.year,
-            votes: record._fields[1].low,
+            result.records.forEach(function (record) {
+              bookArr.push({
+                id: record._fields[0].identity.low,
+                author: record._fields[0].properties.author,
+                title: record._fields[0].properties.title,
+                category: record._fields[0].properties.category,
+                cover: record._fields[0].properties.cover,
+                description: record._fields[0].properties.description,
+                pages: record._fields[0].properties.pages,
+                year: record._fields[0].properties.year,
+                votes: record._fields[1].low,
+              });
+            });
+
+            res.json({ bookArr: bookArr, numberOfBooks: numberOfBooks });
+          })
+          .catch(function (error) {
+            console.log(error);
           });
-        });
-
-        res.json(bookArr);
       })
       .catch(function (error) {
         console.log(error);
@@ -90,7 +108,6 @@ module.exports = function (app) {
   app.delete("/expand", function (req, res) {
     var bookId = req.body.bookId;
 
-    console.log(bookId);
     session
       .run("MATCH (n:ExpandBook) WHERE ID(n)=$bookIdParam DETACH DELETE n", {
         bookIdParam: +bookId,

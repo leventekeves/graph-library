@@ -7,6 +7,7 @@ import LoadingSpinner from "../../utility/LoadingSpinner";
 import SubNavigation from "../Layout/SubNavigation";
 import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
+import Pagination from "../../utility/Pagination";
 
 async function addRecommendation(userId, listId) {
   await fetch(`/list/recommendation`, {
@@ -18,8 +19,8 @@ async function addRecommendation(userId, listId) {
   });
 }
 
-async function getList(listId) {
-  const response = await fetch(`/list/${listId}`);
+async function getList(listId, pageNumber, itemsPerPage) {
+  const response = await fetch(`/list/${listId}/${pageNumber}/${itemsPerPage}`);
   const data = await response.json();
 
   if (!response.ok) {
@@ -39,6 +40,11 @@ const ListCard = (props) => {
   const [isRecommended, setIsRecommended] = useState(false);
   const [canRecommend, setCanRecommend] = useState(true);
 
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const itemsPerPage = 2;
+
   if (!listId) {
     listId = props.listId;
   }
@@ -54,15 +60,20 @@ const ListCard = (props) => {
   }, [isLoading, authCtx.recommendations, list?.id]);
 
   useEffect(() => {
-    getList(listId).then((data) => {
-      if (data[0]) {
-        setList(data[0]);
-        setNumberOfBooks(data[0].books.length);
+    getList(listId, currentPage, itemsPerPage).then((data) => {
+      if (data.listArr[0]) {
+        setList(data.listArr[0]);
+        setNumberOfBooks(data.listArr[0].books.length);
       }
-
+      setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
       setIsLoading(false);
     });
-  }, [listId]);
+  }, [listId, currentPage]);
+
+  const handlePageClick = (event) => {
+    setCurrentPage(event.selected);
+    window.scrollTo(0, 0);
+  };
 
   const onRecommendHandler = () => {
     setIsRecommended(true);
@@ -106,7 +117,7 @@ const ListCard = (props) => {
           location="list"
         />
       );
-    } else {
+    } else if (list.books.length > 0) {
       return (
         <Fragment>
           <SubNavigation
@@ -142,6 +153,10 @@ const ListCard = (props) => {
               listId={props.listId}
               action={props.action}
               location="list"
+            />
+            <Pagination
+              pageCount={pageCount}
+              handlePageClick={handlePageClick}
             />
           </div>
         </Fragment>

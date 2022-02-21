@@ -5,41 +5,53 @@ import SubNavigation from "../Layout/SubNavigation";
 import LoadingSpinner from "../../utility/LoadingSpinner";
 import classes from "./BorrowingsContent.module.css";
 import BookList from "../Books/BookList";
+import Pagination from "../../utility/Pagination";
 
-async function getBorrowings(userId) {
-  const response = await fetch(`/borrow/${userId}`);
+async function getBorrowings(userId, pageNumber, itemsPerPage) {
+  const response = await fetch(
+    `/borrow/${userId}/${pageNumber}/${itemsPerPage}`
+  );
   const data = await response.json();
 
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch bookmarks.");
   }
-
   return data;
 }
 
 const BorrowingsContent = () => {
   const [borrowings, setBorrowings] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const itemsPerPage = 2;
+
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
     if (authCtx.token) {
-      getBorrowings(authCtx.id).then((data) => {
-        const borrowing = data;
+      getBorrowings(authCtx.id, currentPage, itemsPerPage).then((data) => {
         const transformedBorrowings = [];
-        for (const key in borrowing) {
+        for (const key in data.bookArr) {
           const BorrowingObj = {
             id: key,
-            ...borrowing[key],
+            ...data.bookArr[key],
           };
           transformedBorrowings.push(BorrowingObj);
         }
 
         setBorrowings(transformedBorrowings);
+        setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
         setIsLoading(false);
       });
     }
-  }, [authCtx]);
+  }, [authCtx, currentPage]);
+
+  const handlePageClick = (event) => {
+    setCurrentPage(event.selected);
+    window.scrollTo(0, 0);
+  };
 
   if (!authCtx.isLoggedIn) {
     return (
@@ -66,6 +78,10 @@ const BorrowingsContent = () => {
           <div className={classes.container}>
             <div className={classes.container1}>
               <BookList books={borrowings} action="borrow" location="list" />
+              <Pagination
+                pageCount={pageCount}
+                handlePageClick={handlePageClick}
+              />
             </div>
           </div>
         </Fragment>

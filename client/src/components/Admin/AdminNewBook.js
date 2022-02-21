@@ -5,7 +5,6 @@ import Button from "../Layout/Button";
 import classes from "./AdminNewBook.module.css";
 
 async function addBookHandler(book) {
-  console.log(book);
   await fetch("/book", {
     method: "POST",
     body: JSON.stringify(book),
@@ -16,7 +15,6 @@ async function addBookHandler(book) {
 }
 
 async function editBookHandler(book) {
-  console.log(book);
   await fetch("/book", {
     method: "PUT",
     body: JSON.stringify(book),
@@ -64,7 +62,6 @@ const AdminNewBook = (props) => {
   }, [props]);
 
   const handleChange = (event) => {
-    console.log(event.target.name);
     setNewBook({
       ...newBook,
       [event.target.name]: event.target.value.trim(),

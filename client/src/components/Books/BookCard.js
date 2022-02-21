@@ -19,7 +19,6 @@ async function getBooks(bookId) {
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch the book.");
   }
-  console.log(data);
   return data;
 }
 

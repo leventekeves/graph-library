@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
 import LoadingSpinner from "../../utility/LoadingSpinner";
+import Pagination from "../../utility/Pagination";
 import classes from "./BrowseLists.module.css";
 import ListItem from "./ListItem";
 
-async function fetchLists() {
-  const response = await fetch("/list");
+async function fetchLists(pageNumber, itemsPerPage, sort) {
+  const response = await fetch(
+    `/list/${pageNumber}/${itemsPerPage}?sort=${sort}`
+  );
   const data = await response.json();
 
   if (!response.ok) {
@@ -18,79 +21,58 @@ async function fetchLists() {
 const BrowseLists = () => {
   const [lists, setLists] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const itemsPerPage = 2;
 
   const history = useHistory();
   const location = useLocation();
 
-  const queryParams = new URLSearchParams(location.search);
+  const queryParams = useMemo(() => {
+    return new URLSearchParams(location.search);
+  }, [location]);
 
-  if (queryParams.get("sort") === "newest") {
-    lists.sort(sortByNewest);
-  }
-  if (queryParams.get("sort") === "oldest") {
-    lists.sort(sortByOldest);
-  }
-  if (queryParams.get("sort") === "recommendations") {
-    lists.sort(sortByRecommendations);
-  }
+  const changeSortHandler = (event) => {
+    addQuery("sort", event.target.value);
+  };
 
-  const changeSortHangler = (props) => {
-    history.push("/lists?function=browse&sort=" + props.target.value);
+  const addQuery = (key, value) => {
+    let pathname = location.pathname;
+    let searchParams = new URLSearchParams(location.search);
+    searchParams.set(key, value);
+    history.push({
+      pathname: pathname,
+      search: searchParams.toString(),
+    });
   };
 
   useEffect(() => {
-    fetchLists().then((data) => {
+    const sort = queryParams.get("sort");
+
+    fetchLists(currentPage, itemsPerPage, sort).then((data) => {
       const transformedLists = [];
 
-      for (const key in data) {
+      for (const key in data.listArr) {
         const listObj = {
           id: key,
-          ...data[key],
+          ...data.listArr[key],
         };
 
         transformedLists.push(listObj);
       }
 
       setLists(transformedLists);
+      setPageCount(Math.ceil(data.numberOfLists / itemsPerPage));
+
       setIsLoading(false);
     });
-  }, []);
+  }, [queryParams, currentPage]);
 
-  function sortByRecommendations(a, b) {
-    if (+a.recommendations < +b.recommendations) {
-      return 1;
-    }
-    if (+a.recommendations > +b.recommendations) {
-      return -1;
-    }
-    return 0;
-  }
-
-  function sortByNewest(a, b) {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-
-    if (dateA < dateB) {
-      return 1;
-    }
-    if (dateA > dateB) {
-      return -1;
-    }
-    return 0;
-  }
-
-  function sortByOldest(a, b) {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-
-    if (dateA < dateB) {
-      return -1;
-    }
-    if (dateA > dateB) {
-      return 1;
-    }
-    return 0;
-  }
+  const handlePageClick = (event) => {
+    setCurrentPage(event.selected);
+    window.scrollTo(0, 0);
+  };
 
   const content =
     lists.length > 0 ? (
@@ -101,21 +83,21 @@ const BrowseLists = () => {
             <option
               className={classes["sort-item"]}
               value="recommendations"
-              onClick={changeSortHangler}
+              onClick={changeSortHandler}
             >
               Most recommended
             </option>
             <option
               className={classes["sort-item"]}
               value="newest"
-              onClick={changeSortHangler}
+              onClick={changeSortHandler}
             >
               Newest
             </option>
             <option
               className={classes["sort-item"]}
               value="oldest"
-              onClick={changeSortHangler}
+              onClick={changeSortHandler}
             >
               Oldest
             </option>
@@ -138,6 +120,7 @@ const BrowseLists = () => {
               );
             }
           })}
+          <Pagination pageCount={pageCount} handlePageClick={handlePageClick} />
         </div>
       </div>
     ) : (

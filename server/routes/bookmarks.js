@@ -1,38 +1,57 @@
 const config = require("../config");
+const neo4j = require("neo4j-driver");
 
 module.exports = function (app) {
   const session = config.session;
 
   //Get Bookmarks Route
-  app.get("/bookmarks/:userId", function (req, res) {
+  app.get("/bookmarks/:userId/:pageNumber/:itemsPerPage", function (req, res) {
     var userId = req.params.userId;
+    var pageNumber = req.params.pageNumber;
+    var itemsPerPage = req.params.itemsPerPage;
+
     session
       .run(
-        "MATCH (a:User)-[r:Bookmarked]->(b:Book) WHERE ID(a)=$userIdParam OPTIONAL MATCH ()-[d:Rated]->(b) RETURN b, avg(d.rating) AS rating",
+        "MATCH (a:User)-[r:Bookmarked]->(b:Book) WHERE ID(a)=$userIdParam OPTIONAL MATCH ()-[d:Rated]->(b) RETURN b, avg(d.rating) AS rating SKIP $skipParam LIMIT $limitParam",
         {
           userIdParam: +userId,
+          skipParam: neo4j.int(pageNumber * itemsPerPage),
+          limitParam: neo4j.int(itemsPerPage),
         }
       )
       .then(function (result) {
-        var bookArr = [];
+        session
+          .run(
+            "MATCH (a:User)-[r:Bookmarked]->(b:Book) WHERE ID(a)=$userIdParam RETURN COUNT(b)",
+            {
+              userIdParam: +userId,
+            }
+          )
+          .then(function (result2) {
+            var bookArr = [];
+            var numberOfBooks = result2.records[0]._fields[0].low;
 
-        result.records.forEach(function (record) {
-          bookArr.push({
-            id: record._fields[0].identity.low,
-            name: record._fields[0].properties.name,
-            author: record._fields[0].properties.author,
-            title: record._fields[0].properties.title,
-            category: record._fields[0].properties.category,
-            cover: record._fields[0].properties.cover,
-            description: record._fields[0].properties.description,
-            pages: record._fields[0].properties.pages,
-            stock: record._fields[0].properties.stock,
-            year: record._fields[0].properties.year,
-            rating: record._fields[1],
+            result.records.forEach(function (record) {
+              bookArr.push({
+                id: record._fields[0].identity.low,
+                name: record._fields[0].properties.name,
+                author: record._fields[0].properties.author,
+                title: record._fields[0].properties.title,
+                category: record._fields[0].properties.category,
+                cover: record._fields[0].properties.cover,
+                description: record._fields[0].properties.description,
+                pages: record._fields[0].properties.pages,
+                stock: record._fields[0].properties.stock,
+                year: record._fields[0].properties.year,
+                rating: record._fields[1],
+              });
+            });
+
+            res.json({ bookArr: bookArr, numberOfBooks: numberOfBooks });
+          })
+          .catch(function (error) {
+            console.log(error);
           });
-        });
-
-        res.json(bookArr);
       })
       .catch(function (error) {
         console.log(error);

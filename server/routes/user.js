@@ -184,8 +184,8 @@ module.exports = function (app) {
             .then(function (result2) {
               res.sendStatus(200);
             })
-            .catch(function (error2) {
-              console.log(error2);
+            .catch(function (error) {
+              console.log(error);
             });
         } else {
           res.sendStatus(401);

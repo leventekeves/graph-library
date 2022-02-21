@@ -1,16 +1,19 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import classes from "./ExpandCollectionAdd.module.css";
 import Button from "../Layout/Button";
 import ExpandCollectionList from "./ExpandCollectionList";
+import Pagination from "../../utility/Pagination";
 
-async function getBooks(title, author, category) {
+async function getBooks(title, author, category, currentPage, itemsPerPage) {
   const titleSerach = title ? `+intitle:${title}` : "";
   const authorSearch = author ? `+inauthor:${author}` : "";
   const categorySearch = category ? `+subject:${category}` : "";
 
   const response = await fetch(
-    `https://www.googleapis.com/books/v1/volumes?q=${titleSerach}${authorSearch}${categorySearch}&langRestrict=en`
+    `https://www.googleapis.com/books/v1/volumes?q=${titleSerach}${authorSearch}${categorySearch}&langRestrict=en&startIndex=${
+      currentPage * itemsPerPage
+    }&maxResults=${itemsPerPage}`
   );
   const data = await response.json();
 
@@ -26,17 +29,23 @@ const ExpandCollectionAdd = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchInputError, setSearchInputError] = useState(false);
 
+  const [pageCount, setPageCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [firstLoad, setFirstLoad] = useState(true);
+
+  const itemsPerPage = 10;
+
   const titleInputRef = useRef();
   const authorInputRef = useRef();
   const categoryInputRef = useRef();
 
-  const onSubmitHandler = (event) => {
-    event.preventDefault();
-
+  const fetchBooks = useCallback(() => {
     getBooks(
       titleInputRef.current.value || "",
       authorInputRef.current.value || "",
-      categoryInputRef.current.value || ""
+      categoryInputRef.current.value || "",
+      currentPage,
+      itemsPerPage
     )
       .then((data) => {
         const transformedBooks = [];
@@ -72,12 +81,28 @@ const ExpandCollectionAdd = () => {
         });
         setSearchInputError(false);
         setBooks(transformedBooks);
+        setPageCount(Math.ceil(data.totalItems / itemsPerPage));
         setIsLoading(false);
+        setFirstLoad(false);
       })
       .catch((error) => {
         console.log(error);
         setSearchInputError(true);
       });
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (!firstLoad) fetchBooks();
+  }, [fetchBooks, firstLoad]);
+
+  const onSubmitHandler = (event) => {
+    event.preventDefault();
+    fetchBooks();
+  };
+
+  const handlePageClick = (event) => {
+    setCurrentPage(event.selected);
+    window.scrollTo(0, 0);
   };
 
   return (
@@ -116,7 +141,17 @@ const ExpandCollectionAdd = () => {
       </div>
 
       <div>
-        {isLoading ? "" : <ExpandCollectionList books={books} location="add" />}
+        {isLoading ? (
+          ""
+        ) : (
+          <div>
+            <ExpandCollectionList books={books} location="add" />{" "}
+            <Pagination
+              pageCount={pageCount}
+              handlePageClick={handlePageClick}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
