@@ -32,10 +32,10 @@ const Login = () => {
     event.preventDefault();
 
     fetchUsers(
-      emailInputRef.current.value,
-      passwordInputRef.current.value
-      // "admin@admin.com",
-      // "admin"
+      // emailInputRef.current.value,
+      // passwordInputRef.current.value
+      "admin@admin.com",
+      "admin"
     ).then((data) => {
       if (data.credentialsCorrect === true) {
         authCtx.login(

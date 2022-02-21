@@ -4,6 +4,7 @@ const neo4j = require("neo4j-driver");
 module.exports = function (app) {
   const session = config.session;
   const session2 = config.session2;
+  const session3 = config.session3;
 
   // Get Books Route
   app.get("/book/:pageNumber/:itemsPerPage", function (req, res) {
@@ -219,7 +220,7 @@ module.exports = function (app) {
   app.delete("/book", function (req, res) {
     var bookId = +req.body.bookId;
 
-    session
+    session3
       .run("MATCH (n:Book) WHERE ID(n)=$bookIdParam DETACH DELETE n", {
         bookIdParam: bookId,
       })
