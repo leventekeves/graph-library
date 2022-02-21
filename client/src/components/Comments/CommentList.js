@@ -3,13 +3,14 @@ import CommentItem from "./CommentItem";
 import classes from "./CommentList.module.css";
 
 async function getComments(bookId) {
-  const response = await fetch(`/book/comment/${bookId}`);
+  const response = await fetch(`/comment/${bookId}`);
   const data = await response.json();
 
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch comments.");
   }
 
+  console.log(data);
   return data;
 }
 

@@ -12,6 +12,8 @@ module.exports = function (app) {
     let query2;
     let filters;
 
+    console.log(req);
+
     var pageNumber = req.params.pageNumber;
     var itemsPerPage = req.params.itemsPerPage;
 
@@ -268,9 +270,10 @@ module.exports = function (app) {
   });
 
   // Get Comments Route
-  app.get("/book/comment/:bookId", function (req, res) {
+  app.get("/comment/:bookId", function (req, res) {
     var bookId = req.params.bookId;
-    session
+
+    session2
       .run(
         "MATCH (a:User)-[r:Comment]->(b:Book) WHERE ID(b)=$bookIdParam RETURN r, a",
         {
@@ -297,7 +300,7 @@ module.exports = function (app) {
   });
 
   // Add Comment Route
-  app.post("/book/comment", function (req, res) {
+  app.post("/comment", function (req, res) {
     var userId = req.body.userId;
     var bookId = req.body.bookId;
     var comment = req.body.comment;

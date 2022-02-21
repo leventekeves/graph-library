@@ -5,7 +5,7 @@ import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
 
 async function addCommentHandler(comment) {
-  await fetch("/book/comment", {
+  await fetch("/comment", {
     method: "POST",
     body: JSON.stringify(comment),
     headers: {
