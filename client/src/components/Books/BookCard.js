@@ -403,10 +403,15 @@ const BookCard = () => {
                 </div>
               </div>
             </div>
-            <NewComment
-              currentBook={bookId}
-              onNewComment={newCommentAddedHandler}
-            />
+            {authCtx.token ? (
+              <NewComment
+                currentBook={bookId}
+                onNewComment={newCommentAddedHandler}
+              />
+            ) : (
+              ""
+            )}
+
             <CommentList
               currentBook={bookId}
               newCommentAdded={newCommentAdded}
