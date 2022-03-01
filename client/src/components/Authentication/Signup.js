@@ -4,17 +4,21 @@ import authClasses from "./Authentication.module.css";
 import classes from "./Signup.module.css";
 
 async function addNewUser(userData) {
-  await fetch("/user", {
+  const response = await fetch("/user", {
     method: "POST",
     body: JSON.stringify(userData),
     headers: {
       "Content-Type": "application/json",
     },
   });
+
+  return response.ok;
 }
 
 const Signup = () => {
   const [signedUp, setSignedUp] = useState(false);
+  const [creationSuccessful, setCreationSuccessful] = useState(false);
+
   const nameInputRef = useRef();
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
@@ -26,12 +30,18 @@ const Signup = () => {
       email: emailInputRef.current.value,
       password: passwordInputRef.current.value,
     };
-    addNewUser(userData);
-    setSignedUp(true);
+    addNewUser(userData).then((response) => {
+      setSignedUp(true);
+      if (response) {
+        setCreationSuccessful(true);
+      } else {
+        setCreationSuccessful(false);
+      }
+    });
   };
 
   let content;
-  if (signedUp) {
+  if (creationSuccessful) {
     content = (
       <div className={classes["feedback-message"]}>Account created!</div>
     );
@@ -59,6 +69,14 @@ const Signup = () => {
               ref={passwordInputRef}
               className={authClasses.input}
             />
+
+            {!creationSuccessful && signedUp ? (
+              <div className={classes["error-message"]}>
+                E-mail address aleady exists!
+              </div>
+            ) : (
+              ""
+            )}
             <div className={authClasses["button-container"]}>
               <Button>Submit</Button>
             </div>

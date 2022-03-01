@@ -1,11 +1,12 @@
-import { useRef, useContext } from "react";
+import { useRef, useContext, useState } from "react";
 import AuthContext from "../../store/auth-context";
 import { useHistory } from "react-router-dom";
 
+import classes from "./Login.module.css";
 import authClasses from "./Authentication.module.css";
 import Button from "../Layout/Button";
 
-async function fetchUsers(email, password) {
+async function loginUser(email, password) {
   const response = await fetch("/user/login", {
     method: "POST",
     body: JSON.stringify({ email: email, password: password }),
@@ -18,6 +19,7 @@ async function fetchUsers(email, password) {
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch users.");
   }
+
   return data;
 }
 
@@ -28,10 +30,12 @@ const Login = () => {
   const authCtx = useContext(AuthContext);
   const history = useHistory();
 
+  const [loginFailed, setLoginFailed] = useState(false);
+
   const onSubmitHandler = (event) => {
     event.preventDefault();
 
-    fetchUsers(
+    loginUser(
       emailInputRef.current.value,
       passwordInputRef.current.value
       // "admin@admin.com",
@@ -51,6 +55,8 @@ const Login = () => {
           data.historyBorrowings
         );
         history.replace("/");
+      } else {
+        setLoginFailed(true);
       }
     });
   };
@@ -72,6 +78,12 @@ const Login = () => {
             ref={passwordInputRef}
             className={authClasses.input}
           />
+          {loginFailed ? (
+            <div className={classes["error-message"]}>Login unsuccessful!</div>
+          ) : (
+            ""
+          )}
+
           <div className={authClasses["button-container"]}>
             <Button>Submit</Button>
           </div>

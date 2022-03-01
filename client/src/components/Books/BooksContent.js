@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, Fragment } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
 import classes from "./BooksContent.module.css";
@@ -25,24 +25,26 @@ async function getBooks(
         listIdArray.push(book.id);
       });
       response = await fetch(
-        `/book/list/${pageNumber}/${itemsPerPage}/${listIdArray.join("-")}`
+        `/book/list/${listIdArray.join(
+          "-"
+        )}?pagenumber=${pageNumber}&itemsperpage=${itemsPerPage}`
       );
     } else {
       response = await fetch(
-        `/book/${pageNumber}/${itemsPerPage}?search=${
-          queryParamsForRequest?.search || ""
-        }&year=${queryParamsForRequest?.year || ""}&category=${
+        `/book?search=${queryParamsForRequest?.search || ""}&year=${
+          queryParamsForRequest?.year || ""
+        }&category=${
           queryParamsForRequest?.category || ""
-        }`
+        }&pagenumber=${pageNumber}&itemsperpage=${itemsPerPage}`
       );
     }
   } else {
     response = await fetch(
-      `/book/${pageNumber}/${itemsPerPage}?search=${
-        queryParamsForRequest?.search || ""
-      }&year=${queryParamsForRequest?.year || ""}&category=${
+      `/book?search=${queryParamsForRequest?.search || ""}&year=${
+        queryParamsForRequest?.year || ""
+      }&category=${
         queryParamsForRequest?.category || ""
-      }`
+      }&pagenumber=${pageNumber}&itemsperpage=${itemsPerPage}`
     );
   }
   const data = await response.json();
@@ -50,13 +52,15 @@ async function getBooks(
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch books.");
   }
+
+  console.log(data);
   return data;
 }
 
 const BooksContent = (props) => {
   const [data, setData] = useState([]);
   const [books, setBooks] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [firstLoad, setFirstLoad] = useState(true);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -98,9 +102,11 @@ const BooksContent = (props) => {
         itemsPerPage,
         props.listId
       ).then((data) => {
-        setData(data);
-        setIsLoading(false);
-        setFirstLoad(false);
+        if (isLoading) {
+          setData(data);
+          setIsLoading(false);
+          setFirstLoad(false);
+        }
       });
     }
 
@@ -111,13 +117,26 @@ const BooksContent = (props) => {
         itemsPerPage,
         props.listId
       ).then((data) => {
-        setData(data);
-        setIsLoading(false);
-        setFirstLoad(false);
-        setPageChange(false);
+        if (isLoading) {
+          setData(data);
+          setIsLoading(false);
+          setFirstLoad(false);
+          setPageChange(false);
+        }
       });
+
+      return () => {
+        setIsLoading(false);
+      };
     }
-  }, [props.listId, queryParams, firstLoad, currentPage, pageChange]);
+  }, [
+    props.listId,
+    queryParams,
+    firstLoad,
+    currentPage,
+    pageChange,
+    isLoading,
+  ]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -162,7 +181,8 @@ const BooksContent = (props) => {
     });
   };
 
-  const onSearchHandler = () => {
+  const onSearchHandler = (event) => {
+    event.preventDefault();
     const searchFilter = queryParams.get("search");
     const yearFilter = queryParams.get("year");
     const categoryFilter = queryParams.get("category");
@@ -173,56 +193,57 @@ const BooksContent = (props) => {
       category: categoryFilter,
     };
 
+    setIsLoading(true);
     getBooks(queryParamsForRequest, currentPage, itemsPerPage).then((data) => {
       setData(data);
+      setIsLoading(false);
     });
   };
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);
     setPageChange(true);
+    setIsLoading(true);
     window.scrollTo(0, 0);
   };
 
   return (
-    <Fragment>
-      <div className={classes.container}>
-        <div className={classes.search}>
-          <div className={classes["search--input"]}>
-            <BookFilters
-              onYearSelect={onYearSelectHandler}
-              onCategorySelect={onCategorySelectHandler}
-              onRemoveFilter={removeFilterHandler}
-            />
+    <div className={classes.container}>
+      <div className={classes.search}>
+        <div className={classes["search--input"]}>
+          <BookFilters
+            onYearSelect={onYearSelectHandler}
+            onCategorySelect={onCategorySelectHandler}
+            onRemoveFilter={removeFilterHandler}
+          />
 
+          <form onSubmit={onSearchHandler}>
             <input
               type="text"
               className={classes["search--field"]}
               placeholder="Search..."
               onChange={onSearchChangeHandler}
             />
-            <Button onClick={onSearchHandler}>Search</Button>
-          </div>
-          {isLoading ? (
-            <div className={classes.center}>
-              <LoadingSpinner />
-            </div>
-          ) : (
-            <div>
-              <BookList
-                books={books}
-                listId={props.listId}
-                action={props.action}
-              />
-              <Pagination
-                pageCount={pageCount}
-                handlePageClick={handlePageClick}
-              />
-            </div>
-          )}
+          </form>
+
+          <Button onClick={onSearchHandler}>Search</Button>
         </div>
+        {isLoading ? (
+          <div className={classes.center}>
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <div>
+            <BookList
+              books={books}
+              listId={props.listId}
+              action={props.action}
+            />
+          </div>
+        )}
+        <Pagination pageCount={pageCount} handlePageClick={handlePageClick} />
       </div>
-    </Fragment>
+    </div>
   );
 };
 

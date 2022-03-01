@@ -11,9 +11,15 @@ const BookList = (props) => {
   };
 
   if (bookCounter === 0 && props.action === "borrow") {
-    return (
-      <div className={classes["feedback-message"]}>No books borrowed!</div>
-    );
+    if (props.action === "borrow")
+      return (
+        <div className={classes["feedback-message"]}>No books borrowed!</div>
+      );
+  } else if (bookCounter === 0 && props.action === "bookmark") {
+    if (props.action === "bookmark")
+      return (
+        <div className={classes["feedback-message"]}>No books bookmarked!</div>
+      );
   } else {
     return (
       <Fragment>
@@ -37,6 +43,7 @@ const BookList = (props) => {
                 remainingExtensions={book.remainingExtensions}
                 date={book.date}
                 onDelete={handleDelete}
+                realId={book.realId}
               />
             );
           })}

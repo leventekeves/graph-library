@@ -4,7 +4,7 @@ import AuthContext from "../../store/auth-context";
 import classes from "./ListSelector.module.css";
 
 async function fetchLists(userId) {
-  const response = await fetch(`/list/user/${userId}`);
+  const response = await fetch(`/list/user?userid=${userId}`);
   const data = await response.json();
 
   if (!response.ok) {
@@ -15,6 +15,7 @@ async function fetchLists(userId) {
 }
 
 const ListSelector = (props) => {
+  const [isLoading, setIsLoading] = useState(true);
   const [dropdown, setDropdown] = useState(
     <select defaultValue={"Select list"} className={classes["list-select"]}>
       <option key={"Select list"} value={"Select list"}>
@@ -62,9 +63,15 @@ const ListSelector = (props) => {
         </select>
       );
 
-      setDropdown(dropdownMapped);
+      if (isLoading) {
+        setDropdown(dropdownMapped);
+        setIsLoading(false);
+      }
     });
-  }, [authCtx.id, props]);
+    return () => {
+      setIsLoading(false);
+    };
+  }, [authCtx.id, props, isLoading]);
 
   return <Fragment>{dropdown}</Fragment>;
 };

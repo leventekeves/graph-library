@@ -9,7 +9,7 @@ import Pagination from "../../utility/Pagination";
 
 async function getBorrowings(userId, pageNumber, itemsPerPage) {
   const response = await fetch(
-    `/borrow/${userId}/${pageNumber}/${itemsPerPage}`
+    `/borrow/${userId}?pagenumber=${pageNumber}&itemsperpage=${itemsPerPage}`
   );
   const data = await response.json();
 
@@ -30,6 +30,8 @@ const BorrowingsContent = () => {
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
+    let isActive = true;
+
     if (authCtx.token) {
       getBorrowings(authCtx.id, currentPage, itemsPerPage).then((data) => {
         const transformedBorrowings = [];
@@ -41,12 +43,18 @@ const BorrowingsContent = () => {
           transformedBorrowings.push(BorrowingObj);
         }
 
-        setBorrowings(transformedBorrowings);
-        setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
-        setIsLoading(false);
+        if (isActive) {
+          setBorrowings(transformedBorrowings);
+          setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
+          setIsLoading(false);
+        }
       });
     }
-  }, [authCtx, currentPage]);
+
+    return () => {
+      isActive = false;
+    };
+  }, [authCtx, currentPage, isLoading]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);

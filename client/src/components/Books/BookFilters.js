@@ -34,6 +34,7 @@ const BookFilters = (props) => {
 
   const removeFilterHandler = () => {
     props.onRemoveFilter();
+    setCategorySelected("");
   };
 
   return (

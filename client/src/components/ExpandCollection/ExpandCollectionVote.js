@@ -3,9 +3,12 @@ import Pagination from "../../utility/Pagination";
 
 import ExpandCollectionList from "./ExpandCollectionList";
 import classes from "./ExpandCollectionVote.module.css";
+import LoadingSpinner from "../../utility/LoadingSpinner";
 
 async function getBooks(pageNumber, itemsPerPage) {
-  const response = await fetch(`/expand/${pageNumber}/${itemsPerPage}`);
+  const response = await fetch(
+    `/expand?pagenumber=${pageNumber}&itemsperpage=${itemsPerPage}`
+  );
   const data = await response.json();
 
   if (!response.ok) {
@@ -24,12 +27,19 @@ const ExpandCollectionVote = () => {
   const itemsPerPage = 3;
 
   useEffect(() => {
+    let isActive = true;
+
     getBooks(currentPage, itemsPerPage).then((data) => {
-      setBooks(data.bookArr);
-      setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
-      setIsLoading(false);
+      if (isActive) {
+        setBooks(data.bookArr);
+        setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
+        setIsLoading(false);
+      }
     });
-  }, [currentPage]);
+    return () => {
+      isActive = false;
+    };
+  }, [currentPage, isLoading]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);
@@ -37,6 +47,14 @@ const ExpandCollectionVote = () => {
   };
 
   let content;
+  if (isLoading) {
+    return (
+      <div className={classes.center}>
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   if (!isLoading) {
     if (books?.length > 0) {
       content = (

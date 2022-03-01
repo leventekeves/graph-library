@@ -5,18 +5,20 @@ import AuthContext from "../../store/auth-context";
 import Button from "../Layout/Button";
 
 async function addCommentHandler(comment) {
-  await fetch("/comment", {
+  const response = await fetch("/comment", {
     method: "POST",
     body: JSON.stringify(comment),
     headers: {
       "Content-Type": "application/json",
     },
   });
+
+  return response.ok;
 }
 
 const NewComment = (props) => {
   const commentInputRef = useRef();
-  const [succesMessage, setSuccesMessage] = useState("");
+  const [feedbackMessage, setFeedbackMessage] = useState("");
   const authCtx = useContext(AuthContext);
 
   const onSubmitHandler = (event) => {
@@ -47,12 +49,16 @@ const NewComment = (props) => {
       date: formatedDate,
       comment: commentInputRef.current.value,
     };
-    addCommentHandler(comment, props.currentBook);
-    commentInputRef.current.value = "";
-    setSuccesMessage(
-      "New comment added, it will appear shortly! If you can't see your comment in a few seconds, reload the page!"
-    );
-    props.onNewComment(true);
+
+    addCommentHandler(comment, props.currentBook).then((response) => {
+      if (response) {
+        props.onNewComment(true);
+        commentInputRef.current.value = "";
+        setFeedbackMessage("New comment added!");
+      } else {
+        setFeedbackMessage("Something went wrong!");
+      }
+    });
   };
 
   return (
@@ -66,7 +72,7 @@ const NewComment = (props) => {
           <Button>New Comment</Button>
         </form>
       </div>
-      <div className={classes["new-comment--success"]}>{succesMessage}</div>
+      <div className={classes["new-comment--success"]}>{feedbackMessage}</div>
     </Fragment>
   );
 };

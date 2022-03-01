@@ -7,11 +7,11 @@ module.exports = function (app) {
   const session3 = config.session3;
 
   //Get Lists Route
-  app.get("/list/:pageNumber/:itemsPerPage", function (req, res) {
+  app.get("/list", function (req, res) {
     const sort = req.query.sort;
 
-    var pageNumber = req.params.pageNumber;
-    var itemsPerPage = req.params.itemsPerPage;
+    var pageNumber = +req.query.pagenumber;
+    var itemsPerPage = +req.query.itemsperpage;
 
     var query =
       "MATCH ()-[r:Created]->(b:List) MATCH (b)-[d:Contains]->(e:Book) OPTIONAL MATCH ()-[t:Recommended]->(b) RETURN  b, r,  count(distinct(e)) as numberOfBooks, count(distinct(t)) as numberOfRecommendations";
@@ -62,9 +62,9 @@ module.exports = function (app) {
   });
 
   //Get User's Lists Route
-  app.get("/list/user/:userId", function (req, res) {
-    var userId = req.params.userId;
-    session2
+  app.get("/list/user", function (req, res) {
+    const userId = req.query.userid;
+    session
       .run(
         "MATCH (a:User)-[r:Created]->(b:List) WHERE ID(a)=$userIdParam OPTIONAL MATCH ()-[d:Recommended]->(b) RETURN b, count(d) AS Recommendations, r",
         {
@@ -92,10 +92,10 @@ module.exports = function (app) {
   });
 
   //Get Specific List
-  app.get("/list/:listId/:pageNumber/:itemsPerPage", function (req, res) {
+  app.get("/list/:listId", function (req, res) {
     var listId = +req.params.listId;
-    var pageNumber = req.params.pageNumber;
-    var itemsPerPage = req.params.itemsPerPage;
+    var pageNumber = +req.query.pagenumber;
+    var itemsPerPage = +req.query.itemsperpage;
 
     session3
       .run(
@@ -182,7 +182,7 @@ module.exports = function (app) {
 
     session
       .run(
-        "MATCH (a:User) WHERE ID(a)=$userIdParam CREATE (a)-[r:Created {date:$dateParam}]->(b:List {name:$nameParam, description:$descriptionParam})",
+        "MATCH (a:User) WHERE ID(a)=$userIdParam CREATE (a)-[r:Created {date:$dateParam}]->(b:List {name:$nameParam, description:$descriptionParam}) RETURN r",
         {
           userIdParam: userId,
           dateParam: date,
@@ -191,7 +191,7 @@ module.exports = function (app) {
         }
       )
       .then(function (result) {
-        res.redirect("/");
+        res.sendStatus(200);
       })
       .catch(function (error) {
         console.log(error);

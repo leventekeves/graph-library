@@ -28,10 +28,15 @@ const AdminManageUsers = () => {
 
         transformedUsers.push(userObj);
       }
-      setUsers(transformedUsers);
-      setIsLoading(false);
+      if (isLoading) {
+        setUsers(transformedUsers);
+        setIsLoading(false);
+      }
     });
-  }, []);
+    return () => {
+      setIsLoading(false);
+    };
+  }, [isLoading]);
 
   return (
     <div>

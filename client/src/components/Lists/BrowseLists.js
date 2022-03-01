@@ -8,7 +8,7 @@ import ListItem from "./ListItem";
 
 async function fetchLists(pageNumber, itemsPerPage, sort) {
   const response = await fetch(
-    `/list/${pageNumber}/${itemsPerPage}?sort=${sort}`
+    `/list?pagenumber=${pageNumber}&itemsperpage=${itemsPerPage}&sort=${sort}`
   );
   const data = await response.json();
 
@@ -48,6 +48,7 @@ const BrowseLists = () => {
   };
 
   useEffect(() => {
+    let isActive = true;
     const sort = queryParams.get("sort");
 
     fetchLists(currentPage, itemsPerPage, sort).then((data) => {
@@ -62,12 +63,17 @@ const BrowseLists = () => {
         transformedLists.push(listObj);
       }
 
-      setLists(transformedLists);
-      setPageCount(Math.ceil(data.numberOfLists / itemsPerPage));
-
-      setIsLoading(false);
+      if (isActive) {
+        setLists(transformedLists);
+        setPageCount(Math.ceil(data.numberOfLists / itemsPerPage));
+        setIsLoading(false);
+      }
     });
-  }, [queryParams, currentPage]);
+
+    return () => {
+      isActive = false;
+    };
+  }, [queryParams, currentPage, isLoading]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);

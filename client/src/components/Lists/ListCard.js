@@ -20,7 +20,9 @@ async function addRecommendation(userId, listId) {
 }
 
 async function getList(listId, pageNumber, itemsPerPage) {
-  const response = await fetch(`/list/${listId}/${pageNumber}/${itemsPerPage}`);
+  const response = await fetch(
+    `/list/${listId}?pagenumber=${pageNumber}&itemsperpage=${itemsPerPage}`
+  );
   const data = await response.json();
 
   if (!response.ok) {
@@ -60,15 +62,20 @@ const ListCard = (props) => {
   }, [isLoading, authCtx.recommendations, list?.id]);
 
   useEffect(() => {
+    let isActive = true;
     getList(listId, currentPage, itemsPerPage).then((data) => {
-      if (data.listArr[0]) {
+      if (data.listArr[0] && isActive) {
         setList(data.listArr[0]);
         setNumberOfBooks(data.listArr[0].books.length);
+        setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
+        setIsLoading(false);
       }
-      setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
-      setIsLoading(false);
     });
-  }, [listId, currentPage]);
+
+    return () => {
+      isActive = false;
+    };
+  }, [listId, currentPage, isLoading]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);
@@ -107,14 +114,15 @@ const ListCard = (props) => {
         <LoadingSpinner />
       </div>
     );
-  } else if (list) {
+  }
+
+  if (!isLoading && list) {
     if (props.listId) {
       return (
         <BookList
           books={list.books}
           listId={props.listId}
           action={props.action}
-          location="list"
         />
       );
     } else if (list.books.length > 0) {
@@ -152,7 +160,6 @@ const ListCard = (props) => {
               books={list.books}
               listId={props.listId}
               action={props.action}
-              location="list"
             />
             <Pagination
               pageCount={pageCount}

@@ -10,7 +10,6 @@ async function getComments(bookId) {
     throw new Error(data.message || "Could not fetch comments.");
   }
 
-  console.log(data);
   return data;
 }
 
@@ -35,23 +34,22 @@ const CommentList = (props) => {
       });
       setFirstRender(false);
     }
+
     if (props.newCommentAdded) {
-      setTimeout(() => {
-        getComments(props.currentBook).then((data) => {
-          const transformedComments = [];
+      getComments(props.currentBook).then((data) => {
+        const transformedComments = [];
 
-          for (const key in data) {
-            const commentObj = {
-              id: key,
-              ...data[key],
-            };
+        for (const key in data) {
+          const commentObj = {
+            id: key,
+            ...data[key],
+          };
 
-            transformedComments.push(commentObj);
-          }
-          setComments(transformedComments);
-        });
+          transformedComments.push(commentObj);
+        }
+        setComments(transformedComments);
         props.onNewComment(false);
-      }, 3000);
+      });
     }
   }, [props, firstRender]);
 

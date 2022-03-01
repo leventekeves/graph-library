@@ -4,6 +4,7 @@ import classes from "./ExpandCollectionAdd.module.css";
 import Button from "../Layout/Button";
 import ExpandCollectionList from "./ExpandCollectionList";
 import Pagination from "../../utility/Pagination";
+import LoadingSpinner from "../../utility/LoadingSpinner";
 
 async function getBooks(title, author, category, currentPage, itemsPerPage) {
   const titleSerach = title ? `+intitle:${title}` : "";
@@ -26,7 +27,7 @@ async function getBooks(title, author, category, currentPage, itemsPerPage) {
 
 const ExpandCollectionAdd = () => {
   const [books, setBooks] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchInputError, setSearchInputError] = useState(false);
 
   const [pageCount, setPageCount] = useState(0);
@@ -88,6 +89,8 @@ const ExpandCollectionAdd = () => {
       .catch((error) => {
         console.log(error);
         setSearchInputError(true);
+        setBooks(null);
+        setIsLoading(false);
       });
   }, [currentPage]);
 
@@ -97,6 +100,7 @@ const ExpandCollectionAdd = () => {
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
+    setIsLoading(true);
     fetchBooks();
   };
 
@@ -104,6 +108,28 @@ const ExpandCollectionAdd = () => {
     setCurrentPage(event.selected);
     window.scrollTo(0, 0);
   };
+
+  let content;
+  if (isLoading) {
+    content = (
+      <div className={classes.spinner}>
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (!isLoading) {
+    content = "";
+  }
+
+  if (!isLoading && books?.length > 0) {
+    content = (
+      <div>
+        <ExpandCollectionList books={books} location="add" />{" "}
+        <Pagination pageCount={pageCount} handlePageClick={handlePageClick} />
+      </div>
+    );
+  }
 
   return (
     <div className={classes.container}>
@@ -139,20 +165,7 @@ const ExpandCollectionAdd = () => {
           )}
         </form>
       </div>
-
-      <div>
-        {isLoading ? (
-          ""
-        ) : (
-          <div>
-            <ExpandCollectionList books={books} location="add" />{" "}
-            <Pagination
-              pageCount={pageCount}
-              handlePageClick={handlePageClick}
-            />
-          </div>
-        )}
-      </div>
+      {content}
     </div>
   );
 };

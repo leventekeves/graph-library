@@ -5,13 +5,13 @@ module.exports = function (app) {
   const session = config.session;
 
   // Get ExpandBooks Route
-  app.get("/expand/:pageNumber/:itemsPerPage", function (req, res) {
-    var pageNumber = req.params.pageNumber;
-    var itemsPerPage = req.params.itemsPerPage;
+  app.get("/expand", function (req, res) {
+    var pageNumber = +req.query.pagenumber;
+    var itemsPerPage = +req.query.itemsperpage;
 
     session
       .run(
-        "MATCH ()-[r:Voted]->(b:ExpandBook) RETURN b, count(r) SKIP $skipParam LIMIT $limitParam",
+        "MATCH (b:ExpandBook) RETURN b, count(b) SKIP $skipParam LIMIT $limitParam",
         {
           skipParam: neo4j.int(pageNumber * itemsPerPage),
           limitParam: neo4j.int(itemsPerPage),
@@ -19,7 +19,7 @@ module.exports = function (app) {
       )
       .then(function (result) {
         session
-          .run("MATCH ()-[r:Voted]->(b:ExpandBook) RETURN count(DISTINCT(b))")
+          .run("MATCH (b:ExpandBook) RETURN count(DISTINCT(b))")
           .then(function (result2) {
             var bookArr = [];
             var numberOfBooks = result2.records[0]._fields[0].low;

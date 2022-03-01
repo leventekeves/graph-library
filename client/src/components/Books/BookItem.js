@@ -47,6 +47,16 @@ async function extendBorrow(userId, bookId, newDate) {
   });
 }
 
+async function removeBookmark(bookId, userId) {
+  await fetch(`/bookmarks`, {
+    method: "DELETE",
+    body: JSON.stringify({ bookId, userId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 const BookItem = (props) => {
   const [isRemoved, setIsRemoved] = useState(false);
   const [book, setBook] = useState();
@@ -123,6 +133,23 @@ const BookItem = (props) => {
     setBook({ ...book, expiration: formatedDate });
   }, [authCtx, book, props]);
 
+  const removeBookmarkHandler = useCallback(() => {
+    const bookmarksArray = authCtx.bookmarks.map((bookmark) => {
+      return bookmark.id;
+    });
+
+    const removeIndex = bookmarksArray.findIndex((bookmarkId) => {
+      return +bookmarkId === +props.id;
+    });
+
+    removeBookmark(props.id, authCtx.id);
+
+    const updatedBookmarks = authCtx.bookmarks;
+    updatedBookmarks.splice(removeIndex, 1);
+    authCtx.updateBookmarks(updatedBookmarks);
+    setIsRemoved(true);
+  }, [authCtx, props.id]);
+
   useEffect(() => {
     if (props.action === "add") {
       setButton(
@@ -149,11 +176,19 @@ const BookItem = (props) => {
           EXTEND
         </Button>
       );
+    if (props.action === "bookmark") {
+      setButton(
+        <Button className={classes.add} onClick={removeBookmarkHandler}>
+          REMOVE
+        </Button>
+      );
+    }
   }, [
     addBookToListHandler,
     removeBookFromListHandler,
     returnBookHandler,
     extendBorrowHandler,
+    removeBookmarkHandler,
     props.action,
   ]);
 
@@ -231,7 +266,10 @@ const BookItem = (props) => {
   if (!isRemoved) {
     return (
       <div className={classes.container}>
-        <Link to={`/books/${props.id}`} style={{ textDecoration: "none" }}>
+        <Link
+          to={`/books/${props.action ? props.realId : props.id}`}
+          style={{ textDecoration: "none" }}
+        >
           <div className={classes["book-item"]}>
             <div>
               {props.cover === "https://undefined" ? (

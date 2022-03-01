@@ -2,15 +2,15 @@ const config = require("../config");
 const neo4j = require("neo4j-driver");
 
 module.exports = function (app) {
-  const session = config.session;
+  const session2 = config.session2;
 
   //Get Bookmarks Route
-  app.get("/bookmarks/:userId/:pageNumber/:itemsPerPage", function (req, res) {
+  app.get("/bookmarks/:userId", function (req, res) {
     var userId = req.params.userId;
-    var pageNumber = req.params.pageNumber;
-    var itemsPerPage = req.params.itemsPerPage;
+    var pageNumber = +req.query.pagenumber;
+    var itemsPerPage = +req.query.itemsperpage;
 
-    session
+    session2
       .run(
         "MATCH (a:User)-[r:Bookmarked]->(b:Book) WHERE ID(a)=$userIdParam OPTIONAL MATCH ()-[d:Rated]->(b) RETURN b, avg(d.rating) AS rating SKIP $skipParam LIMIT $limitParam",
         {
@@ -20,7 +20,7 @@ module.exports = function (app) {
         }
       )
       .then(function (result) {
-        session
+        session2
           .run(
             "MATCH (a:User)-[r:Bookmarked]->(b:Book) WHERE ID(a)=$userIdParam RETURN COUNT(b)",
             {
@@ -31,6 +31,7 @@ module.exports = function (app) {
             var bookArr = [];
             var numberOfBooks = result2.records[0]._fields[0].low;
 
+            console.log(result);
             result.records.forEach(function (record) {
               bookArr.push({
                 id: record._fields[0].identity.low,
@@ -63,7 +64,7 @@ module.exports = function (app) {
     var userId = req.body.userId;
     var bookId = req.body.bookId;
 
-    session
+    session2
       .run(
         "MATCH (a:User), (b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam CREATE (a)-[r:Bookmarked]->(b) RETURN r",
         {
@@ -84,7 +85,7 @@ module.exports = function (app) {
     var userId = req.body.userId;
     var bookId = req.body.bookId;
 
-    session
+    session2
       .run(
         "MATCH (a:User)-[r:Bookmarked]->(b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam DELETE r",
         {

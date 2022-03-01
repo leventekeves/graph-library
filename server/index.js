@@ -16,6 +16,7 @@ app.use(cookieParser());
 app.use(express.static(path.resolve(__dirname, "../client/build")));
 
 require("./routes/book.js")(app);
+require("./routes/comment.js")(app);
 require("./routes/user.js")(app);
 require("./routes/bookmarks.js")(app);
 require("./routes/borrow.js")(app);

@@ -11,9 +11,11 @@ module.exports = function (app) {
     var password = req.body.password;
     var access = "user";
 
+    //CREATE(n:User{name:$nameParam, email:$emailParam, password:$passwordParam, access:$accessParam }) RETURN n
+
     session
       .run(
-        "CREATE(n:User{name:$nameParam, email:$emailParam, password:$passwordParam, access:$accessParam }) RETURN n",
+        "MERGE (n:User {email: $emailParam}) ON CREATE SET n.name=$nameParam, n.password=$passwordParam, n.access=$accessParam, n.created = timestamp() ON MATCH SET n.alreadyexists = timestamp() RETURN n.created, n.alreadyexists",
         {
           nameParam: name,
           emailParam: email,
@@ -22,7 +24,11 @@ module.exports = function (app) {
         }
       )
       .then(function (result) {
-        res.redirect("/");
+        if (result.records[0]._fields[1]?.low) {
+          res.sendStatus(400);
+        } else {
+          res.sendStatus(200);
+        }
       })
       .catch(function (error) {
         console.log(error);

@@ -103,10 +103,16 @@ const BookCard = () => {
 
   useEffect(() => {
     getBooks(bookId).then((data) => {
-      setBook(data);
-      setIsLoading(false);
+      if (isLoading) {
+        setBook(data);
+        setIsLoading(false);
+      }
     });
-  }, [bookId]);
+
+    return () => {
+      setIsLoading(false);
+    };
+  }, [bookId, isLoading]);
 
   const newCommentAddedHandler = (value) => {
     setNewCommentAdded(value);
@@ -248,7 +254,6 @@ const BookCard = () => {
     if (!isLoading) alreadyRated();
   }, [alreadyRated, isLoading]);
 
-  //useeffect?
   let rateContent;
   if (canRate) {
     rateContent = isRated ? (

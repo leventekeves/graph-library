@@ -6,10 +6,10 @@ module.exports = function (app) {
   const session2 = config.session2;
 
   //Get Borrowed Books Route
-  app.get("/borrow/:userId/:pageNumber/:itemsPerPage", function (req, res) {
+  app.get("/borrow/:userId", function (req, res) {
     var userId = req.params.userId;
-    var pageNumber = req.params.pageNumber;
-    var itemsPerPage = req.params.itemsPerPage;
+    var pageNumber = +req.query.pagenumber;
+    var itemsPerPage = +req.query.itemsperpage;
 
     session
       .run(

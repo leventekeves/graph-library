@@ -9,7 +9,7 @@ import Pagination from "../../utility/Pagination";
 
 async function getBookmarks(userId, pageNumber, itemsPerPage) {
   const response = await fetch(
-    `/bookmarks/${userId}/${pageNumber}/${itemsPerPage}`
+    `/bookmarks/${userId}?pagenumber=${pageNumber}&itemsperpage=${itemsPerPage}`
   );
   const data = await response.json();
 
@@ -31,6 +31,8 @@ const BookmarksContent = () => {
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
+    let isActive = true;
+
     if (authCtx.token) {
       getBookmarks(authCtx.id, currentPage, itemsPerPage).then((data) => {
         const transformedBookmarks = [];
@@ -42,12 +44,18 @@ const BookmarksContent = () => {
           transformedBookmarks.push(BookmarkObj);
         }
 
-        setBookmarks(transformedBookmarks);
-        setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
-        setIsLoading(false);
+        if (isActive) {
+          setBookmarks(transformedBookmarks);
+          setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
+          setIsLoading(false);
+        }
       });
     }
-  }, [authCtx, currentPage]);
+
+    return () => {
+      isActive = false;
+    };
+  }, [authCtx, currentPage, isLoading]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);
@@ -77,7 +85,7 @@ const BookmarksContent = () => {
         <Fragment>
           <SubNavigation location={[{ name: "Bookmarks", link: "" }]} />
           <div className={classes.container}>
-            <BookList books={bookmarks} />
+            <BookList books={bookmarks} action="bookmark" />
             <Pagination
               pageCount={pageCount}
               handlePageClick={handlePageClick}
