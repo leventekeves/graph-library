@@ -1,16 +1,17 @@
 const config = require("../config");
 
 module.exports = function (app) {
-  const session = config.session;
-  const session2 = config.session2;
+  const session_comment = config.driver.session();
 
   // Get Comments Route
   app.get("/comment/:bookId", function (req, res) {
     var bookId = req.params.bookId;
 
-    session2
+    session_comment
       .run(
-        "MATCH (a:User)-[r:Comment]->(b:Book) WHERE ID(b)=$bookIdParam RETURN r, a",
+        `MATCH (a:User)-[r:Comment]->(b:Book) 
+        WHERE ID(b)=$bookIdParam 
+        RETURN r, a`,
         {
           bookIdParam: +bookId,
         }
@@ -41,9 +42,12 @@ module.exports = function (app) {
     var comment = req.body.comment;
     var date = req.body.date;
 
-    session
+    session_comment
       .run(
-        "MATCH (a:User), (b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam CREATE (a)-[r:Comment {comment:$commentParam, date:$dateParam}]->(b) return r",
+        `MATCH (a:User), (b:Book) 
+        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+        CREATE (a)-[r:Comment {comment:$commentParam, date:$dateParam}]->(b) 
+        RETURN r`,
         {
           userIdParam: +userId,
           bookIdParam: +bookId,

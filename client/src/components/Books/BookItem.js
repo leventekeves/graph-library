@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import classes from "./BookItem.module.css";
 import Button from "../Layout/Button";
 import AuthContext from "../../store/auth-context";
-
 import noCover from "../../utility/nocover.png";
 
 async function addBookToList(listId, bookId) {

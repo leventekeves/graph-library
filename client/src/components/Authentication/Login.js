@@ -36,10 +36,10 @@ const Login = () => {
     event.preventDefault();
 
     loginUser(
-      emailInputRef.current.value,
-      passwordInputRef.current.value
-      // "admin@admin.com",
-      // "admin"
+      // emailInputRef.current.value,
+      // passwordInputRef.current.value
+      "admin@admin.com",
+      "admin"
     ).then((data) => {
       if (data.credentialsCorrect === true) {
         authCtx.login(

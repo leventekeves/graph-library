@@ -2,8 +2,7 @@ const config = require("../config");
 const neo4j = require("neo4j-driver");
 
 module.exports = function (app) {
-  const session = config.session;
-  const session2 = config.session2;
+  const session_borrow = config.driver.session();
 
   //Get Borrowed Books Route
   app.get("/borrow/:userId", function (req, res) {
@@ -11,9 +10,14 @@ module.exports = function (app) {
     var pageNumber = +req.query.pagenumber;
     var itemsPerPage = +req.query.itemsperpage;
 
-    session
+    session_borrow
       .run(
-        "MATCH (a:User)-[r:Borrowed]->(b:Book) WHERE ID(a)=$userIdParam OPTIONAL MATCH ()-[d:Rated]->(b) RETURN b, avg(d.rating) AS rating, r SKIP $skipParam LIMIT $limitParam",
+        `MATCH (a:User)-[r:Borrowed]->(b:Book) 
+        WHERE ID(a)=$userIdParam 
+        OPTIONAL MATCH ()-[d:Rated]->(b) 
+        RETURN b, avg(d.rating) AS rating, r 
+        SKIP $skipParam 
+        LIMIT $limitParam`,
         {
           userIdParam: +userId,
           skipParam: neo4j.int(pageNumber * itemsPerPage),
@@ -21,9 +25,11 @@ module.exports = function (app) {
         }
       )
       .then(function (result) {
-        session
+        session_borrow
           .run(
-            "MATCH (a:User)-[r:Borrowed]->(b:Book) WHERE ID(a)=$userIdParam RETURN COUNT(b)",
+            `MATCH (a:User)-[r:Borrowed]->(b:Book) 
+            WHERE ID(a)=$userIdParam 
+            RETURN COUNT(b)`,
             {
               userIdParam: +userId,
             }
@@ -68,9 +74,12 @@ module.exports = function (app) {
     var date = req.body.date;
     var remainingExtensions = 2;
 
-    session
+    session_borrow
       .run(
-        "MATCH (a:User), (b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam CREATE (a)-[r:Borrowed {date:$dateParam, remainingExtensions:$remainingExtensionsParam }]->(b) RETURN r",
+        `MATCH (a:User), (b:Book) 
+        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+        CREATE (a)-[r:Borrowed {date:$dateParam, remainingExtensions:$remainingExtensionsParam }]->(b) 
+        RETURN r`,
         {
           userIdParam: +userId,
           bookIdParam: +bookId,
@@ -92,9 +101,12 @@ module.exports = function (app) {
     var bookId = req.body.bookId;
     var date = req.body.newDate;
 
-    session
+    session_borrow
       .run(
-        "MATCH (a:User)-[r:Borrowed]->(b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam SET r.remainingExtensions=r.remainingExtensions-1, r.date=$dateParam RETURN r",
+        `MATCH (a:User)-[r:Borrowed]->(b:Book) 
+        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+        SET r.remainingExtensions=r.remainingExtensions-1, r.date=$dateParam 
+        RETURN r`,
         {
           userIdParam: +userId,
           bookIdParam: +bookId,
@@ -114,9 +126,11 @@ module.exports = function (app) {
     var userId = +req.body.userId;
     var bookId = +req.body.bookId;
 
-    session2
+    session_borrow
       .run(
-        "MATCH (a:User)-[r:Borrowed]->(b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam DELETE r",
+        `MATCH (a:User)-[r:Borrowed]->(b:Book) 
+        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+        DELETE r`,
         {
           userIdParam: userId,
           bookIdParam: bookId,

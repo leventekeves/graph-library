@@ -2,8 +2,7 @@ const config = require("../config");
 const neo4j = require("neo4j-driver");
 
 module.exports = function (app) {
-  const session = config.session;
-  const session2 = config.session2;
+  const session_historyborrow = config.driver.session();
 
   // Add Borrowed Book to History Route
   app.post("/historyborrow", function (req, res) {
@@ -11,9 +10,12 @@ module.exports = function (app) {
     var bookId = req.body.bookId;
     var date = req.body.date;
 
-    session
+    session_historyborrow
       .run(
-        "MATCH (a:User), (b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam CREATE (a)-[t:HistoryBorrowed {date:$dateParam}]->(b) RETURN t",
+        `MATCH (a:User), (b:Book) 
+        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+        CREATE (a)-[t:HistoryBorrowed {date:$dateParam}]->(b) 
+        RETURN t`,
         {
           userIdParam: +userId,
           bookIdParam: +bookId,
@@ -34,9 +36,14 @@ module.exports = function (app) {
     var pageNumber = +req.query.pagenumber;
     var itemsPerPage = +req.query.itemsperpage;
 
-    session
+    session_historyborrow
       .run(
-        "MATCH (a:User)-[r:HistoryBorrowed]->(b:Book) WHERE ID(a)=$userIdParam OPTIONAL MATCH ()-[d:Rated]->(b) RETURN b, avg(d.rating) AS rating, r SKIP $skipParam LIMIT $limitParam",
+        `MATCH (a:User)-[r:HistoryBorrowed]->(b:Book) 
+        WHERE ID(a)=$userIdParam 
+        OPTIONAL MATCH ()-[d:Rated]->(b) 
+        RETURN b, avg(d.rating) AS rating, r 
+        SKIP $skipParam 
+        LIMIT $limitParam`,
         {
           userIdParam: +userId,
           skipParam: neo4j.int(pageNumber * itemsPerPage),
@@ -44,9 +51,11 @@ module.exports = function (app) {
         }
       )
       .then(function (result) {
-        session2
+        session_historyborrow
           .run(
-            "MATCH (a:User)-[r:HistoryBorrowed]->(b:Book) WHERE ID(a)=$userIdParam RETURN count(*)",
+            `MATCH (a:User)-[r:HistoryBorrowed]->(b:Book) 
+            WHERE ID(a)=$userIdParam 
+            RETURN count(*)`,
             {
               userIdParam: +userId,
             }

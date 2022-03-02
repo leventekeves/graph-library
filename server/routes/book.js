@@ -2,14 +2,12 @@ const config = require("../config");
 const neo4j = require("neo4j-driver");
 
 module.exports = function (app) {
-  const session = config.session;
-  const session2 = config.session2;
-  const session3 = config.session3;
+  const session_book = config.driver.session();
 
   // Get Books Route
   app.get("/book", function (req, res) {
     let query;
-    let query2;
+    let queryNumberOfBooks;
     let filters;
 
     const pageNumber = req.query.pagenumber;
@@ -17,9 +15,6 @@ module.exports = function (app) {
     const searchFilter = req.query.search;
     const yearFilter = req.query.year;
     const categoryFilter = req.query.category;
-
-    console.log(pageNumber);
-    console.log(itemsPerPage);
 
     if (searchFilter || yearFilter || categoryFilter) {
       filters = "WHERE ";
@@ -41,31 +36,34 @@ module.exports = function (app) {
         filters = filters + `AND NOT b.category = "" `;
       }
 
-      query =
-        "MATCH (b:Book) " +
-        filters +
-        "OPTIONAL MATCH (a)-[r:Rated]->(b) RETURN b, avg(r.rating) AS rating SKIP $skipParam LIMIT $limitParam";
-      query2 = "MATCH (b:Book)" + filters + " RETURN count(*)";
+      query = `MATCH (b:Book) ${filters} 
+        OPTIONAL MATCH (a)-[r:Rated]->(b) 
+        RETURN b, avg(r.rating) AS rating 
+        SKIP $skipParam 
+        LIMIT $limitParam`;
+      queryNumberOfBooks = `MATCH (b:Book) ${filters} RETURN count(*)`;
     } else {
-      query =
-        "MATCH (b:Book) OPTIONAL MATCH (a)-[r:Rated]->(b) RETURN b, avg(r.rating) AS rating SKIP $skipParam LIMIT $limitParam";
-      query2 = "MATCH (b:Book) RETURN count(*)";
+      query = `MATCH (b:Book) 
+        OPTIONAL MATCH (a)-[r:Rated]->(b) 
+        RETURN b, avg(r.rating) AS rating 
+        SKIP $skipParam 
+        LIMIT $limitParam`;
+      queryNumberOfBooks = "MATCH (b:Book) RETURN count(*)";
     }
 
-    session
+    session_book
       .run(query, {
         skipParam: neo4j.int(pageNumber * itemsPerPage),
         limitParam: neo4j.int(itemsPerPage),
       })
       .then(function (result) {
-        session2
-          .run(query2)
+        session_book
+          .run(queryNumberOfBooks)
           .then((result2) => {
             var bookArr = [];
             var numberOfBooks = result2.records[0]._fields[0].low;
 
             result.records.forEach(function (record) {
-              console.log(record._fields[0].properties.title);
               bookArr.push({
                 id: record._fields[0].identity.low,
                 author: record._fields[0].properties.author,
@@ -101,27 +99,35 @@ module.exports = function (app) {
     });
 
     var query;
-    var query2;
+    var queryNumberOfBooks;
     if (booksInList.length > 0) {
-      query =
-        "MATCH (b:Book) WHERE NOT ID(b) IN $booksInListParam OPTIONAL MATCH (a)-[r:Rated]->(b) RETURN b, avg(r.rating) AS rating SKIP $skipParam LIMIT $limitParam";
-      query2 =
-        "MATCH (b:Book) WHERE NOT ID(b) IN $booksInListParam RETURN count(b)";
+      query = `MATCH (b:Book) 
+        WHERE NOT ID(b) IN $booksInListParam 
+        OPTIONAL MATCH (a)-[r:Rated]->(b) 
+        RETURN b, avg(r.rating) AS rating 
+        SKIP $skipParam 
+        LIMIT $limitParam`;
+      queryNumberOfBooks = `MATCH (b:Book) 
+        WHERE NOT ID(b) IN $booksInListParam 
+        RETURN count(b)`;
     } else {
-      query =
-        "MATCH (b:Book) OPTIONAL MATCH (a)-[r:Rated]->(b) RETURN b, avg(r.rating) AS rating SKIP $skipParam LIMIT $limitParam";
-      query2 = "MATCH (b:Book) RETURN count(b)";
+      query = `MATCH (b:Book) 
+        OPTIONAL MATCH (a)-[r:Rated]->(b) 
+        RETURN b, avg(r.rating) AS rating 
+        SKIP $skipParam 
+        LIMIT $limitParam`;
+      queryNumberOfBooks = "MATCH (b:Book) RETURN count(b)";
     }
 
-    session
+    session_book
       .run(query, {
         booksInListParam: booksInList,
         skipParam: neo4j.int(pageNumber * itemsPerPage),
         limitParam: neo4j.int(itemsPerPage),
       })
       .then(function (result) {
-        session2
-          .run(query2, { booksInListParam: booksInList })
+        session_book
+          .run(queryNumberOfBooks, { booksInListParam: booksInList })
           .then((result2) => {
             var bookArr = [];
             var numberOfBooks = result2.records[0]._fields[0].low;
@@ -153,9 +159,12 @@ module.exports = function (app) {
   // Get Specific Book Route
   app.get("/book/:bookId", function (req, res) {
     var bookId = req.params.bookId;
-    session
+    session_book
       .run(
-        "MATCH (b:Book) WHERE ID(b)=$bookIdParam OPTIONAL MATCH (a:User)-[r:Rated]->(b:Book) RETURN b, avg(r.rating) AS rating , count(r.rating) AS numberOfRatings",
+        `MATCH (b:Book) 
+        WHERE ID(b)=$bookIdParam
+        OPTIONAL MATCH (a:User)-[r:Rated]->(b:Book) 
+        RETURN b, avg(r.rating) AS rating , count(r.rating) AS numberOfRatings`,
         {
           bookIdParam: +bookId,
         }
@@ -194,9 +203,13 @@ module.exports = function (app) {
     var stock = +req.body.stock;
     var year = +req.body.year;
 
-    session
+    session_book
       .run(
-        "CREATE(n:Book{author:$authorParam, title:$titleParam, category:$categoryParam, cover:$coverParam, description:$descriptionParam, pages:$pagesParam, stock:$stockParam, year:$yearParam }) RETURN n",
+        `CREATE(n:Book{author:$authorParam, title:$titleParam,
+           category:$categoryParam, cover:$coverParam, 
+           description:$descriptionParam, pages:$pagesParam, 
+           stock:$stockParam, year:$yearParam }) 
+        RETURN n`,
         {
           authorParam: author,
           titleParam: title,
@@ -220,10 +233,15 @@ module.exports = function (app) {
   app.delete("/book", function (req, res) {
     var bookId = +req.body.bookId;
 
-    session3
-      .run("MATCH (n:Book) WHERE ID(n)=$bookIdParam DETACH DELETE n", {
-        bookIdParam: bookId,
-      })
+    session_book
+      .run(
+        `MATCH (n:Book) 
+      WHERE ID(n)=$bookIdParam 
+      DETACH DELETE n`,
+        {
+          bookIdParam: bookId,
+        }
+      )
       .then(function (result) {
         res.json(result);
       })
@@ -244,9 +262,15 @@ module.exports = function (app) {
     var stock = +req.body.stock;
     var year = +req.body.year;
 
-    session
+    session_book
       .run(
-        "MATCH (n:Book) WHERE ID(n)=$idParam SET n.author=$authorParam, n.title=$titleParam, n.category=$categoryParam, n.cover=$coverParam, n.description=$descriptionParam, n.pages=$pagesParam, n.stock=$stockParam, n.year=$yearParam RETURN n",
+        `MATCH (n:Book) 
+        WHERE ID(n)=$idParam 
+        SET n.author=$authorParam, n.title=$titleParam, 
+        n.category=$categoryParam, n.cover=$coverParam, 
+        n.description=$descriptionParam, n.pages=$pagesParam, 
+        n.stock=$stockParam, n.year=$yearParam 
+        RETURN n`,
         {
           idParam: id,
           authorParam: author,
@@ -274,9 +298,12 @@ module.exports = function (app) {
     var rating = req.body.rating;
 
     //MATCH (a:User), (b:Book) WHERE ID(a)=0 AND ID(b)=3 CREATE (a)-[r:Rating {rating:5}]->(b) return r
-    session
+    session_book
       .run(
-        "MATCH (a:User), (b:Book) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam CREATE (a)-[r:Rated {rating:$ratingParam}]->(b) RETURN r",
+        `MATCH (a:User), (b:Book) 
+        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+        CREATE (a)-[r:Rated {rating:$ratingParam}]->(b) 
+        RETURN r`,
         {
           userIdParam: +userId,
           bookIdParam: +bookId,

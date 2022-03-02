@@ -9,8 +9,7 @@ import SubNavigation from "../Layout/SubNavigation";
 import LoadingSpinner from "../../utility/LoadingSpinner";
 import AdminNewBook from "../Admin/AdminNewBook";
 import classes from "./BookCard.module.css";
-
-import noCover from "../../utility/nocover.png";
+import noCover from "../../utility/nocover.png"
 
 async function getBooks(bookId) {
   const response = await fetch(`/book/${bookId}`);

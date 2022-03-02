@@ -1,8 +1,7 @@
 const config = require("../config");
 
 module.exports = function (app) {
-  const session = config.session;
-  const session2 = config.session;
+  const session_user = config.driver.session();
 
   // Signup User Route
   app.post("/user", function (req, res) {
@@ -11,11 +10,13 @@ module.exports = function (app) {
     var password = req.body.password;
     var access = "user";
 
-    //CREATE(n:User{name:$nameParam, email:$emailParam, password:$passwordParam, access:$accessParam }) RETURN n
-
-    session
+    session_user
       .run(
-        "MERGE (n:User {email: $emailParam}) ON CREATE SET n.name=$nameParam, n.password=$passwordParam, n.access=$accessParam, n.created = timestamp() ON MATCH SET n.alreadyexists = timestamp() RETURN n.created, n.alreadyexists",
+        `MERGE (n:User {email: $emailParam}) 
+        ON CREATE SET n.name=$nameParam, n.password=$passwordParam, 
+        n.access=$accessParam, n.created = timestamp() 
+        ON MATCH SET n.alreadyexists = timestamp() 
+        RETURN n.created, n.alreadyexists`,
         {
           nameParam: name,
           emailParam: email,
@@ -40,9 +41,12 @@ module.exports = function (app) {
     var email = req.body.email;
     var password = req.body.password;
 
-    session
+    session_user
       .run(
-        "MATCH (n:User) WHERE n.email=$emailParam OPTIONAL MATCH (n:User)-[r]->(b) RETURN n, r, b",
+        `MATCH (n:User) 
+        WHERE n.email=$emailParam 
+        OPTIONAL MATCH (n:User)-[r]->(b) 
+        RETURN n, r, b`,
         {
           emailParam: email,
         }
@@ -121,7 +125,7 @@ module.exports = function (app) {
 
   // Get Users Route
   app.get("/user", function (req, res) {
-    session
+    session_user
       .run("MATCH (n:User) RETURN n")
       .then(function (result) {
         var userArr = [];
@@ -144,10 +148,15 @@ module.exports = function (app) {
   // Ban User Route
   app.delete("/user/:userId", function (req, res) {
     var userId = req.params.userId;
-    session
-      .run("MATCH (n:User) WHERE ID(n)=$userIdParam DETACH DELETE n", {
-        userIdParam: +userId,
-      })
+    session_user
+      .run(
+        `MATCH (n:User) 
+      WHERE ID(n)=$userIdParam 
+      DETACH DELETE n`,
+        {
+          userIdParam: +userId,
+        }
+      )
       .then(function (result) {
         res.json(result);
       })
@@ -161,10 +170,15 @@ module.exports = function (app) {
     var userId = req.body.userId;
     var currentPassword = req.body.currentPassword;
 
-    session
-      .run("MATCH(n:User) WHERE ID(n)=$userIdParam RETURN n", {
-        userIdParam: userId,
-      })
+    session_user
+      .run(
+        `MATCH(n:User) 
+      WHERE ID(n)=$userIdParam 
+      RETURN n`,
+        {
+          userIdParam: userId,
+        }
+      )
       .then(function (result) {
         if (
           result.records[0]._fields[0].properties.password === currentPassword
@@ -177,9 +191,12 @@ module.exports = function (app) {
             req.body.password ||
             result.records[0]._fields[0].properties.password;
 
-          session2
+          session_user
             .run(
-              "MATCH(n:User) WHERE ID(n)=$userIdParam SET n.name=$nameParam, n.email=$emailParam, n.password=$passwordParam RETURN n",
+              `MATCH(n:User) 
+              WHERE ID(n)=$userIdParam 
+              SET n.name=$nameParam, n.email=$emailParam, n.password=$passwordParam 
+              RETURN n`,
               {
                 userIdParam: userId,
                 nameParam: name,
@@ -194,7 +211,7 @@ module.exports = function (app) {
               console.log(error);
             });
         } else {
-          res.sendStatus(401);
+          res.sendStatus(400);
         }
       })
       .catch(function (error) {

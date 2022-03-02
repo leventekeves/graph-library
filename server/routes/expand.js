@@ -2,23 +2,26 @@ const config = require("../config");
 const neo4j = require("neo4j-driver");
 
 module.exports = function (app) {
-  const session = config.session;
+  const session_expand = config.driver.session();
 
   // Get ExpandBooks Route
   app.get("/expand", function (req, res) {
     var pageNumber = +req.query.pagenumber;
     var itemsPerPage = +req.query.itemsperpage;
 
-    session
+    session_expand
       .run(
-        "MATCH (b:ExpandBook) RETURN b, count(b) SKIP $skipParam LIMIT $limitParam",
+        `MATCH (b:ExpandBook) 
+        RETURN b, count(b) 
+        SKIP $skipParam 
+        LIMIT $limitParam`,
         {
           skipParam: neo4j.int(pageNumber * itemsPerPage),
           limitParam: neo4j.int(itemsPerPage),
         }
       )
       .then(function (result) {
-        session
+        session_expand
           .run("MATCH (b:ExpandBook) RETURN count(DISTINCT(b))")
           .then(function (result2) {
             var bookArr = [];
@@ -61,9 +64,14 @@ module.exports = function (app) {
 
     var userId = +req.body.userId;
 
-    session
+    session_expand
       .run(
-        "MATCH (a:User) WHERE ID(a)=$userIdParam CREATE (a)-[r:Voted]->(b:ExpandBook{author:$authorParam, title:$titleParam, category:$categoryParam, cover:$coverParam, description:$descriptionParam, pages:$pagesParam, year:$yearParam})",
+        `MATCH (a:User) 
+        WHERE ID(a)=$userIdParam 
+        CREATE (a)-[r:Voted]->(b:ExpandBook{author:$authorParam, 
+          title:$titleParam, category:$categoryParam, 
+          cover:$coverParam, description:$descriptionParam, 
+          pages:$pagesParam, year:$yearParam})`,
         {
           authorParam: author,
           titleParam: title,
@@ -88,9 +96,11 @@ module.exports = function (app) {
     var userId = req.body.userId;
     var bookId = req.body.bookId;
 
-    session
+    session_expand
       .run(
-        "MATCH (a:User), (b:ExpandBook) WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam MERGE (a)-[r:Voted]->(b)",
+        `MATCH (a:User), (b:ExpandBook) 
+        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+        MERGE (a)-[r:Voted]->(b)`,
         {
           userIdParam: +userId,
           bookIdParam: +bookId,
@@ -108,10 +118,15 @@ module.exports = function (app) {
   app.delete("/expand", function (req, res) {
     var bookId = req.body.bookId;
 
-    session
-      .run("MATCH (n:ExpandBook) WHERE ID(n)=$bookIdParam DETACH DELETE n", {
-        bookIdParam: +bookId,
-      })
+    session_expand
+      .run(
+        `MATCH (n:ExpandBook) 
+      WHERE ID(n)=$bookIdParam 
+      DETACH DELETE n`,
+        {
+          bookIdParam: +bookId,
+        }
+      )
       .then(function (result) {
         res.json(result);
       })

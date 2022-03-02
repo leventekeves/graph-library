@@ -4,7 +4,7 @@ import AuthContext from "../../store/auth-context";
 import classes from "./ListSelector.module.css";
 
 async function fetchLists(userId) {
-  const response = await fetch(`/list/user?userid=${userId}`);
+  const response = await fetch(`/list/user/${userId}`);
   const data = await response.json();
 
   if (!response.ok) {

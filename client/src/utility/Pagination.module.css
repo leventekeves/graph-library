@@ -16,23 +16,23 @@
   width: 30px;
   display: flex;
   justify-content: center;
-  background-color: white;
+  background-color: #ffdea4;
 }
 
 .lia {
   text-decoration: none;
-  color: #337ab7;
+  color: black;
   font-size: 16px;
   cursor: pointer;
 }
 
 .activelinkclass {
-  color: white;
+  color: black;
 }
 .activeclass {
-  background-color: #337ab7;
+  background-color: #d79771;
 }
 
 .lia:hover {
-  color: red;
+  color: #b05b3b;
 }

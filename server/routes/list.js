@@ -2,9 +2,7 @@ const config = require("../config");
 const neo4j = require("neo4j-driver");
 
 module.exports = function (app) {
-  const session = config.session;
-  const session2 = config.session2;
-  const session3 = config.session3;
+  const session_list = config.driver.session();
 
   //Get Lists Route
   app.get("/list", function (req, res) {
@@ -13,8 +11,11 @@ module.exports = function (app) {
     var pageNumber = +req.query.pagenumber;
     var itemsPerPage = +req.query.itemsperpage;
 
-    var query =
-      "MATCH ()-[r:Created]->(b:List) MATCH (b)-[d:Contains]->(e:Book) OPTIONAL MATCH ()-[t:Recommended]->(b) RETURN  b, r,  count(distinct(e)) as numberOfBooks, count(distinct(t)) as numberOfRecommendations";
+    var query = `
+    MATCH ()-[r:Created]->(b:List) 
+    MATCH (b)-[d:Contains]->(e:Book) 
+    OPTIONAL MATCH ()-[t:Recommended]->(b) 
+    RETURN  b, r,  count(distinct(e)) as numberOfBooks, count(distinct(t)) as numberOfRecommendations`;
 
     if (sort === "newest") query = query + " ORDER BY(r.date) DESC";
     if (sort === "oldest") query = query + " ORDER BY(r.date)";
@@ -23,15 +24,16 @@ module.exports = function (app) {
 
     query = query + " SKIP $skipParam LIMIT $limitParam";
 
-    session
+    session_list
       .run(query, {
         skipParam: neo4j.int(pageNumber * itemsPerPage),
         limitParam: neo4j.int(itemsPerPage),
       })
       .then(function (result) {
-        session2
+        session_list
           .run(
-            "MATCH ()-[r:Created]->(b:List)-[d:Contains]->(e:Book) RETURN COUNT(DISTINCT(b))"
+            `MATCH ()-[r:Created]->(b:List)-[d:Contains]->(e:Book) 
+            RETURN COUNT(DISTINCT(b))`
           )
           .then(function (result2) {
             var numberOfLists = result2.records[0]._fields[0].low;
@@ -62,11 +64,15 @@ module.exports = function (app) {
   });
 
   //Get User's Lists Route
-  app.get("/list/user", function (req, res) {
-    const userId = req.query.userid;
-    session
+  app.get("/list/user/:userId", function (req, res) {
+    const userId = req.params.userId;
+
+    session_list
       .run(
-        "MATCH (a:User)-[r:Created]->(b:List) WHERE ID(a)=$userIdParam OPTIONAL MATCH ()-[d:Recommended]->(b) RETURN b, count(d) AS Recommendations, r",
+        `MATCH (a:User)-[r:Created]->(b:List) 
+        WHERE ID(a)=$userIdParam 
+        OPTIONAL MATCH ()-[d:Recommended]->(b) 
+        RETURN b, count(d) AS Recommendations, r`,
         {
           userIdParam: +userId,
         }
@@ -97,9 +103,12 @@ module.exports = function (app) {
     var pageNumber = +req.query.pagenumber;
     var itemsPerPage = +req.query.itemsperpage;
 
-    session3
+    session_list
       .run(
-        "MATCH ()-[r:Created]->(b:List)-[d:Contains]->(e:Book) WHERE ID(b)=$listIdParam OPTIONAL MATCH ()-[f:Recommended]->(b) RETURN b, count(f) AS Recommendations, r, e",
+        `MATCH ()-[r:Created]->(b:List)-[d:Contains]->(e:Book) 
+        WHERE ID(b)=$listIdParam 
+        OPTIONAL MATCH ()-[f:Recommended]->(b) 
+        RETURN b, count(f) AS Recommendations, r, e`,
         {
           listIdParam: listId,
         }
@@ -107,9 +116,14 @@ module.exports = function (app) {
       .then(function (result) {
         var listArr = [];
 
-        session
+        session_list
           .run(
-            "MATCH (a:List)-[r:Contains]->(b:Book) WHERE ID(a)=$listIdParam OPTIONAL MATCH (c)-[d:Rated]->(b) RETURN b, avg(d.rating) AS rating SKIP $skipParam LIMIT $limitParam",
+            `MATCH (a:List)-[r:Contains]->(b:Book) 
+            WHERE ID(a)=$listIdParam 
+            OPTIONAL MATCH (c)-[d:Rated]->(b) 
+            RETURN b, avg(d.rating) AS rating 
+            SKIP $skipParam 
+            LIMIT $limitParam`,
             {
               listIdParam: listId,
               skipParam: neo4j.int(pageNumber * itemsPerPage),
@@ -117,9 +131,11 @@ module.exports = function (app) {
             }
           )
           .then(function (result2) {
-            session
+            session_list
               .run(
-                "MATCH (a:List)-[r:Contains]->(b:Book) WHERE ID(a)=$listIdParam RETURN count(b) AS numberOfBooks",
+                `MATCH (a:List)-[r:Contains]->(b:Book) 
+                WHERE ID(a)=$listIdParam 
+                RETURN count(b) AS numberOfBooks`,
                 {
                   listIdParam: listId,
                 }
@@ -180,9 +196,12 @@ module.exports = function (app) {
     var name = req.body.name;
     var description = req.body.description;
 
-    session
+    session_list
       .run(
-        "MATCH (a:User) WHERE ID(a)=$userIdParam CREATE (a)-[r:Created {date:$dateParam}]->(b:List {name:$nameParam, description:$descriptionParam}) RETURN r",
+        `MATCH (a:User) 
+        WHERE ID(a)=$userIdParam 
+        CREATE (a)-[r:Created {date:$dateParam}]->(b:List {name:$nameParam, description:$descriptionParam}) 
+        RETURN r`,
         {
           userIdParam: userId,
           dateParam: date,
@@ -202,10 +221,15 @@ module.exports = function (app) {
   app.delete("/list", function (req, res) {
     var listId = +req.body.listId;
 
-    session
-      .run("MATCH (n:List) WHERE ID(n)=$listIdParam DETACH DELETE n", {
-        listIdParam: listId,
-      })
+    session_list
+      .run(
+        `MATCH (n:List) 
+      WHERE ID(n)=$listIdParam 
+      DETACH DELETE n`,
+        {
+          listIdParam: listId,
+        }
+      )
       .then(function (result) {
         res.json(result);
       })
@@ -219,9 +243,11 @@ module.exports = function (app) {
     var listId = req.body.listId;
     var bookId = req.body.bookId;
 
-    session
+    session_list
       .run(
-        "MATCH (a:List),(b:Book) WHERE ID(a)=$listIdParam AND ID(b)=$bookIdParam CREATE (a)-[r:Contains]->(b)",
+        `MATCH (a:List),(b:Book) 
+        WHERE ID(a)=$listIdParam AND ID(b)=$bookIdParam 
+        CREATE (a)-[r:Contains]->(b)`,
         {
           listIdParam: +listId,
           bookIdParam: +bookId,
@@ -240,9 +266,11 @@ module.exports = function (app) {
     var listId = req.body.listId;
     var bookId = req.body.bookId;
 
-    session
+    session_list
       .run(
-        "MATCH (a:List)-[r:Contains]->(b:Book) WHERE ID(a)=$listIdParam AND ID(b)=$bookIdParam DELETE r",
+        `MATCH (a:List)-[r:Contains]->(b:Book) 
+        WHERE ID(a)=$listIdParam AND ID(b)=$bookIdParam 
+        DELETE r`,
         {
           listIdParam: +listId,
           bookIdParam: +bookId,
@@ -261,9 +289,11 @@ module.exports = function (app) {
     var userId = req.body.userId;
     var listId = req.body.listId;
 
-    session
+    session_list
       .run(
-        "MATCH (a:User), (b:List) WHERE ID(a)=$userIdParam AND ID(b)=$listIdParam CREATE (a)-[r:Recommended]->(b)",
+        `MATCH (a:User), (b:List) 
+        WHERE ID(a)=$userIdParam AND ID(b)=$listIdParam 
+        CREATE (a)-[r:Recommended]->(b)`,
         {
           userIdParam: +userId,
           listIdParam: +listId,
