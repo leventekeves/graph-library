@@ -10,30 +10,32 @@ module.exports = function (app) {
     var pageNumber = +req.query.pagenumber;
     var itemsPerPage = +req.query.itemsperpage;
 
+    const query = `
+      MATCH (a:User)-[r:Borrowed]->(b:Book) 
+      WHERE ID(a)=$userIdParam 
+      OPTIONAL MATCH ()-[d:Rated]->(b) 
+      RETURN b, avg(d.rating) AS rating, r 
+      SKIP $skipParam 
+      LIMIT $limitParam`;
+    const queryParams = {
+      userIdParam: +userId,
+      skipParam: neo4j.int(pageNumber * itemsPerPage),
+      limitParam: neo4j.int(itemsPerPage),
+    };
+
+    const queryNumberOfBooks = `
+      MATCH (a:User)-[r:Borrowed]->(b:Book) 
+      WHERE ID(a)=$userIdParam 
+      RETURN COUNT(b)`;
+    const queryNumberOfBooksParams = {
+      userIdParam: +userId,
+    };
+
     session_borrow
-      .run(
-        `MATCH (a:User)-[r:Borrowed]->(b:Book) 
-        WHERE ID(a)=$userIdParam 
-        OPTIONAL MATCH ()-[d:Rated]->(b) 
-        RETURN b, avg(d.rating) AS rating, r 
-        SKIP $skipParam 
-        LIMIT $limitParam`,
-        {
-          userIdParam: +userId,
-          skipParam: neo4j.int(pageNumber * itemsPerPage),
-          limitParam: neo4j.int(itemsPerPage),
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         session_borrow
-          .run(
-            `MATCH (a:User)-[r:Borrowed]->(b:Book) 
-            WHERE ID(a)=$userIdParam 
-            RETURN COUNT(b)`,
-            {
-              userIdParam: +userId,
-            }
-          )
+          .run(queryNumberOfBooks, queryNumberOfBooksParams)
           .then(function (result2) {
             var numberOfBooks = result2.records[0]._fields[0].low;
             var bookArr = [];
@@ -74,19 +76,20 @@ module.exports = function (app) {
     var date = req.body.date;
     var remainingExtensions = 2;
 
+    const query = `
+      MATCH (a:User), (b:Book) 
+      WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+      CREATE (a)-[r:Borrowed {date:$dateParam, remainingExtensions:$remainingExtensionsParam }]->(b) 
+      RETURN r`;
+    const queryParams = {
+      userIdParam: +userId,
+      bookIdParam: +bookId,
+      dateParam: date,
+      remainingExtensionsParam: remainingExtensions,
+    };
+
     session_borrow
-      .run(
-        `MATCH (a:User), (b:Book) 
-        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
-        CREATE (a)-[r:Borrowed {date:$dateParam, remainingExtensions:$remainingExtensionsParam }]->(b) 
-        RETURN r`,
-        {
-          userIdParam: +userId,
-          bookIdParam: +bookId,
-          dateParam: date,
-          remainingExtensionsParam: remainingExtensions,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         res.redirect("/");
       })
@@ -101,18 +104,18 @@ module.exports = function (app) {
     var bookId = req.body.bookId;
     var date = req.body.newDate;
 
+    const query = `MATCH (a:User)-[r:Borrowed]->(b:Book) 
+    WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+    SET r.remainingExtensions=r.remainingExtensions-1, r.date=$dateParam 
+    RETURN r`;
+    const queryParams = {
+      userIdParam: +userId,
+      bookIdParam: +bookId,
+      dateParam: date,
+    };
+
     session_borrow
-      .run(
-        `MATCH (a:User)-[r:Borrowed]->(b:Book) 
-        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
-        SET r.remainingExtensions=r.remainingExtensions-1, r.date=$dateParam 
-        RETURN r`,
-        {
-          userIdParam: +userId,
-          bookIdParam: +bookId,
-          dateParam: date,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         res.redirect("/");
       })
@@ -126,16 +129,17 @@ module.exports = function (app) {
     var userId = +req.body.userId;
     var bookId = +req.body.bookId;
 
+    const query = `
+      MATCH (a:User)-[r:Borrowed]->(b:Book) 
+      WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+      DELETE r`;
+    const queryParams = {
+      userIdParam: userId,
+      bookIdParam: bookId,
+    };
+
     session_borrow
-      .run(
-        `MATCH (a:User)-[r:Borrowed]->(b:Book) 
-        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
-        DELETE r`,
-        {
-          userIdParam: userId,
-          bookIdParam: bookId,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         res.json(result);
       })

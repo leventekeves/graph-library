@@ -7,15 +7,16 @@ module.exports = function (app) {
   app.get("/comment/:bookId", function (req, res) {
     var bookId = req.params.bookId;
 
+    const query = `
+      MATCH (a:User)-[r:Comment]->(b:Book) 
+      WHERE ID(b)=$bookIdParam 
+      RETURN r, a`;
+    const queryParams = {
+      bookIdParam: +bookId,
+    };
+
     session_comment
-      .run(
-        `MATCH (a:User)-[r:Comment]->(b:Book) 
-        WHERE ID(b)=$bookIdParam 
-        RETURN r, a`,
-        {
-          bookIdParam: +bookId,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         var commentArr = [];
 
@@ -42,19 +43,20 @@ module.exports = function (app) {
     var comment = req.body.comment;
     var date = req.body.date;
 
+    const query = `
+      MATCH (a:User), (b:Book) 
+      WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+      CREATE (a)-[r:Comment {comment:$commentParam, date:$dateParam}]->(b) 
+      RETURN r`;
+    const queryParams = {
+      userIdParam: +userId,
+      bookIdParam: +bookId,
+      commentParam: comment,
+      dateParam: date,
+    };
+
     session_comment
-      .run(
-        `MATCH (a:User), (b:Book) 
-        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
-        CREATE (a)-[r:Comment {comment:$commentParam, date:$dateParam}]->(b) 
-        RETURN r`,
-        {
-          userIdParam: +userId,
-          bookIdParam: +bookId,
-          commentParam: comment,
-          dateParam: date,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         if (result.records[0]._fields[0].identity.low) {
           res.sendStatus(200);

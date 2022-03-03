@@ -10,30 +10,32 @@ module.exports = function (app) {
     var pageNumber = +req.query.pagenumber;
     var itemsPerPage = +req.query.itemsperpage;
 
+    const query = `
+      MATCH (a:User)-[r:Bookmarked]->(b:Book) 
+      WHERE ID(a)=$userIdParam 
+      OPTIONAL MATCH ()-[d:Rated]->(b) 
+      RETURN b, avg(d.rating) AS rating 
+      SKIP $skipParam 
+      LIMIT $limitParam`;
+    const queryParams = {
+      userIdParam: +userId,
+      skipParam: neo4j.int(pageNumber * itemsPerPage),
+      limitParam: neo4j.int(itemsPerPage),
+    };
+
+    const queryNumberOfBooks = `
+      MATCH (a:User)-[r:Bookmarked]->(b:Book) 
+      WHERE ID(a)=$userIdParam 
+      RETURN COUNT(b)`;
+    const queryNumberOfBooksParams = {
+      userIdParam: +userId,
+    };
+
     session_bookmark
-      .run(
-        `MATCH (a:User)-[r:Bookmarked]->(b:Book) 
-        WHERE ID(a)=$userIdParam 
-        OPTIONAL MATCH ()-[d:Rated]->(b) 
-        RETURN b, avg(d.rating) AS rating 
-        SKIP $skipParam 
-        LIMIT $limitParam`,
-        {
-          userIdParam: +userId,
-          skipParam: neo4j.int(pageNumber * itemsPerPage),
-          limitParam: neo4j.int(itemsPerPage),
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         session_bookmark
-          .run(
-            `MATCH (a:User)-[r:Bookmarked]->(b:Book) 
-            WHERE ID(a)=$userIdParam 
-            RETURN COUNT(b)`,
-            {
-              userIdParam: +userId,
-            }
-          )
+          .run(queryNumberOfBooks, queryNumberOfBooksParams)
           .then(function (result2) {
             var bookArr = [];
             var numberOfBooks = result2.records[0]._fields[0].low;
@@ -70,17 +72,18 @@ module.exports = function (app) {
     var userId = req.body.userId;
     var bookId = req.body.bookId;
 
+    const query = `
+      MATCH (a:User), (b:Book) 
+      WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+      CREATE (a)-[r:Bookmarked]->(b) 
+      RETURN r`;
+    const queryParams = {
+      userIdParam: +userId,
+      bookIdParam: +bookId,
+    };
+
     session_bookmark
-      .run(
-        `MATCH (a:User), (b:Book) 
-        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
-        CREATE (a)-[r:Bookmarked]->(b) 
-        RETURN r`,
-        {
-          userIdParam: +userId,
-          bookIdParam: +bookId,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         res.redirect("/");
       })
@@ -94,16 +97,17 @@ module.exports = function (app) {
     var userId = req.body.userId;
     var bookId = req.body.bookId;
 
+    const query = `
+      MATCH (a:User)-[r:Bookmarked]->(b:Book) 
+      WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
+      DELETE r`;
+    const queryParams = {
+      userIdParam: +userId,
+      bookIdParam: +bookId,
+    };
+
     session_bookmark
-      .run(
-        `MATCH (a:User)-[r:Bookmarked]->(b:Book) 
-        WHERE ID(a)=$userIdParam AND ID(b)=$bookIdParam 
-        DELETE r`,
-        {
-          userIdParam: +userId,
-          bookIdParam: +bookId,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         res.json(result);
       })

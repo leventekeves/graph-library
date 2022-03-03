@@ -16,6 +16,10 @@ module.exports = function (app) {
     MATCH (b)-[d:Contains]->(e:Book) 
     OPTIONAL MATCH ()-[t:Recommended]->(b) 
     RETURN  b, r,  count(distinct(e)) as numberOfBooks, count(distinct(t)) as numberOfRecommendations`;
+    const queryParams = {
+      skipParam: neo4j.int(pageNumber * itemsPerPage),
+      limitParam: neo4j.int(itemsPerPage),
+    };
 
     if (sort === "newest") query = query + " ORDER BY(r.date) DESC";
     if (sort === "oldest") query = query + " ORDER BY(r.date)";
@@ -24,17 +28,15 @@ module.exports = function (app) {
 
     query = query + " SKIP $skipParam LIMIT $limitParam";
 
+    const queryNumberOfLists = `
+      MATCH ()-[r:Created]->(b:List)-[d:Contains]->(e:Book) 
+      RETURN COUNT(DISTINCT(b))`;
+
     session_list
-      .run(query, {
-        skipParam: neo4j.int(pageNumber * itemsPerPage),
-        limitParam: neo4j.int(itemsPerPage),
-      })
+      .run(query, queryParams)
       .then(function (result) {
         session_list
-          .run(
-            `MATCH ()-[r:Created]->(b:List)-[d:Contains]->(e:Book) 
-            RETURN COUNT(DISTINCT(b))`
-          )
+          .run(queryNumberOfLists)
           .then(function (result2) {
             var numberOfLists = result2.records[0]._fields[0].low;
 
@@ -67,16 +69,17 @@ module.exports = function (app) {
   app.get("/list/user/:userId", function (req, res) {
     const userId = req.params.userId;
 
+    const query = `
+      MATCH (a:User)-[r:Created]->(b:List) 
+      WHERE ID(a)=$userIdParam 
+      OPTIONAL MATCH ()-[d:Recommended]->(b) 
+      RETURN b, count(d) AS Recommendations, r`;
+    const queryParams = {
+      userIdParam: +userId,
+    };
+
     session_list
-      .run(
-        `MATCH (a:User)-[r:Created]->(b:List) 
-        WHERE ID(a)=$userIdParam 
-        OPTIONAL MATCH ()-[d:Recommended]->(b) 
-        RETURN b, count(d) AS Recommendations, r`,
-        {
-          userIdParam: +userId,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         var listArr = [];
 
@@ -103,43 +106,46 @@ module.exports = function (app) {
     var pageNumber = +req.query.pagenumber;
     var itemsPerPage = +req.query.itemsperpage;
 
+    const queryList = `
+      MATCH ()-[r:Created]->(b:List)-[d:Contains]->(e:Book) 
+      WHERE ID(b)=$listIdParam 
+      OPTIONAL MATCH ()-[f:Recommended]->(b) 
+      RETURN b, count(f) AS Recommendations, r, e`;
+    const queryListParams = {
+      listIdParam: listId,
+    };
+
+    const queryBooks = `
+      MATCH (a:List)-[r:Contains]->(b:Book) 
+      WHERE ID(a)=$listIdParam 
+      OPTIONAL MATCH (c)-[d:Rated]->(b) 
+      RETURN b, avg(d.rating) AS rating 
+      SKIP $skipParam 
+      LIMIT $limitParam`;
+    const queryBooksParams = {
+      listIdParam: listId,
+      skipParam: neo4j.int(pageNumber * itemsPerPage),
+      limitParam: neo4j.int(itemsPerPage),
+    };
+
+    const queryNumberOfBooks = `
+      MATCH (a:List)-[r:Contains]->(b:Book) 
+      WHERE ID(a)=$listIdParam 
+      RETURN count(b) AS numberOfBooks`;
+    const queryNumberOfBooksParams = {
+      listIdParam: listId,
+    };
+
     session_list
-      .run(
-        `MATCH ()-[r:Created]->(b:List)-[d:Contains]->(e:Book) 
-        WHERE ID(b)=$listIdParam 
-        OPTIONAL MATCH ()-[f:Recommended]->(b) 
-        RETURN b, count(f) AS Recommendations, r, e`,
-        {
-          listIdParam: listId,
-        }
-      )
+      .run(queryList, queryListParams)
       .then(function (result) {
         var listArr = [];
 
         session_list
-          .run(
-            `MATCH (a:List)-[r:Contains]->(b:Book) 
-            WHERE ID(a)=$listIdParam 
-            OPTIONAL MATCH (c)-[d:Rated]->(b) 
-            RETURN b, avg(d.rating) AS rating 
-            SKIP $skipParam 
-            LIMIT $limitParam`,
-            {
-              listIdParam: listId,
-              skipParam: neo4j.int(pageNumber * itemsPerPage),
-              limitParam: neo4j.int(itemsPerPage),
-            }
-          )
+          .run(queryBooks, queryBooksParams)
           .then(function (result2) {
             session_list
-              .run(
-                `MATCH (a:List)-[r:Contains]->(b:Book) 
-                WHERE ID(a)=$listIdParam 
-                RETURN count(b) AS numberOfBooks`,
-                {
-                  listIdParam: listId,
-                }
-              )
+              .run(queryNumberOfBooks, queryNumberOfBooksParams)
               .then(function (result3) {
                 var bookArr = [];
                 var numberOfBooks = result3.records[0]._fields[0].low;
@@ -196,19 +202,20 @@ module.exports = function (app) {
     var name = req.body.name;
     var description = req.body.description;
 
+    const query = `
+      MATCH (a:User) 
+      WHERE ID(a)=$userIdParam 
+      CREATE (a)-[r:Created {date:$dateParam}]->(b:List {name:$nameParam, description:$descriptionParam}) 
+      RETURN r`;
+    const queryParams = {
+      userIdParam: userId,
+      dateParam: date,
+      nameParam: name,
+      descriptionParam: description,
+    };
+
     session_list
-      .run(
-        `MATCH (a:User) 
-        WHERE ID(a)=$userIdParam 
-        CREATE (a)-[r:Created {date:$dateParam}]->(b:List {name:$nameParam, description:$descriptionParam}) 
-        RETURN r`,
-        {
-          userIdParam: userId,
-          dateParam: date,
-          nameParam: name,
-          descriptionParam: description,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         res.sendStatus(200);
       })
@@ -221,15 +228,16 @@ module.exports = function (app) {
   app.delete("/list", function (req, res) {
     var listId = +req.body.listId;
 
-    session_list
-      .run(
-        `MATCH (n:List) 
+    const query = `
+      MATCH (n:List) 
       WHERE ID(n)=$listIdParam 
-      DETACH DELETE n`,
-        {
-          listIdParam: listId,
-        }
-      )
+      DETACH DELETE n`;
+    const queryParams = {
+      listIdParam: listId,
+    };
+
+    session_list
+      .run(query, queryParams)
       .then(function (result) {
         res.json(result);
       })
@@ -243,16 +251,17 @@ module.exports = function (app) {
     var listId = req.body.listId;
     var bookId = req.body.bookId;
 
+    const query = `
+      MATCH (a:List),(b:Book) 
+      WHERE ID(a)=$listIdParam AND ID(b)=$bookIdParam 
+      CREATE (a)-[r:Contains]->(b)`;
+    const queryParams = {
+      listIdParam: +listId,
+      bookIdParam: +bookId,
+    };
+
     session_list
-      .run(
-        `MATCH (a:List),(b:Book) 
-        WHERE ID(a)=$listIdParam AND ID(b)=$bookIdParam 
-        CREATE (a)-[r:Contains]->(b)`,
-        {
-          listIdParam: +listId,
-          bookIdParam: +bookId,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         res.redirect("/");
       })
@@ -266,16 +275,17 @@ module.exports = function (app) {
     var listId = req.body.listId;
     var bookId = req.body.bookId;
 
+    const query = `
+      MATCH (a:List)-[r:Contains]->(b:Book) 
+      WHERE ID(a)=$listIdParam AND ID(b)=$bookIdParam 
+      DELETE r`;
+    const queryParams = {
+      listIdParam: +listId,
+      bookIdParam: +bookId,
+    };
+
     session_list
-      .run(
-        `MATCH (a:List)-[r:Contains]->(b:Book) 
-        WHERE ID(a)=$listIdParam AND ID(b)=$bookIdParam 
-        DELETE r`,
-        {
-          listIdParam: +listId,
-          bookIdParam: +bookId,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         res.json(result);
       })
@@ -289,16 +299,17 @@ module.exports = function (app) {
     var userId = req.body.userId;
     var listId = req.body.listId;
 
+    const query = `
+      MATCH (a:User), (b:List) 
+      WHERE ID(a)=$userIdParam AND ID(b)=$listIdParam 
+      CREATE (a)-[r:Recommended]->(b)`;
+    const queryParams = {
+      userIdParam: +userId,
+      listIdParam: +listId,
+    };
+
     session_list
-      .run(
-        `MATCH (a:User), (b:List) 
-        WHERE ID(a)=$userIdParam AND ID(b)=$listIdParam 
-        CREATE (a)-[r:Recommended]->(b)`,
-        {
-          userIdParam: +userId,
-          listIdParam: +listId,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         res.redirect("/");
       })

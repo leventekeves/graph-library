@@ -10,20 +10,21 @@ module.exports = function (app) {
     var password = req.body.password;
     var access = "user";
 
+    const query = `
+      MERGE (n:User {email: $emailParam}) 
+      ON CREATE SET n.name=$nameParam, n.password=$passwordParam, 
+      n.access=$accessParam, n.created = timestamp() 
+      ON MATCH SET n.alreadyexists = timestamp() 
+      RETURN n.created, n.alreadyexists`;
+    const queryParams = {
+      nameParam: name,
+      emailParam: email,
+      passwordParam: password,
+      accessParam: access,
+    };
+
     session_user
-      .run(
-        `MERGE (n:User {email: $emailParam}) 
-        ON CREATE SET n.name=$nameParam, n.password=$passwordParam, 
-        n.access=$accessParam, n.created = timestamp() 
-        ON MATCH SET n.alreadyexists = timestamp() 
-        RETURN n.created, n.alreadyexists`,
-        {
-          nameParam: name,
-          emailParam: email,
-          passwordParam: password,
-          accessParam: access,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         if (result.records[0]._fields[1]?.low) {
           res.sendStatus(400);
@@ -41,16 +42,17 @@ module.exports = function (app) {
     var email = req.body.email;
     var password = req.body.password;
 
+    const query = `
+      MATCH (n:User) 
+      WHERE n.email=$emailParam 
+      OPTIONAL MATCH (n:User)-[r]->(b) 
+      RETURN n, r, b`;
+    const queryParams = {
+      emailParam: email,
+    };
+
     session_user
-      .run(
-        `MATCH (n:User) 
-        WHERE n.email=$emailParam 
-        OPTIONAL MATCH (n:User)-[r]->(b) 
-        RETURN n, r, b`,
-        {
-          emailParam: email,
-        }
-      )
+      .run(query, queryParams)
       .then(function (result) {
         if (
           result.records[0]?._fields[0]?.properties?.password &&
@@ -125,8 +127,12 @@ module.exports = function (app) {
 
   // Get Users Route
   app.get("/user", function (req, res) {
+    const query = `
+    MATCH (n:User) 
+    RETURN n`;
+
     session_user
-      .run("MATCH (n:User) RETURN n")
+      .run(query)
       .then(function (result) {
         var userArr = [];
 
@@ -148,15 +154,17 @@ module.exports = function (app) {
   // Ban User Route
   app.delete("/user/:userId", function (req, res) {
     var userId = req.params.userId;
-    session_user
-      .run(
-        `MATCH (n:User) 
+
+    const query = `
+      MATCH (n:User) 
       WHERE ID(n)=$userIdParam 
-      DETACH DELETE n`,
-        {
-          userIdParam: +userId,
-        }
-      )
+      DETACH DELETE n`;
+    const queryParams = {
+      userIdParam: +userId,
+    };
+
+    session_user
+      .run(query, queryParams)
       .then(function (result) {
         res.json(result);
       })
@@ -170,15 +178,28 @@ module.exports = function (app) {
     var userId = req.body.userId;
     var currentPassword = req.body.currentPassword;
 
-    session_user
-      .run(
-        `MATCH(n:User) 
+    const query = `
+      MATCH(n:User) 
       WHERE ID(n)=$userIdParam 
-      RETURN n`,
-        {
-          userIdParam: userId,
-        }
-      )
+      RETURN n`;
+    const queryParams = {
+      userIdParam: userId,
+    };
+
+    const queryChange = `
+      MATCH(n:User) 
+      WHERE ID(n)=$userIdParam 
+      SET n.name=$nameParam, n.email=$emailParam, n.password=$passwordParam 
+      RETURN n`;
+    const queryChangeParams = {
+      userIdParam: userId,
+      nameParam: name,
+      emailParam: email,
+      passwordParam: password,
+    };
+
+    session_user
+      .run(query, queryParams)
       .then(function (result) {
         if (
           result.records[0]._fields[0].properties.password === currentPassword
@@ -192,18 +213,7 @@ module.exports = function (app) {
             result.records[0]._fields[0].properties.password;
 
           session_user
-            .run(
-              `MATCH(n:User) 
-              WHERE ID(n)=$userIdParam 
-              SET n.name=$nameParam, n.email=$emailParam, n.password=$passwordParam 
-              RETURN n`,
-              {
-                userIdParam: userId,
-                nameParam: name,
-                emailParam: email,
-                passwordParam: password,
-              }
-            )
+            .run(queryChange, queryChangeParams)
             .then(function (result2) {
               res.sendStatus(200);
             })
