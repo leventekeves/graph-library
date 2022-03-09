@@ -62,7 +62,7 @@ const CommentList = (props) => {
               <CommentItem
                 key={comment.id}
                 comment={comment.comment}
-                userId={comment.userId}
+                username={comment.username}
                 date={comment.date}
               />
             );

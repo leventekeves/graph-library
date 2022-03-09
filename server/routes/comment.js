@@ -25,7 +25,7 @@ module.exports = function (app) {
             id: record._fields[0].identity.low,
             date: record._fields[0].properties.date,
             comment: record._fields[0].properties.comment,
-            userId: record._fields[1].properties.name,
+            username: record._fields[1].properties.name,
           });
         });
 

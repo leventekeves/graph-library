@@ -73,7 +73,7 @@ const BrowseLists = () => {
     return () => {
       isActive = false;
     };
-  }, [queryParams, currentPage, isLoading]);
+  }, [queryParams, currentPage]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);

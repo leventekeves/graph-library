@@ -14,13 +14,13 @@ async function loginUser(email, password) {
       "Content-Type": "application/json",
     },
   });
-  const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || "Could not fetch users.");
+    return response.ok;
+  } else {
+    const data = await response.json();
+    return data;
   }
-
-  return data;
 }
 
 const Login = () => {
@@ -41,7 +41,7 @@ const Login = () => {
       "admin@admin.com",
       "admin"
     ).then((data) => {
-      if (data.credentialsCorrect === true) {
+      if (data) {
         authCtx.login(
           "123456789",
           data.id,

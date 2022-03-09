@@ -68,7 +68,7 @@ const NewComment = (props) => {
           <textarea
             className={classes["new-comment--input"]}
             ref={commentInputRef}
-          ></textarea>
+          />
           <Button>New Comment</Button>
         </form>
       </div>

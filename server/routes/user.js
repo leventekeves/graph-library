@@ -2,6 +2,7 @@ const config = require("../config");
 
 module.exports = function (app) {
   const session_user = config.driver.session();
+  var userIdFromTheBackend;
 
   // Signup User Route
   app.post("/user", function (req, res) {
@@ -104,6 +105,7 @@ module.exports = function (app) {
             }
           });
 
+          userIdFromTheBackend = result.records[0]._fields[0].identity.low;
           res.json({
             id: result.records[0]._fields[0].identity.low,
             name: result.records[0]._fields[0].properties.name,
@@ -114,10 +116,9 @@ module.exports = function (app) {
             recommendations: recommendationArr,
             votes: votedArr,
             historyBorrowings: historyBorrowingsArr,
-            credentialsCorrect: true,
           });
         } else {
-          res.json({ credentialsCorrect: false });
+          res.sendStatus(401);
         }
       })
       .catch(function (error) {
@@ -152,8 +153,8 @@ module.exports = function (app) {
   });
 
   // Ban User Route
-  app.delete("/user/:userId", function (req, res) {
-    var userId = req.params.userId;
+  app.delete("/user", function (req, res) {
+    var userId = req.body.userId;
 
     const query = `
       MATCH (n:User) 

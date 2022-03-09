@@ -39,7 +39,7 @@ const ExpandCollectionVote = () => {
     return () => {
       isActive = false;
     };
-  }, [currentPage, isLoading]);
+  }, [currentPage]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);

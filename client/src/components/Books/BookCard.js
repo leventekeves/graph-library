@@ -9,9 +9,9 @@ import SubNavigation from "../Layout/SubNavigation";
 import LoadingSpinner from "../../utility/LoadingSpinner";
 import AdminNewBook from "../Admin/AdminNewBook";
 import classes from "./BookCard.module.css";
-import noCover from "../../utility/nocover.png"
+import noCover from "../../utility/nocover.png";
 
-async function getBooks(bookId) {
+async function getBook(bookId) {
   const response = await fetch(`/book/${bookId}`);
   const data = await response.json();
 
@@ -101,17 +101,18 @@ const BookCard = () => {
   const history = useHistory();
 
   useEffect(() => {
-    getBooks(bookId).then((data) => {
-      if (isLoading) {
+    let isActive = true;
+    getBook(bookId).then((data) => {
+      if (isActive) {
         setBook(data);
         setIsLoading(false);
       }
     });
 
     return () => {
-      setIsLoading(false);
+      isActive = false;
     };
-  }, [bookId, isLoading]);
+  }, [bookId]);
 
   const newCommentAddedHandler = (value) => {
     setNewCommentAdded(value);
@@ -297,8 +298,9 @@ const BookCard = () => {
   }, [authCtx, bookId]);
 
   const deleteBookHandler = useCallback(() => {
-    deleteBook(book.id);
-    history.replace("/books");
+    deleteBook(book.id).then(() => {
+      history.replace("/books");
+    });
   }, [book.id, history]);
 
   const editBookHandler = useCallback(() => {

@@ -2,8 +2,12 @@ import { useState } from "react";
 import classes from "./AdminUserItem.module.css";
 
 async function banUser(userId) {
-  await fetch(`/user/${userId}`, {
+  await fetch(`/user`, {
     method: "DELETE",
+    body: JSON.stringify({ userId: userId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 }
 

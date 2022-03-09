@@ -53,7 +53,7 @@ const UserBorrowingHistory = () => {
     return () => {
       isActive = false;
     };
-  }, [authCtx, itemsPerPage, currentPage, isLoading]);
+  }, [authCtx, itemsPerPage, currentPage]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);

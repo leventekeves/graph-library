@@ -28,6 +28,8 @@ async function getList(listId, pageNumber, itemsPerPage) {
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch books.");
   }
+
+  console.log(data);
   return data;
 }
 
@@ -54,7 +56,7 @@ const ListCard = (props) => {
   const alreadyRecommended = useCallback(() => {
     if (!isLoading) {
       authCtx.recommendations.forEach((recommendation) => {
-        if (recommendation.listId === list.id) {
+        if (recommendation.listId === list?.id) {
           setCanRecommend(false);
         }
       });
@@ -68,14 +70,14 @@ const ListCard = (props) => {
         setList(data.listArr[0]);
         setNumberOfBooks(data.listArr[0].books.length);
         setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
-        setIsLoading(false);
       }
+      setIsLoading(false);
     });
 
     return () => {
       isActive = false;
     };
-  }, [listId, currentPage, isLoading]);
+  }, [listId, currentPage]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);
@@ -116,8 +118,8 @@ const ListCard = (props) => {
     );
   }
 
-  if (!isLoading && list) {
-    if (props.listId) {
+  if (!isLoading && props.action === "remove") {
+    if (list?.books?.length > 0) {
       return (
         <BookList
           books={list.books}
@@ -125,52 +127,55 @@ const ListCard = (props) => {
           action={props.action}
         />
       );
-    } else if (list.books.length > 0) {
+    } else {
       return (
-        <Fragment>
-          <SubNavigation
-            location={[
-              { name: "Lists", link: "/lists" },
-              { name: "Browse Lists", link: "/lists?function=browse" },
-              { name: `${list.name}`, link: "" },
-            ]}
-          />
-          <div className={classes.container}>
-            <div className={classes["list-container"]}>
-              <div className={classes["list-card"]}>
-                <div className={classes.double}>{list.name}</div>
-                <div className={classes.double}>{list.description}</div>
-                <div>Number of books: {numberOfBooks}</div>
-                <div>
-                  Recommendations:
-                  {isRecommended
-                    ? numberOfRecommendations
-                    : list.recommendations}
-                </div>
-                {authCtx.isLoggedIn ? (
-                  recommendButton
-                ) : (
-                  <div className={classes["feedback-message"]}>
-                    Login to recommend this list!
-                  </div>
-                )}
-              </div>
-            </div>
-            <BookList
-              books={list.books}
-              listId={props.listId}
-              action={props.action}
-            />
-            <Pagination
-              pageCount={pageCount}
-              handlePageClick={handlePageClick}
-            />
-          </div>
-        </Fragment>
+        <div className={classes["feedback-message"]}>This list is empty!</div>
       );
     }
+  }
+
+  if (!isLoading && list.books.length > 0) {
+    return (
+      <Fragment>
+        <SubNavigation
+          location={[
+            { name: "Lists", link: "/lists" },
+            { name: "Browse Lists", link: "/lists?function=browse" },
+            { name: `${list.name}`, link: "" },
+          ]}
+        />
+        <div className={classes.container}>
+          <div className={classes["list-container"]}>
+            <div className={classes["list-card"]}>
+              <div className={classes.double}>{list.name}</div>
+              <div className={classes.double}>{list.description}</div>
+              <div>Number of books: {numberOfBooks}</div>
+              <div>
+                Recommendations:
+                {isRecommended ? numberOfRecommendations : list.recommendations}
+              </div>
+              {authCtx.isLoggedIn ? (
+                recommendButton
+              ) : (
+                <div className={classes["feedback-message"]}>
+                  Login to recommend this list!
+                </div>
+              )}
+            </div>
+          </div>
+          <BookList
+            books={list.books}
+            listId={props.listId}
+            action={props.action}
+          />
+          <Pagination pageCount={pageCount} handlePageClick={handlePageClick} />
+        </div>
+      </Fragment>
+    );
   } else {
-    return <div>This list is empty!</div>;
+    return (
+      <div className={classes["feedback-message"]}>This list is empty!</div>
+    );
   }
 };
 

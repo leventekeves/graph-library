@@ -54,7 +54,7 @@ const BorrowingsContent = () => {
     return () => {
       isActive = false;
     };
-  }, [authCtx, currentPage, isLoading]);
+  }, [authCtx, currentPage]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);

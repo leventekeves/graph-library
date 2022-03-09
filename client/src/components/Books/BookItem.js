@@ -116,8 +116,6 @@ const BookItem = (props) => {
     updatedBorrowings.splice(borrowingIndex, 1);
     authCtx.updateBorrowings(updatedBorrowings);
 
-    //authCtx.borrowings.splice(borrowingIndex, borrowingIndex);
-
     setIsRemoved(true);
   }, [authCtx, props]);
 
@@ -246,10 +244,7 @@ const BookItem = (props) => {
       const borrowDate = new Date(props.date);
       setMiscContent(
         <div className={classes["misc-container"]}>
-          <div className={classes["button-container"]}>
-            <div>{button}</div>
-            <div> Borrowed at: {borrowDate.toLocaleDateString()}</div>
-          </div>
+          <div> Borrowed at: {borrowDate.toLocaleDateString()}</div>
         </div>
       );
     }
@@ -287,7 +282,9 @@ const BookItem = (props) => {
             </div>
           </div>
         </Link>
-        {props.action === ("borrow" || "history") ? miscContent : button}
+        {props.action === "borrow" || props.action === "history"
+          ? miscContent
+          : button}
       </div>
     );
   } else {

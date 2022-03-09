@@ -39,7 +39,6 @@ const BookList = (props) => {
                 inListId={book.inListId}
                 listId={props.listId}
                 action={props.action}
-                location={props.location}
                 remainingExtensions={book.remainingExtensions}
                 date={book.date}
                 onDelete={handleDelete}

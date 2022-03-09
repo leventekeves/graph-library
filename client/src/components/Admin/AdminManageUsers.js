@@ -18,6 +18,7 @@ const AdminManageUsers = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isActive = true;
     getUsers().then((data) => {
       const transformedUsers = [];
       for (const key in data) {
@@ -28,15 +29,15 @@ const AdminManageUsers = () => {
 
         transformedUsers.push(userObj);
       }
-      if (isLoading) {
+      if (isActive) {
         setUsers(transformedUsers);
         setIsLoading(false);
       }
     });
     return () => {
-      setIsLoading(false);
+      isActive = false;
     };
-  }, [isLoading]);
+  }, []);
 
   return (
     <div>

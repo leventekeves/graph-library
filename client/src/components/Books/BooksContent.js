@@ -53,7 +53,6 @@ async function getBooks(
     throw new Error(data.message || "Could not fetch books.");
   }
 
-  console.log(data);
   return data;
 }
 
@@ -85,6 +84,8 @@ const BooksContent = (props) => {
   }, [location]);
 
   useEffect(() => {
+    let isActive = true;
+
     const searchFilter = queryParams.get("search");
     const yearFilter = queryParams.get("year");
     const categoryFilter = queryParams.get("category");
@@ -95,29 +96,45 @@ const BooksContent = (props) => {
       category: categoryFilter,
     };
 
-    if (firstLoad) {
-      getBooks(
-        queryParamsForRequest,
-        currentPage,
-        itemsPerPage,
-        props.listId
-      ).then((data) => {
-        if (isLoading) {
-          setData(data);
-          setIsLoading(false);
-          setFirstLoad(false);
-        }
-      });
-    }
+    // if (firstLoad) {
+    //   getBooks(
+    //     queryParamsForRequest,
+    //     currentPage,
+    //     itemsPerPage,
+    //     props.listId
+    //   ).then((data) => {
+    //     if (isActive) {
+    //       setData(data);
+    //       setIsLoading(false);
+    //       setFirstLoad(false);
+    //     }
+    //   });
+    // }
 
-    if (pageChange) {
+    // if (pageChange) {
+    //   getBooks(
+    //     queryParamsForRequest,
+    //     currentPage,
+    //     itemsPerPage,
+    //     props.listId
+    //   ).then((data) => {
+    //     if (isActive) {
+    //       setData(data);
+    //       setIsLoading(false);
+    //       setFirstLoad(false);
+    //       setPageChange(false);
+    //     }
+    //   });
+    // }
+
+    if (pageChange || firstLoad)
       getBooks(
         queryParamsForRequest,
         currentPage,
         itemsPerPage,
         props.listId
       ).then((data) => {
-        if (isLoading) {
+        if (isActive) {
           setData(data);
           setIsLoading(false);
           setFirstLoad(false);
@@ -125,18 +142,10 @@ const BooksContent = (props) => {
         }
       });
 
-      return () => {
-        setIsLoading(false);
-      };
-    }
-  }, [
-    props.listId,
-    queryParams,
-    firstLoad,
-    currentPage,
-    pageChange,
-    isLoading,
-  ]);
+    return () => {
+      isActive = false;
+    };
+  }, [props.listId, queryParams, firstLoad, currentPage, pageChange]);
 
   useEffect(() => {
     if (!isLoading) {
