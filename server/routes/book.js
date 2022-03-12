@@ -93,32 +93,61 @@ module.exports = function (app) {
 
   // Get Books Route, parameter gives the ID's of books that are in the choosen list
   app.get("/book/list/:booksInList", function (req, res) {
-    var pageNumber = +req.query.pagenumber;
-    var itemsPerPage = +req.query.itemsperpage;
+    const pageNumber = req.query.pagenumber;
+    const itemsPerPage = req.query.itemsperpage;
+    const searchFilter = req.query.search;
+    const yearFilter = req.query.year;
+    const categoryFilter = req.query.category;
     var booksInList = req.params.booksInList.split("-").map(function (item) {
       return parseInt(item);
     });
 
-    var query;
-    var queryNumberOfBooks;
+    let query;
+    let queryNumberOfBooks;
+    let filters;
 
-    if (booksInList.length > 0) {
-      query = `MATCH (b:Book) 
-        WHERE NOT ID(b) IN $booksInListParam 
+    if (searchFilter || yearFilter || categoryFilter) {
+      filters = "WHERE ";
+      if (searchFilter) {
+        filters = filters + `b.title =~ "(?i).*${searchFilter}.*" `;
+      } else {
+        filters = filters + `NOT b.title = "" `;
+      }
+
+      if (yearFilter) {
+        filters = filters + `AND b.year = ${yearFilter} `;
+      } else {
+        filters = filters + `AND NOT b.year = "" `;
+      }
+
+      if (categoryFilter) {
+        filters = filters + `AND b.category = "${categoryFilter}" `;
+      } else {
+        filters = filters + `AND NOT b.category = "" `;
+      }
+
+      filters =
+        filters +
+        (booksInList.length > 0 ? "AND NOT ID(b) IN $booksInListParam" : "");
+
+      query = `MATCH (b:Book) ${filters} 
         OPTIONAL MATCH (a)-[r:Rated]->(b) 
         RETURN b, avg(r.rating) AS rating 
         SKIP $skipParam 
         LIMIT $limitParam`;
-      queryNumberOfBooks = `MATCH (b:Book) 
-        WHERE NOT ID(b) IN $booksInListParam 
-        RETURN count(b)`;
+      queryNumberOfBooks = `MATCH (b:Book) ${filters} RETURN count(*)`;
     } else {
-      query = `MATCH (b:Book) 
+      query = `
+        MATCH (b:Book) 
+        WHERE NOT ID(b) IN $booksInListParam
         OPTIONAL MATCH (a)-[r:Rated]->(b) 
         RETURN b, avg(r.rating) AS rating 
         SKIP $skipParam 
         LIMIT $limitParam`;
-      queryNumberOfBooks = "MATCH (b:Book) RETURN count(b)";
+      queryNumberOfBooks = `
+        MATCH (b:Book) 
+        WHERE NOT ID(b) IN $booksInListParam 
+        RETURN count(*)`;
     }
 
     const queryParams = {
@@ -127,11 +156,40 @@ module.exports = function (app) {
       limitParam: neo4j.int(itemsPerPage),
     };
 
+    const queryNumberOfBooksParams = { booksInListParam: booksInList };
+
+    /////////////////////////
+
+    // if (booksInList.length > 0) {
+    //   query = `MATCH (b:Book)
+    //     WHERE NOT ID(b) IN $booksInListParam
+    //     OPTIONAL MATCH (a)-[r:Rated]->(b)
+    //     RETURN b, avg(r.rating) AS rating
+    //     SKIP $skipParam
+    //     LIMIT $limitParam`;
+    //   queryNumberOfBooks = `MATCH (b:Book)
+    //     WHERE NOT ID(b) IN $booksInListParam
+    //     RETURN count(b)`;
+    // } else {
+    //   query = `MATCH (b:Book)
+    //     OPTIONAL MATCH (a)-[r:Rated]->(b)
+    //     RETURN b, avg(r.rating) AS rating
+    //     SKIP $skipParam
+    //     LIMIT $limitParam`;
+    //   queryNumberOfBooks = "MATCH (b:Book) RETURN count(b)";
+    // }
+
+    // queryParams = {
+    //   booksInListParam: booksInList,
+    //   skipParam: neo4j.int(pageNumber * itemsPerPage),
+    //   limitParam: neo4j.int(itemsPerPage),
+    // };
+
     session_book
       .run(query, queryParams)
       .then(function (result) {
         session_book
-          .run(queryNumberOfBooks, { booksInListParam: booksInList })
+          .run(queryNumberOfBooks, queryNumberOfBooksParams)
           .then((result2) => {
             var bookArr = [];
             var numberOfBooks = result2.records[0]._fields[0].low;

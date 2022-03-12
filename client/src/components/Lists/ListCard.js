@@ -29,7 +29,6 @@ async function getList(listId, pageNumber, itemsPerPage) {
     throw new Error(data.message || "Could not fetch books.");
   }
 
-  console.log(data);
   return data;
 }
 
@@ -66,9 +65,9 @@ const ListCard = (props) => {
   useEffect(() => {
     let isActive = true;
     getList(listId, currentPage, itemsPerPage).then((data) => {
-      if (data.listArr[0] && isActive) {
-        setList(data.listArr[0]);
-        setNumberOfBooks(data.listArr[0].books.length);
+      if (data.list && isActive) {
+        setList(data.list);
+        setNumberOfBooks(data.list.books.length);
         setPageCount(Math.ceil(data.numberOfBooks / itemsPerPage));
       }
       setIsLoading(false);

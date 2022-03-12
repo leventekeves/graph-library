@@ -15,19 +15,23 @@ async function getBooks(
   listId
 ) {
   let response;
+
   if (listId) {
     const listResponse = await fetch(`/list/${listId}`);
     const listData = await listResponse.json();
 
-    if (listData[0]?.books) {
+    if (listData.list?.books) {
       const listIdArray = [];
-      listData[0].books.forEach((book) => {
+      listData.list.books.forEach((book) => {
         listIdArray.push(book.id);
       });
+
       response = await fetch(
-        `/book/list/${listIdArray.join(
-          "-"
-        )}?pagenumber=${pageNumber}&itemsperpage=${itemsPerPage}`
+        `/book/list/${listIdArray.join("-")}?search=${
+          queryParamsForRequest?.search || ""
+        }&year=${queryParamsForRequest?.year || ""}&category=${
+          queryParamsForRequest?.category || ""
+        }&pagenumber=${pageNumber}&itemsperpage=${itemsPerPage}`
       );
     } else {
       response = await fetch(
@@ -52,7 +56,6 @@ async function getBooks(
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch books.");
   }
-
   return data;
 }
 
@@ -203,7 +206,12 @@ const BooksContent = (props) => {
     };
 
     setIsLoading(true);
-    getBooks(queryParamsForRequest, currentPage, itemsPerPage).then((data) => {
+    getBooks(
+      queryParamsForRequest,
+      currentPage,
+      itemsPerPage,
+      props.listId
+    ).then((data) => {
       setData(data);
       setIsLoading(false);
     });

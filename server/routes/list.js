@@ -115,18 +115,32 @@ module.exports = function (app) {
       listIdParam: listId,
     };
 
-    const queryBooks = `
+    let queryBooks;
+    let queryBooksParams;
+
+    if (itemsPerPage) {
+      queryBooks = `
       MATCH (a:List)-[r:Contains]->(b:Book) 
       WHERE ID(a)=$listIdParam 
       OPTIONAL MATCH (c)-[d:Rated]->(b) 
       RETURN b, avg(d.rating) AS rating 
       SKIP $skipParam 
       LIMIT $limitParam`;
-    const queryBooksParams = {
-      listIdParam: listId,
-      skipParam: neo4j.int(pageNumber * itemsPerPage),
-      limitParam: neo4j.int(itemsPerPage),
-    };
+      queryBooksParams = {
+        listIdParam: listId,
+        skipParam: neo4j.int(pageNumber * itemsPerPage),
+        limitParam: neo4j.int(itemsPerPage),
+      };
+    } else {
+      queryBooks = `
+      MATCH (a:List)-[r:Contains]->(b:Book) 
+      WHERE ID(a)=$listIdParam 
+      OPTIONAL MATCH (c)-[d:Rated]->(b) 
+      RETURN b, avg(d.rating) AS rating `;
+      queryBooksParams = {
+        listIdParam: listId,
+      };
+    }
 
     const queryNumberOfBooks = `
       MATCH (a:List)-[r:Contains]->(b:Book) 
@@ -139,7 +153,7 @@ module.exports = function (app) {
     session_list
       .run(queryList, queryListParams)
       .then(function (result) {
-        var listArr = [];
+        var list;
 
         session_list
           .run(queryBooks, queryBooksParams)
@@ -169,7 +183,7 @@ module.exports = function (app) {
                 }
 
                 if (result?.records[0]?._fields[0]) {
-                  listArr.push({
+                  list = {
                     id: result.records[0]._fields[0].identity.low,
                     name: result.records[0]._fields[0].properties.name,
                     description:
@@ -177,10 +191,10 @@ module.exports = function (app) {
                     date: result.records[0]._fields[2].properties.date,
                     recommendations: result.records[0]._fields[1].low,
                     books: bookArr,
-                  });
+                  };
                 }
 
-                res.json({ listArr: listArr, numberOfBooks: numberOfBooks });
+                res.json({ list: list, numberOfBooks: numberOfBooks });
               })
               .catch(function (error) {
                 console.log(error);
