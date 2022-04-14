@@ -5,8 +5,4 @@ const driver = neo4j.driver(
   neo4j.auth.basic("neo4j", "jWPQTxy-r-EdIqJAHglPE9fCmIRs7Rcdy-TJeEknpgg")
 );
 
-// module.exports.session = driver.session();
-// module.exports.session2 = driver.session();
-// module.exports.session3 = driver.session();
-
 module.exports.driver = driver;

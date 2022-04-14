@@ -101,6 +101,12 @@ const BookCard = () => {
   const history = useHistory();
 
   useEffect(() => {
+    getBook(bookId).then((data) => {
+      setBook(data);
+    });
+  }, [bookId]);
+
+  useEffect(() => {
     let isActive = true;
     getBook(bookId).then((data) => {
       if (isActive) {

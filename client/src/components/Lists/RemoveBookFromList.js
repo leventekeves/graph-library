@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import ListSelector from "./ListSelector";
 import classes from "./AddBookToList.module.css";
@@ -6,12 +6,25 @@ import ListCard from "./ListCard";
 
 const RemoveBookFromList = () => {
   const [bookContent, setBookContent] = useState(<div></div>);
+  const [selectedList, setSelectedList] = useState();
 
   const onListSelectHandler = (value) => {
-    if (value !== "Select list") {
-      setBookContent(<ListCard listId={value} action="remove" />);
+    if (selectedList !== "Select list") {
+      setSelectedList(value);
     }
   };
+
+  useEffect(() => {
+    let isActive = true;
+
+    if (selectedList && isActive) {
+      setBookContent(<ListCard listId={selectedList} action="remove" />);
+    }
+
+    return () => {
+      isActive = false;
+    };
+  }, [selectedList]);
 
   return (
     <Fragment>

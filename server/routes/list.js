@@ -67,6 +67,7 @@ module.exports = function (app) {
 
   //Get User's Lists Route
   app.get("/list/user/:userId", function (req, res) {
+    const session_listuser = config.driver.session();
     const userId = req.params.userId;
 
     const query = `
@@ -78,7 +79,7 @@ module.exports = function (app) {
       userIdParam: +userId,
     };
 
-    session_list
+    session_listuser
       .run(query, queryParams)
       .then(function (result) {
         var listArr = [];
@@ -97,6 +98,9 @@ module.exports = function (app) {
       })
       .catch(function (error) {
         console.log(error);
+      })
+      .finally(function () {
+        session_listuser.close();
       });
   });
 

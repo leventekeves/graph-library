@@ -79,7 +79,6 @@ module.exports = function (app) {
                 rating: record._fields[1],
               });
             });
-
             res.json({ bookArr: bookArr, numberOfBooks: numberOfBooks });
           })
           .catch(function (error) {

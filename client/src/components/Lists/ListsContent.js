@@ -53,7 +53,6 @@ const ListsContent = () => {
     }
 
     if (queryParams.get("function") === "delete") {
-      content = <div>yo</div>;
       content = <DeleteList />;
       subNavigation = (
         <SubNavigation

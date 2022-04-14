@@ -261,7 +261,7 @@ const BookItem = (props) => {
     return (
       <div className={classes.container}>
         <Link
-          to={`/books/${props.action ? props.realId : props.id}`}
+          to={`/books/${props.action === "history" ? props.realId : props.id}`}
           style={{ textDecoration: "none" }}
         >
           <div className={classes["book-item"]}>
