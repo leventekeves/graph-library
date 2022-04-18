@@ -9,7 +9,6 @@ const BookFilters = (props) => {
 
   const categories = [
     "Fantasy",
-    "Crime",
     "Drama",
     "Horror",
     "Mystery",

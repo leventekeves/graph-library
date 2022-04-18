@@ -70,7 +70,7 @@ const BooksContent = (props) => {
 
   const history = useHistory();
   const location = useLocation();
-  const itemsPerPage = 4;
+  const itemsPerPage = 8;
 
   const addQuery = (key, value) => {
     let pathname = location.pathname;
@@ -206,15 +206,14 @@ const BooksContent = (props) => {
     };
 
     setIsLoading(true);
-    getBooks(
-      queryParamsForRequest,
-      currentPage,
-      itemsPerPage,
-      props.listId
-    ).then((data) => {
-      setData(data);
-      setIsLoading(false);
-    });
+    setCurrentPage(0);
+
+    getBooks(queryParamsForRequest, 0, itemsPerPage, props.listId).then(
+      (data) => {
+        setData(data);
+        setIsLoading(false);
+      }
+    );
   };
 
   const handlePageClick = (event) => {
@@ -258,7 +257,11 @@ const BooksContent = (props) => {
             />
           </div>
         )}
-        <Pagination pageCount={pageCount} handlePageClick={handlePageClick} />
+        <Pagination
+          pageCount={pageCount}
+          handlePageClick={handlePageClick}
+          currentPage={currentPage}
+        />
       </div>
     </div>
   );

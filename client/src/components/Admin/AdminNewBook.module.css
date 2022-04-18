@@ -56,8 +56,8 @@
 }
 
 .book-cover {
-  height: 15rem;
-  width: fit-content;
+  max-height: 15rem;
+  max-width: 10rem;
 }
 
 .feedback-message {

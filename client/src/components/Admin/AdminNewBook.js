@@ -40,7 +40,6 @@ const AdminNewBook = (props) => {
 
   const categories = [
     "Fantasy",
-    "Crime",
     "Drama",
     "Horror",
     "Mystery",

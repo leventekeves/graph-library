@@ -47,7 +47,7 @@ const ListCard = (props) => {
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const itemsPerPage = 2;
+  const itemsPerPage = 5;
 
   if (!listId) {
     listId = props.listId;

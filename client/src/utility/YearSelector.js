@@ -1,7 +1,7 @@
 import classes from "./YearSelector.module.css";
 
 const YearSelector = (props) => {
-  let startYear = 1940;
+  let startYear = 1600;
   const currentYear = new Date().getFullYear();
   const years = [];
 

@@ -37,6 +37,15 @@
   grid-column: 1/3;
 }
 
+.title {
+  max-width: 15rem;
+  text-align: center;
+}
+
+.description {
+  white-space: pre-wrap;
+}
+
 .pages,
 .year,
 .stock {
