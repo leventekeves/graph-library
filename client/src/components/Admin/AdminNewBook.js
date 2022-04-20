@@ -38,6 +38,8 @@ const AdminNewBook = (props) => {
   const [bookAdded, setBookAdded] = useState(false);
   const [bookEdited, setBookEdited] = useState(false);
 
+  const projectId = "graph-library-kl";
+
   const categories = [
     "Fantasy",
     "Drama",
@@ -88,7 +90,7 @@ const AdminNewBook = (props) => {
       fileRef.put(file);
       addBookHandler({
         ...newBook,
-        cover: `https://firebasestorage.googleapis.com/v0/b/graph-library-kl.appspot.com/o/covers%2F${file.name}?alt=media`,
+        cover: `https://firebasestorage.googleapis.com/v0/b/${projectId}.appspot.com/o/covers%2F${file.name}?alt=media`,
       }).then((response) => {
         if (response) setBookAdded(true);
       });
@@ -112,7 +114,7 @@ const AdminNewBook = (props) => {
 
       editBookHandler({
         ...newBook,
-        cover: `https://firebasestorage.googleapis.com/v0/b/graph-library-kl.appspot.com/o/covers%2F${file.name}?alt=media`,
+        cover: `https://firebasestorage.googleapis.com/v0/b/${projectId}.appspot.com/o/covers%2F${file.name}?alt=media`,
       }).then((response) => {
         if (response) setBookEdited(true);
       });
