@@ -1,0 +1,35 @@
+\pagestyle{empty}
+
+\noindent \textbf{\Large CD Használati útmutató}
+
+\vskip 1cm
+
+\noindent A CD tartalmazza az alábbiakat:
+\begin{itemize}
+    \item A szakdolgozat
+    \item A szakdolgozat forráskódja
+    \item A mintaalkalmazás forráskódja
+    \item Tesztadatbázis
+    \item API dokumentáció
+    \item CD Használati útmutató
+\end{itemize}
+
+\bigskip
+
+A CD-n található mintaalkalmazás futtatásához a klienshez és a backendhez is telepíteni kell a szükséges csomagokat. Az alkalmazás gyökérkönyvtárából kiindulva:
+\begin{itemize}
+    \item Szerver: npm install
+    \item Kliens: cd client, ezt követően npm install
+\end{itemize}
+
+Ezután külön terminálokon futtatni kell mindkettőt. Az alkalmazás gyökérkönyvtárából kiindulva:
+\begin{itemize}
+    \item Szerver: npm start
+    \item Kliens: cd client, ezt követően npm start
+\end{itemize}
+
+A tesztadatbázis a tesztadatbazis.dump fájlban található. Ezt a fájlt egy Neo4j gráfadatbázisba kell importálni. Neo4j Aura esetében az adatbázis létrehozásakor kapott felhasználónevet, jelszót és URI-t az alkalamzás server.js fájlában kell megadni. 
+
+\bigskip
+
+A borítóképek FireBase Storage-be kerülnek feltöltésre. Ehhez telepíteni kell a firebase csomagot. Ezt követően be kell jelentkezni, initializálni a projektet, majd felállítani a storage-t. Az AdminNewBook.js fájlban kell átírni a projectId-t az aktuális projektnek megfelelően. Mivel a borítóképek elérési útvonala függ a projekt névtől, a tesztadatbázisban található könyvek boríóképei nem fognak megjelenni, ha a FireBase Storage, amin a képek vannak, nem elérhető.

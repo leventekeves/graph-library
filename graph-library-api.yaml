@@ -1,0 +1,1308 @@
+swagger: "2.0"
+info:
+  description: "GraphLibrary API specification"
+  version: "1.0.0"
+  title: "GraphLibrary"
+tags:
+- name: "book"
+  description: "Operations about books"
+- name: "comment"
+  description: "Operations about comments"
+- name: "user"
+  description: "Operations about users"
+- name: "bookmarks"
+  description: "Operations about bookmarks"
+- name: "borrow"
+  description: "Operations about borrowings"
+- name: "list"
+  description: "Operations about lists"
+- name: "expand"
+  description: "Operations about expanding the library"
+- name: "historyborrow"
+  description: "Operations about the borrowing history"
+paths:
+  /book:
+    post:
+      tags:
+      - "book"
+      summary: "Add a new book to the library"
+      description: ""
+      operationId: "addBook"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Book object that needs to be added to the library"
+        required: true
+        schema:
+          $ref: "#/definitions/Book"
+      responses:
+        "200":
+          description: "successful operation"
+        "405":
+          description: "Invalid input"
+    get:
+      tags:
+      - "book"
+      summary: "Returns books"
+      operationId: "getBooks"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "query"
+        name: "pageNumber"
+        type: "integer"
+        description: "The number of sets to skip before starting to collect the result set"
+      - in: "query"
+        name: "itemsPerPage"
+        type: "integer"
+        description: "The numbers of items to return"
+      - in: "query"
+        name: "searchFilter"
+        type: "string"
+        description: "Name or part of the name of the searched books"
+      - in: "query"
+        name: "yearFilter"
+        type: "integer"
+        minimum: 1600
+        maximum: 2100
+        description: "The release year of the searched books"
+      - in: "query"
+        name: "categoryFilter"
+        type: "string"
+        description: "The category of the searched book(s)"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/BookExtended"
+        "404":
+          description: "Books not found"
+    delete:
+      tags:
+      - "book"
+      summary: "Remove book"
+      operationId: "removeBook"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "ID of the book that needs to be deleted"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            bookId:
+              type: "integer"
+              format: "int64"
+          example:
+            bookId: 5
+      responses:
+        "200":
+          description: "successful operation"
+        "404":
+          description: "Book not found"
+    put:
+      tags:
+      - "book"
+      summary: "Update an existing book"
+      operationId: "updateBook"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Book object that needs to be added to the library"
+        required: true
+        schema:
+          $ref: "#/definitions/BookWithId"
+      responses:
+        "200":
+          description: "successful operation"
+        "404":
+          description: "Book not found"
+  /book/list/{listOfIds}:
+    get:
+      tags:
+      - "book"
+      summary: "Return books not in a given list"
+      description: "Returns books that are not received as parameters"
+      operationId: "getBooksNotInList"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "listOfIds"
+        in: "path"
+        description: "ID's of books separated by hyphens"
+        required: true
+        type: "string"
+        pattern: "^[0-9]*(-[0-9]*)*$"
+      - in: "query"
+        name: "pageNumber"
+        type: "integer"
+        description: "The number of sets to skip before starting to collect the result set"
+      - in: "query"
+        name: "itemsPerPage"
+        type: "integer"
+        description: "The numbers of items to return"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+             $ref: "#/definitions/BookExtended"
+        "404":
+          description: "Books not found"
+  /book/{bookId}:
+    get:
+      tags:
+      - "book"
+      summary: "Find book by ID"
+      description: "Returns a single book"
+      operationId: "getBookById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "bookId"
+        in: "path"
+        description: "ID of book to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BookExtendedWithNumberOfRatings"
+        "404":
+          description: "Book not found"
+  /book/rate:
+    post:
+      tags:
+      - "book"
+      summary: "Add a new rating to the choosen book"
+      operationId: "addRating"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Rating object that needs to be added to the book"
+        required: true
+        schema:
+          properties:
+            userId:
+              type: "integer"
+              format: "int64"
+            bookId:
+              type: "integer"
+              format: "int64"
+            rating:
+              type: "integer"
+              format: "int64"
+              minimum: 1
+              maximum: 5
+          example:
+            userId: 5
+            bookId: 10
+            rating: 4
+      responses:
+        "200":
+          description: "successful operation"
+  /comment/{bookId}:
+      get:
+        tags:
+        - "comment"
+        summary: "Returns the comments of a book"
+        operationId: "getCommentsByBookId"
+        produces:
+        - "application/json"
+        parameters:
+        - name: "bookId"
+          in: "path"
+          description: "ID of the book whose comments are returned"
+          required: true
+          type: "integer"
+          format: "int64"
+        responses:
+          "200":
+            description: "successful operation"
+            schema:
+              type: "array"
+              items:
+                properties:
+                  id:
+                    type: "integer"
+                    format: "int64"
+                  date:
+                    type: "string"
+                  comment:
+                    type: "string"
+                  username:
+                    type: "integer"
+                    format: "int64"
+                example:
+                  id: 5
+                  date: "2022-02-27T19:23:01.571Z"
+                  comment: "I really liked  this book!"
+                  username: "Thomas"
+          "404":
+            description: "Comments not found"
+  /comment:
+    post:
+      tags:
+      - "comment"
+      summary: "Add a new comment to the choosen book"
+      operationId: "addComment"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Comment object that needs to be added to the book"
+        required: true
+        schema:
+          properties:
+            userId:
+              type: "integer"
+              format: "int64"
+            bookId:
+              type: "integer"
+              format: "int64"
+            comment:
+              type: "string"
+            date:
+              type: "integer"
+              format: "int64"
+          example:
+            userId: 10
+            bookId: 5
+            comment: "I really liked  this book!"
+            date: "2022-02-27T19:23:01.571Z"
+      responses:
+        "200":
+          description: "successful operation"
+  /user:
+    post:
+      tags:
+      - "user"
+      summary: "Create a new user"
+      operationId: "createUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            name:
+              type: "string"
+            email:
+              type: "string"
+            password:
+              type: "string"
+          example:
+            name: "Thomas"
+            email: "thomas@gmail.com"
+            password: "abc123!"
+      responses:
+        "200":
+          description: "successful operation"
+        "400":
+          description: "authentication failed"
+    get:
+      tags:
+      - "user"
+      summary: "Returns the users"
+      operationId: "getUsers"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              properties:
+                id:
+                  type: "integer"
+                  format: "int64"
+                name:
+                  type: "string"
+                email:
+                  type: "string"
+              example:
+                id: 5
+                name: "Thomas"
+                email: "thomas@gmail.com"
+    put:
+      tags:
+      - "user"
+      summary: "Update an existing user"
+      operationId: "updateUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Book object that needs to be added to the library"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            userId:
+              type: "integer"
+              format: "int64"
+            currentPassword:
+              type: "string"
+            name:
+              type: "string"
+            email:
+              type: "string"
+            password:
+              type: "string"
+          example:
+            userId: 5
+            currentPassword: "abc123!"
+            name: "Jack"
+            email: "jack@gmail.com"
+            password: "abcd1234!"
+      responses:
+        "200":
+          description: "successful operation"
+        "400":
+          description: "authentication failed"
+        "404":
+          description: "User not found"
+    delete:
+      tags:
+      - "user"
+      summary: "Delete user from the database"
+      operationId: "banUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "The id of the user that needs to be banned"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            userId:
+              type: "integer"
+              format: "int64"
+          example:
+            userId: 5
+      responses:
+        "200":
+          description: "successful operation"
+        "404":
+          description: "User not found"
+  /user/login:
+    post:
+      tags:
+      - "user"
+      summary: "Logs user into the system"
+      description: ""
+      operationId: "loginUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Login credentials"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            email:
+              type: "string"
+            password:
+              type: "string"  
+          example:
+            email: "thomas@gmail.com"
+            password: "abc123!"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              id:
+                type: "integer"
+                format: "int64"
+              name:
+                type: "string"
+              access:
+                type: "string"
+              ratings:
+                type: "array"
+                items: 
+                  type: "object"
+                  properties:
+                    bookId:
+                      type: "integer"
+                      format: "int64"
+                    rating:
+                      type: "integer"
+                      format: "int64"
+              bookmarks:
+                type: "array"
+                items: 
+                  type: "object"
+                  properties:
+                    bookId:
+                      type: "integer"
+                      format: "int64"
+              borrowings:
+                type: "array"
+                items: 
+                  type: "object"
+                  properties:
+                    bookId:
+                      type: "integer"
+                      format: "int64"
+              recommendations:
+                type: "array"
+                items: 
+                  type: "object"
+                  properties:
+                    listId:
+                      type: "integer"
+                      format: "int64"
+              votes:
+                type: "array"
+                items: 
+                  type: "object"
+                  properties:
+                    bookId:
+                      type: "integer"
+                      format: "int64"
+              historyborrowings:
+                type: "array"
+                items: 
+                  type: "object"
+                  properties:
+                    bookId:
+                      type: "integer"
+                      format: "int64"
+            example:
+              id: 5
+              name: Thomas
+              access: user
+              ratings: [
+                  {
+                    "bookId": 5,
+                    "rating": 4
+                  }
+                ]
+              bookmarks: [
+                  {
+                    "bookId": 5
+                  }
+                ]
+              borrowings: [
+                  {
+                    "bookId": 5
+                  }
+                ]
+              recommendations: [
+                  {
+                    "listId": 3
+                  }
+                ]
+              votes: [
+                  {
+                    "bookId": 3
+                  }
+                ]
+              historyborrowings: [
+                  {
+                    "bookId": 6
+                  }
+                ]
+        "401":
+          description: "Unauthorized"
+  /bookmarks/{userId}:
+    get:
+      tags:
+      - "bookmarks"
+      summary: "Find bookmarks of the given user"
+      operationId: "getBookmarksByUserId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "ID of the user whose bookmarks are returned"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "query"
+        name: "pageNumber"
+        type: "integer"
+        description: "The number of sets to skip before starting to collect the result set"
+      - in: "query"
+        name: "itemsPerPage"
+        type: "integer"
+        description: "The numbers of items to return"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+             $ref: "#/definitions/BookExtended"
+  /bookmarks:
+    post:
+      tags:
+      - "bookmarks"
+      summary: "Add a new bookmark to the users bookmarks"
+      operationId: "addBookmark"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Bookmark object that needs to be added to the user"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            userId:
+              type: "integer"
+              format: "int64"
+            bookId:
+              type: "integer"
+              format: "int64"
+          example:
+            userId: 5
+            bookId: 4
+      responses:
+        "200":
+          description: "successful operation"
+        "401":
+          description: "Unauthorized"
+    delete:
+      tags:
+      - "bookmarks"
+      summary: "Remove bookmarks"
+      operationId: "removeBookmark"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Bookmark object that needs to be removed"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            userId:
+              type: "integer"
+              format: "int64"
+            bookId:
+              type: "integer"
+              format: "int64"
+          example:
+            userId: 5
+            bookId: 4
+      responses:
+        "200":
+          description: "successful operation"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Bookmark not found"
+  /borrow/{userId}:
+      get:
+        tags:
+        - "borrow"
+        summary: "Returns the given users borrowed books"
+        operationId: "getBorrowedBooksByUserId"
+        produces:
+        - "application/json"
+        parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of the user whose borrowed books are returned"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "query"
+          name: "pageNumber"
+          type: "integer"
+          description: "The number of sets to skip before starting to collect the result set"
+        - in: "query"
+          name: "itemsPerPage"
+          type: "integer"
+          description: "The numbers of items to return"
+        responses:
+          "200":
+            description: "successful operation"
+            schema:
+              type: "array"
+              items:
+                $ref: "#/definitions/BookExtendedWithRemainingExtensions"
+  /borrow:
+    post:
+      tags:
+      - "borrow"
+      summary: "Borrow a book from the library"
+      description: ""
+      operationId: "addBorrowedBook"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Borrowed Book object that needs to be added to the borrowings of the user"
+        required: true
+        schema:
+          $ref: "#/definitions/Borrowing"
+      responses:
+        "200":
+          description: "successful operation"
+    delete:
+      tags:
+      - "borrow"
+      summary: "Remove borrowed book"
+      operationId: "removeBorrowedBook"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Borrowed Book object that needs to be removed"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            userId:
+              type: "integer"
+              format: "int64"
+            bookId:
+              type: "integer"
+              format: "int64"
+          example:
+            userId: 5
+            bookId: 4
+      responses:
+        "200":
+          description: "successful operation"
+        "400":
+          description: "Bad Request"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Borrowing not found"
+  /borrow/extend:
+    post:
+      tags:
+      - "borrow"
+      summary: "Extend the duration of the borrowing"
+      description: ""
+      operationId: "extendDuration"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Extension object"
+        required: true
+        schema:
+          $ref: "#/definitions/Borrowing"
+      responses:
+        "200":
+          description: "successful operation"
+        "400":
+          description: "Bad Request"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Borrowing not found"
+  /list:
+    post:
+      tags:
+      - "list"
+      summary: "Create a new list"
+      operationId: "createList"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created list object"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            userId:
+              type: "string"
+            date:
+              type: "string"
+            name:
+              type: "string"
+            description:
+              type: "string"
+          example:
+            userId: 5
+            date: "2022-02-27T19:23:01.571Z"
+            name: "My favorite list"
+            description: "There are my favorite books. Enjoy!"
+      responses:
+        "200":
+          description: "successful operation"
+    get:
+      tags:
+      - "list"
+      summary: "Returns the lists"
+      operationId: "getLists"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "query"
+        name: "pageNumber"
+        type: "integer"
+        description: "The number of sets to skip before starting to collect the result set"
+      - in: "query"
+        name: "itemsPerPage"
+        type: "integer"
+        description: "The numbers of items to return"
+      - in: "query"
+        name: "sort"
+        type: "string"
+        description: "The way the results should be sorted"
+        enum:
+          - newest
+          - oldest
+          - recommendations
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ListWithNumberOfBooks"
+        "404":
+          description: "Lists not found"
+    delete:
+      tags:
+      - "list"
+      summary: "Delete the specified list"
+      operationId: "deleteList"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "ID of the list that needs to be deleted"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            listId:
+              type: "integer"
+              format: "int64"
+          example:
+            listId: 5
+      responses:
+        "200":
+          description: "successful operation"
+        "404":
+          description: "List not found"
+  /list/user/{userId}:
+      get:
+        tags:
+        - "list"
+        summary: "Returns the given users lists"
+        operationId: "getListsByUserId"
+        produces:
+        - "application/json"
+        parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of the user whose lists are returned"
+          required: true
+          type: "integer"
+          format: "int64"
+        responses:
+          "200":
+            description: "successful operation"
+            schema:
+              $ref: "#/definitions/List"
+          "404":
+            description: "Lists not found"
+  /list/{listId}:
+      get:
+        tags:
+        - "list"
+        summary: "Returns the list specified by the ID"
+        operationId: "getListsById"
+        produces:
+        - "application/json"
+        parameters:
+        - name: "listId"
+          in: "path"
+          description: "ID of the list to return"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "query"
+          name: "pageNumber"
+          type: "integer"
+          description: "The number of sets to skip before starting to collect the result set"
+        - in: "query"
+          name: "itemsPerPage"
+          type: "integer"
+          description: "The numbers of items to return"
+        responses:
+          "200":
+            description: "successful operation"
+            schema:
+              $ref: "#/definitions/ListWithBooks"
+          "404":
+            description: "List not found"
+  /list/book:
+    post:
+      tags:
+      - "list"
+      summary: "Add a new book to the specified list"
+      operationId: "addBookToList"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created book object"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            listId:
+              type: "integer"
+              format: "int64"
+            bookId:
+              type: "integer"
+              format: "int64"
+          example:
+            listId: 4
+            bookId: 2
+      responses:
+        "200":
+          description: "successful operation"
+    delete:
+      tags:
+      - "list"
+      summary: "Remove book from the specified list"
+      operationId: "removeBookFromList"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Book object that needs to be removed"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            listId:
+              type: "integer"
+              format: "int64"
+            bookId:
+              type: "integer"
+              format: "int64"
+          example:
+            listId: 4
+            bookId: 2
+      responses:
+        "200":
+          description: "successful operation"
+        "404":
+          description: "Book not found"
+  /list/recommendation:
+    post:
+      tags:
+      - "list"
+      summary: "Add a new recommendation to the specified list"
+      operationId: "addRecommendationToList"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created recommendaiton object"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            userId:
+              type: "integer"
+              format: "int64"
+            bookId:
+              type: "integer"
+              format: "int64"
+          example:
+            listId: 4
+            bookId: 2
+      responses:
+        "200":
+          description: "successful operation"
+  /expand:
+    post:
+      tags:
+      - "expand"
+      summary: "Add a new book to the expand list"
+      operationId: "addBookToExpand"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created book object"
+        required: true
+        schema:
+          $ref: "#/definitions/BookWithUserId"
+      responses:
+        "200":
+          description: "successful operation"
+    get:
+      tags:
+      - "expand"
+      summary: "Returns the books from the expand list"
+      operationId: "getExpandBooks"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "query"
+        name: "pageNumber"
+        type: "integer"
+        description: "The number of sets to skip before starting to collect the result set"
+      - in: "query"
+        name: "itemsPerPage"
+        type: "integer"
+        description: "The numbers of items to return"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/BooksWithVotes"
+        "404":
+          description: "Books not found"
+    delete:
+      tags:
+      - "expand"
+      summary: "Remove book from the expand list"
+      operationId: "removeBookFromExpand"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Book object that needs to be removed"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            bookId:
+              type: "integer"
+              format: "int64"
+          example:
+            bookId: 2
+      responses:
+        "200":
+          description: "successful operation"
+        "404":
+          description: "Book not found"
+  /expand/vote:
+    post:
+      tags:
+      - "expand"
+      summary: "Add a new vote to the specified book"
+      operationId: "addVoteToExpand"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created vote object"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            userId:
+              type: "integer"
+              format: "int64"
+            bookId:
+              type: "integer"
+              format: "int64"
+          example:
+            userId: 4
+            bookId: 2
+      responses:
+        "200":
+          description: "successful operation"
+          
+  /historyborrow:
+    post:
+      tags:
+      - "historyborrow"
+      summary: "Record the borrowing event"
+      description: ""
+      operationId: "addHistoryBorrowedBook"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "History Borrowed Book object that needs to be added to the borrowings history of the user"
+        required: true
+        schema:
+          $ref: "#/definitions/Borrowing"
+      responses:
+        "200":
+          description: "successful operation"
+          
+  /historyborrow/{userId}:
+      get:
+        tags:
+        - "historyborrow"
+        summary: "Returns the given users borrowed books history"
+        operationId: "getHistoryBorrowedBooksByUserId"
+        produces:
+        - "application/json"
+        parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of the user whose borrowed book history is returned"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "query"
+          name: "pageNumber"
+          type: "integer"
+          description: "The number of sets to skip before starting to collect the result set"
+        - in: "query"
+          name: "itemsPerPage"
+          type: "integer"
+          description: "The numbers of items to return"
+        responses:
+          "200":
+            description: "successful operation"
+            schema:
+              type: "array"
+              items:
+                $ref: "#/definitions/BookExtendedWithDate"
+          "404":
+            description: "User identifier not found"
+        
+definitions:
+  Book:
+    type: "object"
+    properties:
+      author:
+        type: "string"
+      title:
+        type: "string"
+      category:
+        type: "string"
+      cover:
+        type: "string"
+      description:
+        type: "string"
+      pages:
+        type: "integer"
+        format: "int64"
+      year:
+        type: "integer"
+        format: "int64"
+      stock:
+        type: "integer"
+        format: "int64"
+    example:
+      author: "J.R.R. Tolkien"
+      title: "The Return of the King"
+      category: "Fantasy"
+      cover: "https://firebasestorage.googleapis.com/v0/b/graph-library-kl.appspot.com/o/covers%2F838729._SY475_.jpg?alt=media"
+      description: "In the third volume of The Lord of the Rings trilogy the good and evil forces join battle, and we see that the triumph of good is not absolute. The Third Age of Middle-earth ends, and the age of the dominion of Men begins."
+      pages: 385
+      year: 1955
+      stock: 2
+  BookExtended:
+    allOf:
+      - $ref: '#/definitions/Book'
+      - type: "object"
+        properties:
+          id:
+            type: "integer"
+            format: "int64"
+          rating:
+            type: "number"
+            format: "float"
+        example:
+          id: 6
+          rating: 4.32
+  BookExtendedWithNumberOfRatings:
+   allOf:
+      - $ref: '#/definitions/BookExtended'
+      - type: "object"
+        properties:
+          numberOfRatings:
+            type: "integer"
+            format: "int64"
+        example:
+          numberOfRatings: 12
+  BookExtendedWithRemainingExtensions:
+   allOf:
+      - $ref: '#/definitions/BookExtended'
+      - type: "object"
+        properties:
+          date:
+            type: "string"
+          remainingExtensions:
+            type: "integer"
+            format: "int64"
+        example:
+          date: "2022-02-27T19:23:01.571Z"
+          remainingExtensions: 1
+  BookExtendedWithDate:
+   allOf:
+      - $ref: '#/definitions/BookExtended'
+      - type: "object"
+        properties:
+          date:
+            type: "string"
+        example:
+          date: "2022-02-27T19:23:01.571Z"
+  BookWithUserId:
+   allOf:
+      - $ref: '#/definitions/Book'
+      - type: "object"
+        properties:
+          userId:
+            type: "integer"
+            format: "int64"
+        example:
+          userId: 12
+  BooksWithVotes:
+   allOf:
+      - $ref: '#/definitions/Book'
+      - type: "object"
+        properties:
+          id:
+            type: "integer"
+            format: "int64"
+          votes:
+            type: "integer"
+            format: "int64"
+        example:
+          id: 12
+          votes: 3
+  BookWithId:
+   allOf:
+      - $ref: '#/definitions/Book'
+      - type: "object"
+        properties:
+          id:
+            type: "integer"
+            format: "int64"
+        example:
+          id: 12
+  Borrowing:
+    type: "object"
+    properties:
+      userId:
+        type: "integer"
+        format: "int64"
+      bookId:
+        type: "integer"
+        format: "int64"
+      date:
+        type: "string"
+    example:
+          userId: 4
+          bookId: 13
+          date: "2022-02-27T19:23:01.571Z"
+  List:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      description:
+        type: "string"
+      date:
+        type: "string"
+      recommendations:
+        type: "integer"
+        format: "int64"
+    example:
+        id: 4
+        name: "My Favorite Books"
+        description: "There are my favorite books. Enjoy!"
+        date: "2022-02-27T19:23:01.571Z"
+        recommendations: 5
+  ListWithNumberOfBooks:
+   allOf:
+      - $ref: '#/definitions/List'
+      - type: "object"
+        properties:
+          numberOfBooks:
+            type: "integer"
+        example:
+          numberOfBooks: 7
+  ListWithBooks:
+   allOf:
+      - $ref: '#/definitions/List'
+      - type: "object"
+        properties:
+          books:
+            type: "array"
+            items: 
+             $ref: '#/definitions/BookExtended'
+        example:
+          books: [
+              {
+                author: "J.R.R. Tolkien",
+                title: "The Return of the King",
+                category: "Fantasy",
+                cover: "https://firebasestorage.googleapis.com/v0/b/graph-library-kl.appspot.com/o/covers%2F838729._SY475_.jpg?alt=media",
+                description: "In the third volume of The Lord of the Rings trilogy the good and evil forces join battle, and we see that the triumph of good is not absolute. The Third Age of Middle-earth ends, and the age of the dominion of Men begins.",
+                pages: 385,
+                year: 1955,
+                stock: 2,
+              }
+            ]
