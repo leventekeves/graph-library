@@ -1,244 +1,247 @@
 \Chapter{A minta alkalmazás}
 
-% TODO: Eg rövid áttekintés a könyvtári kölcsönzéses és hasonló célú alkalmazásokról. Jó, hogy ha van néhány hivatkozás is hozzá.
-A mintaalkalmazás egy könyvtár internetes felületét valósítja meg. Könyvek böngészésén és kölcsönzésén kívül lehetősége van a felhasználónak könyveket értékelni, hozzászólásokat írni, listákat létrehozni, könyveket könyvjelzőkhöz adni valamint új könyvekre igényt leadni. Ebben a fejezetben az alkalmazás által nyújtott funkciók részletes bemutatásáról, valamint az alkalmazás megvalósításáról lesz szó.
+% TODO: Egy rövid áttekintés a könyvtári kölcsönzéses és hasonló célú alkalmazásokról. Jó, hogy ha van néhány hivatkozás is hozzá.
+
+A mintaalkalmazás egy könyvtár adatainak kezelését valósítja meg online felületen. Könyvek böngészésén és kölcsönzésén kívül lehetősége van a felhasználónak könyveket értékelni, hozzászólásokat írni, listákat létrehozni, könyvjelzőket kezelni, valamint új könyvekre igényt leadni. Ebben a fejezetben az alkalmazás által nyújtott funkciók részletes bemutatásáról, valamint azok megvalósításáról lesz szó.
 
 \Section{Szerepkörök, használati esetek}
+
 % TODO: Ide egy felsorolás (esetleg egy use-case diagram) kerülhet az admin és a publikus funkciókról.
-Az alkalmazás use-case diagramja az alábbi ábrán található:
 
+Az alkalmazás használati eset (\textit{use-case}) diagramja \aref{fig:use-case}. ábrán található.
 
-\bigskip
-
-\sloppy
-\noindent Egy átlagos felhasználó az alkalmazásban az alábbi funkciókat tudja igénybe venni:
-\begin{itemize}
-    \item Felhasználói fiókkal kapcsolatos funkciók: regisztrálás, bejelentkezés, kijelentkezés, felhasználói adatok módosítása
-    \item Könyvkereséssel kapcsolatos funkciók: könyvek böngészése, könyvek szűrése, könyvek adatlapjának megnyitása
-    \item Könyvekkel adatlapján igénybe vehető funkciók: könyvek értékelése, komment írása, Könyv kikölcsönözése, Könyve könyvjelzőkhöz adása, illetve eltávolítása
-    \item Kölcsönzésekkel kapcsolatos funkciók: kölcsönzések böngészése, kölcsönzések meghosszabbítása, könyvek visszavitele, felhasználó kölcsönzése történetének megtekintése
-    \item Könyvjelzőkkel kapcsolatos funkciók: könyvjelzők böngészése, könyvjelzők eltávolítása
-    \item Listák böngészésével kapcsolatos funkciók: listák böngészése, rendezése, listák adatlapjának megtekintése, listák ajánlása
-    \item Saját listákkal kapcsolatos funkciók: új lista létrehozása, lista törlése, könyv listához adása, illetve eltávolítása
-    \item Könyvtárbővítéssel kapcsolatos funkciók: lehetséges könyvek közötti keresés, azok szavazásra bocsátása, szavazatra bocsátott könyvekre szavazás
-\end{itemize}
-\fussy
-
-\bigskip
-
-\noindent Admin jogosultságú felhasználó az alkalmazásban az alábbi funkciókat tudja igénybe venni:
-\begin{itemize}
-    \item Felhasználókkal kapcsolatos funkciók: felhasználói lista megtekintése, felhasználók kitiltása
-    \item Könyvekkel kapcsolatos funkciók: új könyv könyvtárhoz adása, meglévő könyvek módosítása, illetve törlése
-\end{itemize}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.6]{images/graphlibrary-usecase-better.png}
-    \caption{Az alkalmazás use-case diagramja}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.6]{images/graphlibrary-usecase-better.png}
+	\caption{Az alkalmazás használati esetei}
+	\label{fig:use-case}
 \end{figure}
 
+Egy átlagos felhasználó az alkalmazásban az alábbiakban felsorolt funkciókat tudja igénybe venni.
+\begin{itemize}
+    \item Felhasználói fiókkal kapcsolatos funkciók: regisztrálás, bejelentkezés, kijelentkezés, felhasználói adatok módosítása.
+    \item Könyvkereséssel kapcsolatos funkciók: könyvek böngészése, könyvek szűrése, \\ könyvek adatlapjának megnyitása.
+    \item A könyvek adatlapján igénybe vehető funkciók: könyvek értékelése, megjegyzés írása, könyv kikölcsönözése, könyv könyvjelzőkhöz adása, könyv eltávolítása.
+    \item Kölcsönzésekkel kapcsolatos funkciók: kölcsönzések böngészése, kölcsönzések \\ meghosszabbítása, könyvek visszavitele, felhasználó kölcsönzési történetének \\ megtekintése.
+    \item Könyvjelzőkkel kapcsolatos funkciók: könyvjelzők böngészése, könyvjelzők eltávolítása.
+    \item Listák böngészésével kapcsolatos funkciók: listák böngészése, rendezése, listák adatlapjának megtekintése, listák ajánlása.
+    \item Saját listákkal kapcsolatos funkciók: új lista létrehozása, lista törlése, könyv listához adása, könyv eltávolítása a listából.
+    \item Könyvtárbővítéssel kapcsolatos funkciók: lehetséges könyvek közötti keresés, azok szavazásra bocsátása, szavazatra bocsátott könyvekre szavazás.
+\end{itemize}
+
+Adminisztrátori jogosultságú felhasználó az alkalmazásban az alábbi funkciókat tudja igénybe venni.
+\begin{itemize}
+    \item Felhasználókkal kapcsolatos funkciók: felhasználói lista megtekintése, felhasználók kitiltása.
+    \item Könyvekkel kapcsolatos funkciók: új könyv könyvtárhoz adása, meglévő könyvek módosítása, könyvek törlése.
+\end{itemize}
+
 \Section{Funkciók, műveletek}
+
 % TODO: Itt már részletesebben ki lehet fejteni a kölcsönzést, a listázásokat, az értékelést.
+
 Ebben az alfejezetben bemutatásra kerül, hogy milyen funkciókkal van felruházva a mintaalkalmazás. A bemutatás az alkalmazás menüpontjain keresztül fog zajlani.
 
 \subsection{Books menüpont}
-A Books menüpont az alkalmazás központi része. Innen interaktálhat a felhasználó a könyvtárban található könyvekkel. A menüpont megnyitásakor az oldal közepén megjelennek a könyvtárban található könyvek. Egyszerre csak egy adott számú könyv jelenik meg, további könyveket a találatok alatt lévő lapszámozás funkció segítségével lehet elérni. A nyilakra kattintva egy-egy oldallal az adott irányba lehet lépni, míg egy adott számra kattintva az azzal megegyező sorszámú találatoldal fog megjelenni.
 
-\begin{figure}[H]
+A \textit{Books} menüpont az alkalmazás központi része (\ref{fig:books}. ábra). Innen érheti el a felhasználó a könyvtárban található könyvek adatait. A menüpont megnyitásakor az oldal közepén megjelennek a könyvtárban található könyvek. Egyszerre csak egy adott számú könyv jelenik meg, további könyveket a találatok alatt lévő lapszámozás funkció segítségével lehet elérni. A nyilakra kattintva egy-egy oldallal az adott irányba lehet lépni, míg egy adott számra kattintva az azzal megegyező sorszámú találatoldal fog megjelenni.
+
+\begin{figure}[h]
 \centering
 \includegraphics[scale=0.5]{images/application/books.png}
 \caption{A Books menüpont}
+\label{fig:books}
 \end{figure}
 
-\bigskip
+A megjelenő könyveket lehetősége van a felhasználónak szűrni. A könyvek felett található keresési mezőbe beírhatja a felhasználó egy könyv címét, vagy címének egy részletét, és ekkor csak a keresésnek megfelelő könyvek fognak megjelenni a listában. Ezen kívül lehetősége van még a felhasználónak a könyvektől balra található felületen megjelenési év, valamint kategória szerint is szűrni a találatokat. Ez a három szűrési lehetőség egyszerre is használható.
 
-A megjelenő könyveket lehetősége van a felhasználónak szűrni. A könyvek felett található keresési mezőbe beírhatja a felhasználó egy könyv címét, vagy címének egy részletét, és ekkor csak keresésnek megfelelő könyvek fognak megjelenni. Ezenkívül lehetősége van még a felhasználónak a könyvektől balra található felületen megjelenési év, valamint kategória szerint is szűrni a találatokat. Ez a három szűrési lehetőség egyszerre is használható.
+Minden megjelenő könyvhöz tartozik egy rövid összefoglaló. Ebben az összefoglalóban megtudhatja a felhasználó az adott könyv címét, a szerzőjét, oldalainak számát, kategóriáját, megjelenési évét, borítója, valamint a más felhasználók értékelésének átlagát. Egy összefoglalóra kattintva megjelenik az adott könyv adatlapja (\ref{fig:bookcard}. ábra).
 
-\bigskip
-
-Minden megjelenő könyvhöz tartozik egy rövid összefoglaló. Ebben az összefoglalóban megtudhatja a felhasználó az adott könyv címét, a szerzőjét, hosszát, kategóriáját, megjelenési évét, borítója, valamint más a felhasználók általi értékelések átlagát. Egy összefoglalóra kattintva megjelenik az adott könyv adatlapja.
-
-
-
-\bigskip
-
-Egy könyv adatlapját megnyitva megjelennek a könyv adatai: 
+Egy könyv adatlapját megnyitva megjelennek a könyv adatai, úgy mint: 
 \begin{itemize}
-    \item cím
-    \item szerző
-    \item rövid tartalmi összefoglaló
-    \item hossz
-    \item kategória
-    \item megjelenési év
-    \item értékelések átlaga
-    \item darab
+    \item cím,
+    \item szerző(k),
+    \item rövid tartalmi összefoglaló,
+    \item hossz,
+    \item kategória,
+    \item megjelenési év,
+    \item értékelések átlaga,
+    \item könyvtári példányok száma.
 \end{itemize}
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[scale=0.55]{images/application/bookcard.png}
     \caption{Egy könyv adatlapja}
+    \label{fig:bookcard}
 \end{figure}
 
 Az adatlap alatt más felhasználók által írt kommenteket találhat a felhasználó. Egy kommentnél az alábbi információk jelennek meg:
 \begin{itemize}
-    \item a kommentelő neve
-    \item a komment írásának dátuma
-    \item a komment szöveges tartalma
+    \item a kommentelő neve,
+    \item a komment írásának dátuma,
+    \item a komment szöveges tartalma.
 \end{itemize}
-Egy nem bejelentkezetett felhasználónak csak az adatlap megtekintésére van lehetősége. Egy bejelentkezett felhasználó számára további funkciók is elérhetővé válnak:
+Bejelentkezés nélkül a felhasználónak csak az adatlap megtekintésére van lehetősége. Egy bejelentkezett felhasználó számára az alábbi funkciók is elérhetővé válnak.
 \begin{itemize}
-    \item Az értékelések alatt lehetősége van egy regisztrált felhasználónak a könyv értékelésére 1 és 5 között.
+    \item Az értékelések alatt lehetősége van egy regisztrált felhasználónak a könyv értékelésére 1 és 5 közötti értékkel.
     \item  Az adatlap jobb felső sarkában a felhasználó a könyvjelzőihez adhatja a könyvet, vagy ha már ott volt, akkor eltávolíthatja azt onnan.
     \item  Az adatlap alján lehetősége van a felhasználónak az adott könyv kikölcsönzésére, amennyiben a könyv készleten van.
     \item  Az adatlap alatt írhat saját kommentet is a felhasználó.
 \end{itemize}
- Admin jogosultsággal rendelkező felhasználónak a könyv adatlapról lehetősége van még ezeken kívül a könyvet szerkeszteni, illetve törölni.
+Admin jogosultsággal rendelkező felhasználónak a könyv adatlapról lehetősége van még ezeken kívül a könyvet szerkeszteni, illetve törölni.
 
 \subsection{Lists menüpont}
-A Lists menüpontban lehetősége van a felhasználónak más felhasználók által készített listák megtekintésére, valamint saját listák menedzselésére. 
 
-\bigskip
+A \textit{Lists} menüpontban lehetősége van a felhasználónak más felhasználók által készített listák megtekintésére, valamint saját listák menedzselésére.
 
-A Browse Lists almenüpontra kattintva megjelennek a felhasználók által készített listák. A Books menüponthoz hasonlóan itt a lapszámozás funkció segítségével válthat a felhasználó a listák között. A listákat lehetősége van a felhasználónak ajánlások, illetve létrehozási dátum szerint rendezni. Minden listához tartozik egy összefoglaló, ami az alábbiakat tartalmazza:
+A \textit{Browse Lists} almenüpontra kattintva megjelennek a felhasználók által készített listák. A \textit{Books} menüponthoz hasonlóan itt a lapszámozás funkció segítségével válthat a felhasználó a listák között. A listákat lehetősége van a felhasználónak ajánlások, illetve létrehozási dátum szerint rendezni. Minden listához tartozik egy összefoglaló, ami az alábbiakat tartalmazza:
 \begin{itemize}
-    \item a lista neve
-    \item a listában levő könyvek száma
-    \item az ajánlások száma
-    \item a lista létrehozásának dátuma
+    \item a lista neve,
+    \item a listában levő könyvek száma,
+    \item az ajánlások száma,
+    \item a lista létrehozásának dátuma.
 \end{itemize}
- Egy lista összefoglalójára kattintva megjelenik a lista adatlapja.
+Egy lista összefoglalójára kattintva megjelenik a lista adatlapja (\ref{fig:listcard}. ábra).
 
-\bigskip
-
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[scale=0.65]{images/application/listcard.png}
     \caption{Egy lista adatlapja}
+    \label{fig:listcard}
 \end{figure}
 
 \noindent A lista adatlapján az alábbiak szerepelnek:
 \begin{itemize}
-    \item a lista neve
-    \item a lista leírása
-    \item listában levő könyvek száma
+    \item a lista neve,
+    \item a lista leírása,
+    \item listában levő könyvek száma,
     \item az ajánlások száma.
 \end{itemize}
 
 Az adatlap alatt láthatja a felhasználó, hogy pontosan mely könyvek vannak a listában. Bejelentkezett felhasználónak lehetősége van a lista ajánlására.
 
-\bigskip
+A \textit{New List} menüpontban a felhasználó egy listanév és egy leírás megadásával saját listát hozhat létre. A felhasználó a saját listáit a \textit{Delete List} menüpontban törölheti.
 
-A New List menüpontban a felhasználó egy listanév és egy leírás megadásával saját listát hozhat létre. A felhasználó a saját listáit a Delete List menüpontban törölheti.
-
-\bigskip
-
-Az Add Books To List menüpontban lehetősége van a felhasználónak kiválasztania egyet a listáit közül. Egy lista kiválasztása utána a "Books" menüpont felülete jelenik meg annyi különbséggel, hogy minden könyv elemhez tartozik egy Add gomb, amivel az adott könyv a listához rendelhető. A Remove Book From List menüpontban a lista kiválasztása után megjelennek a listához tartozó könyvek, melyeket a Remove gombra kattintva lehet eltávolítani az adott listából.
+Az \textit{Add Books To List} menüpontban lehetősége van a felhasználónak kiválasztania egyet a listái közül. Egy lista kiválasztása utána a \textit{Books} menüpont felülete jelenik meg annyi különbséggel, hogy minden könyv elemhez tartozik egy \textit{Add} gomb, amivel az adott könyv a listához rendelhető. A \textit{Remove Book From List} menüpontban a lista kiválasztása után megjelennek a listához tartozó könyvek, melyeket a \textit{Remove} gombra kattintva lehet eltávolítani az adott listából.
 
 \subsection{Expand menüpont}
-Az Expand menüpont lehetőséget nyújt a felhasználók számára, hogy a könyvtárban még nem található könyvekkel bővítsék a könyvtár készletét. 
 
-\bigskip
+Az \textit{Expand} menüpont lehetőséget nyújt a felhasználók számára, hogy a könyvtárban még nem található könyvekkel bővítsék a könyvtár készletét. 
 
-Az Add almenüpontban lehetősége van a felhasználónak cím, író és kategória szerint keresni a Google Books katalógusában. Keresés utána megjelennek a találatok, melyekhez tartozik egy-egy rövid összefoglaló, amely az alábbiakat tartalmazza:
+Az \textit{Add} almenüpontban lehetősége van a felhasználónak cím, író és kategória szerint keresni a Google Books katalógusában. Keresés után megjelennek a találatok, melyekhez tartozik egy-egy rövid összefoglaló, amely az alábbi adatokat tartalmazza:
 \begin{itemize}
-    \item cím
-    \item író
-    \item oldalszám
-    \item kategória
-    \item megjelenési év
-    \item tartalmi összegzés (kattintás után)
+    \item cím,
+    \item író,
+    \item oldalszám,
+    \item kategória,
+    \item megjelenési év,
+    \item tartalmi összegzés (kattintás után).
 \end{itemize}
-Minden találathoz tartozik egy Add gomb, amire ha rákattint a felhasználó, akkor a könyv szavazásra bocsátódik.
+Minden találathoz tartozik egy \textit{Add} gomb, amire ha rákattint a felhasználó, akkor a könyv szavazásra bocsátásra kerül.
 
-\bigskip
+A \textit{Vote} almenüpontban lehetősége van a felhasználónak szavazásra bocsátott könyvekre szavazni. Ha egy könyv elég szavazatot gyűjt, akkor az hozzáadódik a könyvtárhoz (\ref{fig:expand}. ábra).
 
-A Vote almenüpontban lehetősége van a felhasználónak szavazásra bocsátott könyvekre szavazni. Ha egy könyv elég szavazatot gyűjt, akkor az hozzáadódik a könyvtárhoz.
-
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[scale=0.6]{images/application/expand.png}
-    \caption{Bővítés menüpont - Szavazás funkció}
+    \caption{Bővítés menüpont -- Szavazás funkció}
+    \label{fig:expand}
 \end{figure}
 
 \subsection{Borrowings menüpont}
-A Borrowings menüpontban tudja a felhasználó megtekinteni a jelenlegi kölcsönzéseit. A könyvek a rövid összefoglaló formájukban jelennek meg. Minden megjelenő könyvtől jobbra találhatóak a kölcsönzéssel kapcsolatos információk, illetve lehetőségek. 
 
-\begin{figure}[H]
+A \textit{Borrowings} menüpontban tudja a felhasználó megtekinteni a jelenlegi kölcsönzéseit. A könyvek a rövid összefoglaló formájukban jelennek meg. Minden megjelenő könyvtől jobbra találhatóak a kölcsönzéssel kapcsolatos információk, illetve lehetőségek (\ref{fig:borrowings}. ábra). 
+
+\begin{figure}[h]
     \centering
     \includegraphics[scale=0.6]{images/application/borrowings.png}
     \caption{Kölcsönzések menüpont}
+    \label{fig:borrowings}
 \end{figure}
 
-\bigskip
-
-Egy könyv kikölcsönzése alapvetően 30 napig tart. Ezt az időtartamot a felhasználónak kétszer van lehetősége meghosszabbítani, mindegyik hosszabbítás 30 napot ad a teljes időtartamhoz, tehát egy felhasználó egy könyvet maximum 90 napig birtokolhat. Azt, hogy hány hosszabbítási lehetősége van a felhasználónak, és hogy meddig tart a kölcsönzési határidő, a könyvtől jobbra található részen láthatja a felhasználó. Az Extend gombra kattintva megtörténik a hosszabbítás, a Return gombra kattintva pedig a felhasználó visszaadja a könyvet a könyvtárnak. 
+Egy könyv kikölcsönzése alapvetően 30 napra szól. Ezt az időtartamot a felhasználónak kétszer van lehetősége meghosszabbítani, mindegyik hosszabbítás 30 napot ad a teljes időtartamhoz, tehát egy felhasználó egy könyvet maximum 90 napig tarthat magánál. Azt, hogy hány hosszabbítási lehetősége van a felhasználónak, és hogy meddig tart a kölcsönzési határidő, a könyvtől jobbra található részen láthatja a felhasználó. Az \textit{Extend} gombra kattintva megtörténik a hosszabbítás, a \textit{Return} gombra kattintva pedig a felhasználó visszaadja a könyvet a könyvtárnak. 
 
 \subsection{Bookmarks menüpont}
-A Bookmarks menüpontban megtekintheti a felhasználó a könyvjelzőit. A könyvek a rövid összefoglaló formájukban jelennek meg. Minden könyvhöz tartozik egy Remove gomb, amivel a felhasználó eltávolíthatja a könyvet a könyvjelzők közül.
 
-\begin{figure}[H]
+A \textit{Bookmarks} menüpontban megtekintheti a felhasználó a könyvjelzőit. A könyvek a rövid összefoglaló formájukban jelennek meg. Minden könyvhöz tartozik egy \textit{Remove} gomb, amivel a felhasználó eltávolíthatja a könyvet a könyvjelzők közül (\ref{fig:bookmarks}. ábra).
+
+\begin{figure}[h]
     \centering
     \includegraphics[scale=0.65]{images/application/bookmarks.png}
     \caption{Könyvjelzők menüpont}
+    \label{fig:bookmarks}
 \end{figure}
 
 \subsection{Signup menüpont}
-A Signup menüpontban hozhat létre a felhasználó saját felhasználói fiókot. Egy ilyen felhasználói fiók szükséges ahhoz, hogy az alkalmazás legtöbb funkciója igénybe vehető legyen. A regisztrációhoz meg kell adni egy nevet, egy egyedi email címet és egy jelszót. Már foglalt email cím megadási esetén a felhasználó hibaüzenetet kap.
+
+A \textit{Signup} menüpontban hozhat létre a felhasználó saját felhasználói fiókot. Egy ilyen fiók szükséges ahhoz, hogy az alkalmazás funkcióinak többsége igénybe vehető legyen. A regisztrációhoz meg kell adni egy nevet, egy egyedi email címet és egy jelszót. Már foglalt email cím megadása esetén a felhasználó hibaüzenetet kap.
 
 \subsection{Login menüpont}
-A Login menüpontban léphet be a felhasználó a létrehozott felhasználói fiókjába helyes email cím és jelszó kombináció megadása után. Hibás kombináció megadása esetén a felhasználói hibaüzenetet kap.
+
+A \textit{Login} menüpontban léphet be a felhasználó a létrehozott felhasználói fiókjába helyes email cím és jelszó kombináció megadása után. Hibás bejelentkezési adatok esetén a felhasználó hibaüzenetet kap.
 
 \subsection{Profile menüpont}
-A History gombra kattintva megtekintheti a felhasználó, hogy milyen korábbi kölcsönzései voltak.
 
-\bigskip
+A \textit{History} gombra kattintva megtekintheti a felhasználó, hogy milyen korábbi kölcsönzései voltak.
 
-A Change User Data gombra kattintva lehetősége van a felhasználónak a nevét, jelszavát és/vagy email címét megváltoztatni a jelenlegi jelszó megadása után. Hibás jelszó megadása esetén a felhasználó hibaüzenetet kap.
+A \textit{Change User Data} gombra kattintva lehetősége van a felhasználónak a nevét, jelszavát és/vagy email címét megváltoztatni a jelenlegi jelszó megadása után. Hibás adatok esetén a felhasználó hibaüzenetet kap.
 
 \subsection{Admin menüpont}
-Az Admin menüponthoz csak az admin jogosultsággal rendelkező felhasználóknak van hozzáférési joga. 
 
-\bigskip
+Az \textit{Admin} menüponthoz csak az adminisztrátor jogosultsággal rendelkező felhasználóknak van hozzáférési joga. 
 
-Az Add New Book gombra kattintva megjelenik egy űrlap, amelyen meg tudja adni az admin az új könyv címét, szerzőjét, rövid tartalmi összegzését, hosszát, kategóriáját, megjelenési évét, borítóját, és hogy hány darab van a könyvből készleten. Az Add Book gombra kattintva az űrlapon megadott könyv hozzáadódik a könyvtárhoz. 
+Az \textit{Add New Book} gombra kattintva megjelenik egy űrlap, amelyen meg tudja adni az adminisztrátor az új könyv címét, szerzőjét, rövid tartalmi összegzését, hosszát, kategóriáját, megjelenési évét, borítóját, és hogy hány darab van a könyvből készleten. Az \textit{Add Book} gombra kattintva az űrlapon megadott könyv hozzáadódik a könyvtárhoz (\ref{fig:newbook}. ábra).
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[scale=0.7]{images/application/newbook.png}
     \caption{Új könyv hozzáadása}
+    \label{fig:newbook}
 \end{figure}
 
-A User List gombra kattintva megjelenik az összes felhasználó neve és email címe. A Ban user gombra kattintva lehetősége van az adminnak egy felhasználó végleges kitiltására.
+A \textit{User List} gombra kattintva megjelenik az összes felhasználó neve és email címe (\ref{fig:userlist}. ábra). A \textit{Ban user} gombra kattintva lehetősége van az adminisztrátornak egy felhasználó végleges kitiltására.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[scale=0.7]{images/application/userlist.png}
     \caption{Felhasználói lista}
+    \label{fig:userlist}
 \end{figure}
 
 \Section{Az alkalmazás architektúrája}
+
 % TODO: Ide kellene egy áttekintő jellegű ábra az "elkészítendő" alkalmazás szerkezetéről. Ez mutatná be, hogy a felhasznált technológiák hogyan kapcsolódnak egymáshoz.
 
-Az alkalmazás architektúráját az alábbi ábra ábrázolja:
+Az alkalmazás architektúrájának fő elemeit \aref{fig:graphlibrary_architecture}. ábra foglalja össze.
 
-\begin{center}
+\begin{figure}[h]
+   \centering
    \includegraphics[scale=0.3]{images/graphlibrary_architecture.png}
-\end{center}
+   \caption{Az alkalmazás architektúrájának sematikus ábrája}
+   \label{fig:graphlibrary_architecture}
+\end{figure}
 
 A kliens a React könyvtár segítségével valósul meg. Az adatok a Neo4j gráfadatbázisban kerülnek tárolásra. A kettő közötti kommunikációt a NodeJS és az Express keretrendszer teszi lehetővé.
 
-\Section{Az API}
-Ebben az alfejezetben található az API tömör leírása. Az API részletes OpenAPI szabvány szerinti leírása külön fájlban megtalálható.
+\Section{Az alkalmazás API-ja}
+
+Ebben az alfejezetben található az API tömör leírása. Az API részletes, OpenAPI szabvány szerinti leírása külön (a \texttt{graph-library-api.yaml}) fájlban olvasható.
+
+A tervezés során szempont volt a REST architekturális stílus alkalmazása. A következőkben az API bemutatásánál a jellegzetességekre, döntési pontok indoklására kerül majd sor. (Az egyszerűbb, következetesen adódó esetek különösebb részletezése nem tünt szükségesnek.)
 
 \subsection{Könyvekkel kapcsolatos operációk}
+
+\Aref{tab:book}. táblázatban láthatjuk a könyvekhez kapcsolódó műveleteket. Ennek egy érdekesebb pontja több könyv adatainak visszaadása az azonosítók alapján. Ez egy GET típusú kérés, amelynél viszont paraméterként szerepelnie kell a könyvek azonosítóinak listájának. Mivel az egyidejűleg lekérdezésre kerülő könyvek száma lehetővé tette, ezért ez az útvonalban került megadásra.
+
 \renewcommand\tabularxcolumn[1]{m{#1}}
 \begin{center}
-\begin{table}[H]
+\begin{table}[h]
+\caption{Book operációk}
+\label{tab:book}
+\smallskip
 \begin{tabularx}{\textwidth}{ |l|c|Y|Y| } 
  \hline
- \multicolumn{1}{|c|}{\textbf{Útvonal}} & \textbf{Metódus} & \textbf{Paraméterek} & \textbf{Feladat} \\ 
+ \multicolumn{1}{|c|}{\texttt{Útvonal}} & \texttt{Metódus} & \texttt{Paraméterek} & \texttt{Feladat} \\ 
  \hhline{|=|=|=|=|}
  /book & POST & Könyv objektum & Új könyv létrehozása  \\ 
  \hline
@@ -255,32 +258,42 @@ Ebben az alfejezetben található az API tömör leírása. Az API részletes Op
  /book/rate & POST & Könyv és Felhasználó ID, Értékelés & Új értékelés hozzáadása  \\ 
  \hline
 \end{tabularx}
-\caption{Book operációk}
 \end{table}
 \end{center}
 
 \subsection{Kommentekkel kapcsolatos operációk}
+
+A kommentekhez kapcsolódó műveleteket \aref{tab:comment}. táblázatban láthatjuk. Mivel a megjegyzések utólagos szerkesztésére a rendszer (az aktuális változat tervei szerint) nem ad lehetőséget, ezért elegendő volt csak a könyvhöz tartozó kommentek lekérdezését és új komment létrehozását biztosítani az API-n keresztül.
+
 \begin{center}
-\begin{table}[H]
+\begin{table}[h]
+\caption{Comment operációk}
+\label{tab:comment}
+\smallskip
 \begin{tabularx}{\textwidth}{ |l|c|Y|Y| } 
  \hline
- \multicolumn{1}{|c|}{\textbf{Útvonal}} & \textbf{Metódus} & \textbf{Paraméterek} & \textbf{Feladat} \\ 
+ \multicolumn{1}{|c|}{\texttt{Útvonal}} & \texttt{Metódus} & \texttt{Paraméterek} & \texttt{Feladat} \\ 
  \hhline{|=|=|=|=|}
  /comment/\{bookId\} & GET & Könyv ID & Könyvhöz tartozó kommentek visszaadása  \\ 
  \hline
  /comment & POST & Komment objektum & Új komment létrehozása  \\ 
  \hline
 \end{tabularx}
-\caption{Comment operációk}
 \end{table}
 \end{center}
 
 \subsection{Listákkal kapcsolatos operációk}
+
+A listákhoz tartozó műveleteket \aref{tab:list}. táblázat foglalja össze. A könyvekhez és kommentekhez hasonlóan, az API nem teljes körű olyan tekintetben, hogy például az ajánlásokhoz nem biztosít minden CRUD műveletet. Ez ez esetben sem következetlenség, hanem a specifikált funkcionalitás nem tette szükségessé ezen végpontok kialakítását.
+
 \begin{center}
-\begin{table}[H]
+\begin{table}[h]
+\caption{List operációk}
+\label{tab:list}
+\smallskip
 \begin{tabularx}{\textwidth}{ |l|c|Y|Y| } 
  \hline
- \multicolumn{1}{|c|}{\textbf{Útvonal}} & \textbf{Metódus} & \textbf{Paraméterek} & \textbf{Feladat} \\ 
+ \multicolumn{1}{|c|}{\texttt{Útvonal}} & \texttt{Metódus} & \texttt{Paraméterek} & \texttt{Feladat} \\ 
  \hhline{|=|=|=|=|}
  /list & POST & Lista objektum & Új lista létrehozása  \\ 
  \hline
@@ -288,7 +301,7 @@ Ebben az alfejezetben található az API tömör leírása. Az API részletes Op
  \hline
  /list & DELETE & Lista ID & Lista törlése  \\ 
  \hline
- /list/user\{userId\} & GET & Felhasználó ID & Felhasználó listáinak visszaadása  \\ 
+ /list/user/\{userId\} & GET & Felhasználó ID & Felhasználó listáinak visszaadása  \\ 
  \hline
  /list/\{listId\} & GET & Könyv objektum & ID-nek megfelelő lista visszaadása  \\ 
  \hline
@@ -299,16 +312,21 @@ Ebben az alfejezetben található az API tömör leírása. Az API részletes Op
  /list/recommendation & POST & Lista ID & Új ajánlás hozzáadása  \\ 
  \hline
 \end{tabularx}
-\caption{List operációk}
 \end{table}
 \end{center}
 
 \subsection{Bővítéssel kapcsolatos operációk}
+
+A könyvállomány bővítéséhez kapcsolódó műveleteket \aref{tab:expand}. táblázatban láthatjuk. Ez egyúttal tartalmazza a szavazáshoz szükséges végpontot is.
+
 \begin{center}
 \begin{table}[H]
+\caption{Expand operációk}
+\label{tab:expand}
+\smallskip
 \begin{tabularx}{\textwidth}{ |l|c|Y|Y| } 
  \hline
- \multicolumn{1}{|c|}{\textbf{Útvonal}} & \textbf{Metódus} & \textbf{Paraméterek} & \textbf{Feladat} \\ 
+ \multicolumn{1}{|c|}{\texttt{Útvonal}} & \texttt{Metódus} & \texttt{Paraméterek} & \texttt{Feladat} \\ 
  \hhline{|=|=|=|=|}
  /expand & POST & Könyv objektum, Felhasználó ID & Új potenciális könyv létrehozása  \\ 
  \hline
@@ -319,16 +337,21 @@ Ebben az alfejezetben található az API tömör leírása. Az API részletes Op
  /expand/vote & POST & Könyv ID, Felhasználó ID & Új szavazás hozzáadása  \\ 
  \hline
 \end{tabularx}
-\caption{Expand operációk}
 \end{table}
 \end{center}
 
 \subsection{Kölcsönzésekkel kapcsolatos operációk}
+
+A kölcsönzés esetében \aref{tab:borrow}. táblázatban látható műveletek érhetők el. A kölcsönzést leíró objektum átadása esetén a felhasználói azonosítónak nem szükséges szerepelnie az útvonalban.
+
 \begin{center}
-\begin{table}[H]
-\begin{tabularx}{\textwidth}{ |l|c|Y|Y| } 
+\begin{table}[h]
+\caption{Borrow operációk}
+\label{tab:borrow}
+\smallskip
+\begin{tabularx}{\textwidth}{ |l|c|Y|Y| }
  \hline
- \multicolumn{1}{|c|}{\textbf{Útvonal}} & \textbf{Metódus} & \textbf{Paraméterek} & \textbf{Feladat} \\ 
+ \multicolumn{1}{|c|}{\texttt{Útvonal}} & \texttt{Metódus} & \texttt{Paraméterek} & \texttt{Feladat} \\ 
  \hhline{|=|=|=|=|}
  /borrow/\{userId\} & GET & Felhasználó ID & Felhasználó kölcsönzéseinek visszaadása\\ 
  \hline
@@ -339,16 +362,23 @@ Ebben az alfejezetben található az API tömör leírása. Az API részletes Op
  /borrow/extend & POST & Kölcsönzés objektum & Kölcsönzés meghosszabbítása \\ 
  \hline
 \end{tabularx}
-\caption{Borrow operációk}
 \end{table}
 \end{center}
 
+\pagebreak
+
 \subsection{Könyvjelzőkkel kapcsolatos operációk}
+
+A könyvjelzők műveleteinek áttekintését \aref{tab:bookmarks}. táblázatban láthatjuk. A törlésnél elegendő volt csak a könyvet átadni paraméterként, mivel abból egyértelműen azonosítható a könyvjelző objektum is.
+
 \begin{center}
-\begin{table}[H]
+\begin{table}[h]
+\caption{Bookmarks operációk}
+\label{tab:bookmarks}
+\smallskip
 \begin{tabularx}{\textwidth}{ |l|c|Y|Y| } 
  \hline
- \multicolumn{1}{|c|}{\textbf{Útvonal}} & \textbf{Metódus} & \textbf{Paraméterek} & \textbf{Feladat} \\ 
+ \multicolumn{1}{|c|}{\texttt{Útvonal}} & \texttt{Metódus} & \texttt{Paraméterek} & \texttt{Feladat} \\ 
  \hhline{|=|=|=|=|}
  /bookmarks/\{userId\} & GET & Felhasználó ID & Felhasználó könyvjelzőinek visszaadása\\ 
  \hline
@@ -357,16 +387,21 @@ Ebben az alfejezetben található az API tömör leírása. Az API részletes Op
  /bookmarks & DELETE & Könyv objektum & Könyvjelző törlése \\ 
  \hline
 \end{tabularx}
-\caption{Bookmarks operációk}
 \end{table}
 \end{center}
 
 \subsection{Felhasználókkal kapcsolatos operációk}
+
+A felhasználók kezeléséhez tartozó műveleteket \aref{tab:user}. táblázat foglalja össze. A módosítással és törléssel kapcsolatos adatok a POST és a PUT kérés paramétereibe kerültek. Alternatívaként felvetődött a felhasználói azonosító útvonalban történő megadása is.
+
 \begin{center}
-\begin{table}[H]
+\begin{table}[h]
+\caption{User operációk}
+\label{tab:user}
+\smallskip
 \begin{tabularx}{\textwidth}{ |l|c|Y|Y| } 
  \hline
- \multicolumn{1}{|c|}{\textbf{Útvonal}} & \textbf{Metódus} & \textbf{Paraméterek} & \textbf{Feladat} \\ 
+ \multicolumn{1}{|c|}{\texttt{Útvonal}} & \texttt{Metódus} & \texttt{Paraméterek} & \texttt{Feladat} \\ 
  \hhline{|=|=|=|=|}
  /user & POST & Felhasználó objektum & Új felhasználói fiók létrehozása  \\ 
  \hline
@@ -379,23 +414,27 @@ Ebben az alfejezetben található az API tömör leírása. Az API részletes Op
  /user/login & POST & Bejelentkezési adatok & Felhasználói fiókba való bejelentkezés \\ 
  \hline
 \end{tabularx}
-\caption{User operációk}
 \end{table}
 \end{center}
 
 \subsection{Kölcsönzési történettel kapcsolatos operációk}
+
+\Aref{tab:historyborrow}. táblázat a kölcsönzés naplózásához szükséges API végpontok rövid áttekintését mutatja be. Az ehhez tartozó bejegyzések módosítása és törlése nem tünt szükségesnek, így az API kifejezetten egyszerű tudott maradni.
+
 \begin{center}
-\begin{table}[H]
+\begin{table}[h]
+\caption{Historyborrow operációk}
+\label{tab:historyborrow}
+\smallskip
 \begin{tabularx}{\textwidth}{ |l|c|Y|Y| } 
  \hline
- \multicolumn{1}{|c|}{\textbf{Útvonal}} & \textbf{Metódus} & \textbf{Paraméterek} & \textbf{Feladat} \\ 
+ \multicolumn{1}{|c|}{\texttt{Útvonal}} & \texttt{Metódus} & \texttt{Paraméterek} & \texttt{Feladat} \\ 
  \hhline{|=|=|=|=|}
  /historyborrow & POST & Felhasználó ID, Könyv ID, Dátum & Kölcsönzés naplózása  \\ 
  \hline
  /historyborrow/\{userID\} & GET & Felhasználó ID, Pagination információk & Kölcsönzése történet visszaadása  \\ 
  \hline
 \end{tabularx}
-\caption{Historyborrow operációk}
 \end{table}
 \end{center}
 
@@ -404,337 +443,396 @@ Ebben az alfejezetben található az API tömör leírása. Az API részletes Op
 %Általános React információk, alapvető kliens felépítés, információk
 
 % https://hu.reactjs.org/tutorial/tutorial.html#what-is-react idézet:
-A kliens alkalmazás a React könyvtárral valósul meg. "A React egy deklaratív, effektív, és rugalmas JavaScript könyvtár, felhasználói felületek készítéséhez. Lehetővé teszi komplex felhasználói felületek összeállítását izolált kódrészletekből, amiket “komponenseknek” hívunk." \cite{react}
+A kliens alkalmazás a React JavaScript függvénykönyvtárral valósul meg \cite{react}. Ez lehetőséget ad az elemek deklaratív leírására. Komponens alapú szemléletet követ, amellyel így a nagyobb méretű alkalmazások fejlesztése esetében is kezelhető marad a kódbázis.
 
-A komponensek közötti adatcsere úgynevezett propokkal vannak megvalósítva. Például:
-\begin{lstlisting}
-    <BookItem
-        title={"The Fellowship of the Ring"}
-        author={"J.R.R. Tolkien"}
-     />
-\end{lstlisting}
-Ebben a példában a BookItem komponens két propot kap, title és book, amiket a komponens később fel tud használni. Ahhoz, hogy ezek elérhetők legyenek, a komponens deklarációjakor be kell állítani, hogy fogadjon propokat:
-\begin{lstlisting}
-    const BookItem = (props) => {...}
-\end{lstlisting}
+% "A React egy deklaratív, effektív, és rugalmas JavaScript könyvtár, felhasználói felületek készítéséhez. Lehetővé teszi komplex felhasználói felületek összeállítását izolált kódrészletekből, amiket “komponenseknek” hívunk." \cite{react}
 
-Ezután például a title prop értékét meg lehet kapni a props.title-re utalva.
+A komponensek közötti adatcsere property-kkel (úgynevezett \textit{prop}-okkal) valósul meg, például:
+\begin{java}
+<BookItem
+  title={"The Fellowship of the Ring"}
+  author={"J.R.R. Tolkien"}
+/>
+\end{java}
+Ebben a példában a \texttt{BookItem} komponens két prop-ot kap (\texttt{title} és \texttt{book}), amiket a komponens később fel tud használni. Ahhoz, hogy ezek elérhetők legyenek, a komponens deklarációjakor be kell állítani, hogy fogadjon propokat:
+\begin{java}
+const BookItem = (props) => {...}
+\end{java}
+Ez után például a \texttt{title} prop értékét meg lehet kapni a \texttt{props.title} formában.
 
-\bigskip
-
-Az alkalmazás inicializálása a create-react-app eszközzel történik, aminek a lépései a következők Node package manager esetében:
+Az alkalmazás inicializálása a \texttt{create-react-app} eszközzel történik, aminek a lépései a következők Node package manager esetében:
 \begin{itemize}
-    \item npm install -g create-react-app parancs futtatása, ami telepíti az eszközt
-    \item npm init react-app my-app parancs futtatása, ami inicializálja a React alkalmazást
-    \item npm start parancs futtatása, ami elindítja az alkalmazást
+    \item \texttt{npm install -g create-react-app} parancs futtatása, ami telepíti az eszközt
+    \item \texttt{npm init react-app my-app} parancs futtatása, ami inicializálja a React alkalmazást
+    \item \texttt{npm start} parancs futtatása, ami elindítja az alkalmazást
 \end{itemize}
 
-\bigskip
-A useState React Hook segítségével deklarálhatunk úgynevezett állapot változókat. Ezek olyan változók, amelyek a komponens újrarenderelésekor nem veszítik el értéküket. Például:
-\begin{lstlisting}
-  const [book, setBook]=useState("The Fellowship of the Ring")
-\end{lstlisting}
-Itt a book a változó, aminek kezdőértéke a The Fellowship of the Ring string. A változó értékét a setBook függvénnyel lehet megváltoztatni:
-\begin{lstlisting}
-  setBook("The Two Towers")
-\end{lstlisting}
-Ezzel a változó értéke a "The Two Towers" stringre változik. A változó értékének változásakor a komponens újrarenderelődik.
+A \texttt{useState} React Hook segítségével deklarálhatunk úgynevezett állapot változókat. Ezek olyan változók, amelyek a komponens újrarajzolásakor nem veszítik el értéküket. Például:
+\begin{java}
+const [book, setBook]=useState("The Fellowship of the Ring")
+\end{java}
+Itt a \texttt{book} a változó, aminek kezdőértéke a "\textit{The Fellowship of the Ring}" sztring. A változó értékét a \texttt{setBook} függvénnyel lehet megváltoztatni:
+\begin{java}
+setBook("The Two Towers")
+\end{java}
+Ezzel a változó értéke a "The Two Towers" sztringre változik. A változó értékének változásakor a komponens ez esetben is újrarajzolódik.
 
 %useeffect, cleanup
-\begin{lstlisting}
-  useEffect(() => {
-    getBook(bookId).then((data) => {
+\begin{java}
+useEffect(() => {
+  getBook(bookId).then((data) => {
+    setBook(data);
+  });
+}, [bookId]);
+\end{java}
+Ebben a \texttt{useEffect}-ben található kód lefut, hogy ha a \texttt{bookId} értéke megváltozik. Futáskor küld egy GET kérést a backend-nek, majd a megkapott adatot átadja a \texttt{book} állapot változónak a \texttt{setBook} függvényt felhasználva. Viszont, ha a kérés elküldése, és a \texttt{setBook} függvény futása között a komponens úgymond lecsatlakozik, tehát például átlépünk egy olyan részére az alkalmazásnak, ahol az adott komponens nincs renderelve, akkor memória szivárgást kapunk. Ennek elkerülése érdekében egy \texttt{cleanup} függvényt kell tennünk a \texttt{useEffect}-be. A \texttt{cleanup} függvény lefut a komponens lecsatlakozásakor. A \texttt{cleanup} függvény alakja:
+\begin{java}
+return () => {...}
+\end{java}
+Végeredményben a kiegészített \texttt{useEffect} Hook így fog kinézni:
+\begin{java}
+useEffect(() => {
+  let isActive = true;
+  getBook(bookId).then((data) => {
+    if (isActive) {
       setBook(data);
-    });
-  }, [bookId]);
-\end{lstlisting}
-
-Ebben a useEffect-ben található kód lefut, hogy ha a bookId értéke megváltozik. Futáskor küld egy GET request-et a backendnek, majd a megkapott adatot átadja a book állapot változónak a setBook függvényt felhasználva. Viszont, ha a kérés elküldése, és a setBook függvény futása között a komponens úgymond lecsatlakozik, tehát például átlépünk egy olyan részére az alkalmazásnak, ahol az adott komponens nincs renderelve, akkor memory leak-et kapunk. Ennek elkerülése érdekében egy cleanup függvényt kell tennünk a useEffect-be. A cleanup függvény lefut a komponens lecsatlakozásakor. A cleanup függvény alakja:
-
-\begin{lstlisting}
-    return () => {...}
-\end{lstlisting}
-Tehát a kiegészített useEffect Hook így fog kinézni:
-\begin{lstlisting}
-  useEffect(() => {
-    let isActive = true;
-    getBook(bookId).then((data) => {
-      if (isActive) {
-        setBook(data);
-      }
-    });
-
-    return () => {
-      isActive = false;
-    };
-  }, [bookId]);
-\end{lstlisting}
-Ebben az esetben, a setBook csak akkor fut le, hogy ha az isActive változó igaz. A komponens lecsatlakozásakor le fog futni a cleanup függvény, tehát az isActive értéke hamis lesz, tehát a setBook nem fog lefutni, így nem lesz memory leak.
-
-\bigskip
+    }
+  });
+  return () => {
+    isActive = false;
+  };
+}, [bookId]);
+\end{java}
+Ebben az esetben, a \texttt{setBook} csak akkor fut le, hogy ha az \texttt{isActive} változó igaz. A komponens lecsatlakozásakor le fog futni a \texttt{cleanup} függvény, tehát az \texttt{isActive} értéke hamis lesz, tehát a \texttt{setBook} nem fog lefutni, így nem lesz memória szivárgás.
 
 A továbbiakban az alkalmazás komponensei kerülnek bemutatásra.
 
 \subsection{Navigáció}
-Az oldalon történő navigáció a React Router segítségével van megvalósítva. A React Rotuer egy React könyvtár, aminek fő célja, hogy segítse a komponensek közötti navigációt. Ehhez először az index.js fájlban az App komponenst BrowserRouter komponensbe kell helyezni:  
-\begin{lstlisting}
-     <BrowserRouter>
-      <App />
-    </BrowserRouter>     
-\end{lstlisting}
 
-Ezután az App.js fájlban a Switch komponensbe lehet írni a különböző Route-okat. A Switch komponens az első egyező útvonalú Route-ot fogja renderelni. A Route szintén egy komponens, amelynek a path paraméterében lehet megadni a kívánt elérési útvonalat, majd a komponensbe el lehet helyezni a renderelni kívánt komponenst, például: 
-\begin{lstlisting}
-    <Route path="/books" exact>
-      <BooksPage />
-    </Route>    
-\end{lstlisting}
-
-Ez azt jelenti, hogy ha az útvonal pontosan /books (az exact miatt), akkor a BooksPage komponens lesz renderelve. Egy route elérése feltételhez is szabható, például így: 
-\begin{lstlisting}
-    {authCtx.isLoggedIn && (
-      <Route path="/profile">
-        <ProfilePage />
-      </Route>
-    )}
-\end{lstlisting}
-
-Így csak akkor renderelődik a ProfilePage komponens, ha a felhasználó be van jelentkezve. Van lehetőség arra is, hogy ha egyik útvonalra se illik a megadott URL, akkor egy bizonyos komponens legyen renderelve. Ez úgy érhető el, hogy az utolsó Route komponensnek path="*" paramétert adunk.
+Az oldalon történő navigáció a React Router segítségével került megvalósításra. A React Rotuer egy React könyvtár, aminek fő célja, hogy segítse a komponensek közötti navigációt. Ehhez először az \texttt{index.js} fájlban az \texttt{App} komponenst \texttt{BrowserRouter} komponensbe kell helyezni:  
+\begin{java}
+<BrowserRouter>
+  <App />
+</BrowserRouter>     
+\end{java}
+Ez után az \texttt{App.js} fájlban a \texttt{Switch} komponensbe lehet írni a különböző \texttt{Route}-ot. A \texttt{Switch} komponens az első egyező útvonalú \texttt{Route}-ot fogja renderelni. A \texttt{Route} szintén egy komponens, amelynek a \texttt{path} paraméterében lehet megadni a kívánt elérési útvonalat, majd a komponensbe el lehet helyezni a renderelni kívánt komponenst, például: 
+\begin{java}
+<Route path="/books" exact>
+  <BooksPage />
+</Route>    
+\end{java}
+Ez azt jelenti, hogy ha az útvonal pontosan \texttt{/books} (az \texttt{exact} miatt), akkor a \\ \texttt{BooksPage} komponens lesz renderelve. Egy útvonal eléréséhez feltételhez is szabható, például így:
+\begin{java}
+{authCtx.isLoggedIn && (
+  <Route path="/profile">
+    <ProfilePage />
+  </Route>
+)}
+\end{java}
+Így csak akkor renderelődik a \texttt{ProfilePage} komponens, ha a felhasználó be van jelentkezve. Van lehetőség arra is, hogy ha egyik útvonalra se illik a megadott URL, akkor egy bizonyos komponens legyen renderelve. Ez úgy érhető el, hogy az utolsó \texttt{Route} komponensnek \texttt{path="*"} paramétert adunk.
 
 \subsection{Authentication Context}
-%bővíthető
+
 A Context API segítségével egyszerűsíteni lehet a komponensek közötti adatcserét. Ebben az alkalmazásban a felhasználóhoz tartozó információk tárolására van felhasználva a Context API. Mivel a felhasználói adatok szinte minden komponensben fel vannak használva valamilyen módon, célszerű volt ezt a megoldást implementálni. 
 
-\bigskip
-
-A context az auth-context.js fájlban van inicializálva. A context először bejelentkezéskor kap értéket. Bizonyos komponensekben ezek az értékek változhatnak, bővülhetnek. A komponensek a useContext React Hook-al tudják elérni a context-et.
+A \texttt{context} az \texttt{auth-context.js} fájlban van inicializálva. A \texttt{context} először bejelentkezéskor kap értéket. Bizonyos komponensekben ezek az értékek változhatnak, bővülhetnek. A komponensek a \texttt{useContext} React Hook-al tudják elérni a \texttt{context}-et.
 
 \subsection{Books komponensek}
-Az alábbi komponensek felelősek a Books menüpont megvalósításáért.
+
+Az alábbi komponensek felelősek a \textit{Books} menüpont megvalósításáért.
 
 \subsubsection{BooksContent komponens}
-A BooksContent felelős a Books menüpontért, valamint a Lists menüpont Add Books To List funkciójáért. Felhasználja a BookFilters és a BookList komponenseket.
 
-\bigskip
+A \texttt{BooksContent} felelős a \textit{Books} menüpontért, valamint a \textit{Lists} menüpont \textit{Add Books To List} funkciójáért. Felhasználja a \texttt{BookFilters} és a \texttt{BookList} komponenseket.
 
-A könyvek szűréséhez felhasználja a useHistory és useLocation React Router Hook-okat. A komponens az URL-ben található query paramétereket használja fel a szűréshez, ez lehetővé teszi, hogy a megfelelő URL-t felhasználva egy specifikus szűrést kapjunk. Például, a /books?category=Fantasy\&year=1988\&search=Two  URL-t felhasználva olyan 1988-ban megjelent Fantasy kategóriájú könyveket kapnánk vissza, amiknek a címében szerepel a Two szó.
+A könyvek szűréséhez felhasználja a \texttt{useHistory} és \texttt{useLocation} React Router Hook-okat. A komponens az URL-ben található query paramétereket használja fel a szűréshez. Ez lehetővé teszi, hogy a megfelelő URL-t felhasználva egy specifikus szűrést kapjunk. Például, a
+\begin{java}
+/books?category=Fantasy\&year=1988\&search=Two
+\end{java}
+URL-t felhasználva olyan 1988-ban megjelent Fantasy kategóriájú könyveket kapnánk vissza, amelyeknek a címében szerepel a \textit{Two} szó.
 
-\bigskip
-
-A BooksContent komponens a Books menün kívül a Lists menüben is felhasználásra kerül. Itt a felhasználó hozzáadhat olyan könyveket a listájához, amik korábban még nem adott hozzá. Ahhoz, hogy ezt a komponens tudja, először le kell kérdeznie az adott lista könyveit, majd a találatok közül ki kell szűrnie ezeket a könyveket. Eközben a további szűrési lehetőségek továbbra is funkcionálisak.
+A \texttt{BooksContent} komponens a \textit{Books} menün kívül a \textit{Lists} menüben is felhasználásra kerül. Itt a felhasználó hozzáadhat olyan könyveket a listájához, amik korábban még nem adott hozzá. Ahhoz, hogy ezt a komponens tudja, először le kell kérdeznie az adott lista könyveit, majd a találatok közül ki kell szűrnie ezeket a könyveket. Eközben a további szűrési lehetőségek továbbra is funkcionálisak.
 
 \subsubsection{BookFilters komponens}
-A BookFilters komponens lehetőséget biztosít, hogy valamilyen szempont szerint szűrjük a megjelenő könyveket. A kiválasztott kategóriát vagy megjelelési évet átadja a BooksContent komponensnek. Szükség esetén a szűrök alaphelyzetre állíthatók a "Reset Filters" gombbal.
+
+A \texttt{BookFilters} komponens lehetőséget biztosít, hogy valamilyen szempont szerint szűrjük a megjelenő könyveket. A kiválasztott kategóriát vagy megjelelési évet átadja a \texttt{BooksContent} komponensnek. Szükség esetén a szűrök alaphelyzetre állíthatók a \textit{Reset Filters} gombbal.
 
 \subsubsection{BookList komponens}
-A BookList komponens feladata, hogy elvégezze a megkapott könyv tömb kilistázását. Ahhoz, hogy ez megvalósuljon, minden könyv elemre létrehoz egy BookItem komponenst, amiknek átadja a könyvek adatait. Opcionálisan kaphat, és átadhat egy action nevű paramétert is, amivel a létrehozott BookItem komponensek kaphatnak további funkciókat, attól függően, hogy mi volt az átadott action paraméter. Ez a paraméter lehet például bookmark értékű, ami azt jelenti, hogy a kilistázandó könyvek a Bookmarks menüpontban fognak megjelenni.
+
+A \texttt{BookList} komponens feladata, hogy elvégezze a megkapott könyv tömb kilistázását. Ahhoz, hogy ez megvalósuljon, minden könyv elemre létrehoz egy \texttt{BookItem} komponenst, amiknek átadja a könyvek adatait. Opcionálisan kaphat, és átadhat egy \texttt{action} nevű paramétert is, amivel a létrehozott \texttt{BookItem} komponensek kaphatnak további funkciókat, attól függően, hogy mi volt az átadott \texttt{action} paraméter. Ez a paraméter lehet például \texttt{bookmark} értékű, ami azt jelenti, hogy a kilistázandó könyvek a \textit{Bookmarks} menüpontban fognak megjelenni.
 
 Ezenkívül a komponens kölcsönzések és könyvjelzők törlése esetén figyelemmel kíséri a könyvek számát. Ha a könyvek száma eléri a nullát, akkor értesíti erről a felhasználót.
 
 \subsubsection{BookItem komponens}
-Egy BookItem komponens felelős minden kilistázott könyv adatainak megjelenítésére, valamint számos könyvekkel való feladat ellátására. A könyvhöz tartozó információkon kívül megjeleníthet még 5 különböző gombot. Azt, hogy melyik gomb, illetve gombok jelennek meg, a BookList által átadott action paraméter határozza meg:
+
+Egy \texttt{BookItem} komponens felelős minden kilistázott könyv adatainak megjelenítésére, valamint számos könyvekkel való feladat ellátására. A könyvhöz tartozó információkon kívül megjeleníthet még 5 különböző gombot. Azt, hogy melyik gomb, illetve gombok jelennek meg, a \texttt{BookList} által átadott \texttt{action} paraméter határozza meg.
 \begin{itemize}
-    \item add action esetén a megjelenő ADD gomb segítségével a felhasználó hozzáadhatja az adott könyvet egy listához
-    \item remove action esetén a megjelenő REMOVE gomb segítségével a felhasználó eltávolíthatja az adott könyvet egy listából
-    \item borrow action esetén két gomb jelenik meg: a RETURN gomb segítségével a kikölcsönzött könyvet viheti vissza, az EXTEND gomb segítségével pedig a kölcsönzés időtartamát hosszabbíthatja meg
-    \item bookmark action esetén a megjelenő REMOVE gomb segítségével a felhasználó eltávolíthatja az adott könyvet a könyvjelzők közül
+    \item \texttt{add} érték esetén a megjelenő \textit{ADD} gomb segítségével a felhasználó hozzáadhatja az adott könyvet egy listához.
+    \item \texttt{remove} érték esetén a megjelenő \textit{REMOVE} gomb segítségével a felhasználó eltávolíthatja az adott könyvet egy listából.
+    \item \texttt{borrow} érték esetén két gomb jelenik meg: a \textit{RETURN} gomb segítségével a kikölcsönzött könyvet viheti vissza, az \textit{EXTEND} gomb segítségével pedig a kölcsönzés időtartamát hosszabbíthatja meg.
+    \item \texttt{bookmark} érték esetén a megjelenő \textit{REMOVE} gomb segítségével a felhasználó eltávolíthatja az adott könyvet a könyvjelzők közül.
 \end{itemize}
 Egy gomb megnyomása után meghívásra kerül a gombhoz tartozó kezelő függvény. Ezek a függvények egyrészt elküldik a kérést az API-nak, másrészt visszajelzést adnak a felhasználó számára.
 
-Ezenlívül további információkat is megjeleníthet, ha borrow vagy history action-t kapott:
+Ezen kívül további információkat is megjeleníthet, ha \texttt{borrow} vagy \texttt{history} értéket kapott.
 \begin{itemize}
-    \item borrow action esetén megjelenik a kölcsönzés lejárati ideje, valamint a lehetséges hosszabítások száma
-    \item history action esetén megjelenik, hogy mikor lett kikölcsönözve a könyv
+    \item \texttt{borrow} esetén megjelenik a kölcsönzés lejárati ideje, valamint a lehetséges hosszabítások száma.
+    \item \texttt{history} esetén megjelenik, hogy mikor lett kikölcsönözve a könyv.
 \end{itemize}
 
 \subsubsection{BookCard komponens}
-A BookCard komponens egy könyvről ad részletes információkat, valamint elérhető tesz számos funkciót. A komponens felhasználja a 3 Comments komponenst is a kommentek megjelenítésére.
 
-\bigskip
+A \texttt{BookCard} komponens egy könyvről ad részletes információkat, valamint elérhető tesz számos funkciót. A komponens felhasználja a 3 \texttt{Comments} komponenst is a kommentek megjelenítésére.
 
-Azt, hogy melyik könyvet kell megjelenítenie a komponensnek, azt az URL fogja megtudni. A useParams() React Router Hook segítségével kulcs-érték párokat nyerhetünk ki az URL-ből. A kulcs nevét a Route komponens path attribútumából nyerhetjük ki, ami ebben az esetben "/books/:bookId", tehát a kulcs neve bookId. Az értéket pedig az URL kapjuk meg, például "/books/5". Ez az URL az "5" ID-vel rendelkező könyv adatlapját fogja megjeleníteni.
+Azt, hogy melyik könyvet kell megjelenítenie a komponensnek, azt az URL fogja megtudni. A \texttt{useParams()} React Router Hook segítségével kulcs-érték párokat nyerhetünk ki az URL-ből. A kulcs nevét a \texttt{Route} komponens \texttt{path} attribútumából nyerhetjük ki, ami ebben az esetben \texttt{/books/:bookId}, tehát a kulcs neve \texttt{bookId}. Az értéket pedig az URL kapjuk meg, például \texttt{/books/5}. Ez az URL az 5 azonosítóval rendelkező könyv adatlapját fogja megjeleníteni.
 
-\bigskip
-
-Egy könyv törlését követően az admin felhasználó átirányítódik a "/books" oldalra. Ez a useHistory() React Router Hook segítségével valósítható meg, és az alábbi módon vitelezhető ki:
+Egy könyv törlését követően az admin felhasználó átirányítódik a \texttt{/books} oldalra. Ez a \texttt{useHistory()} React Router Hook segítségével az alábbi módon valósítható meg.
 \begin{itemize}
-    \item Importáljuk a useHistory hook-ot: import \{ useHistory \} from "react-router-dom";
-    \item Létrehozunk egy history objectet: let history = useHistory();
-    \item A history.replace("/books") függvénnyel átirányítjuk a felhasználót a Books menüpontra
+\item Importáljuk a useHistory hook-ot:
+\begin{java}
+import \{ useHistory \} from "react-router-dom";
+\end{java}
+\item Létrehozunk egy history objectet:
+\begin{java}
+let history = useHistory();
+\end{java}
+\item Átirányítjuk a felhasználót a \textit{Books} menüpontra:
+\begin{java}
+history.replace("/books");
+\end{java}
 \end{itemize}
 
 \subsection{Comments komponensek}
+
 Az alábbi 3 komponens felelős minden kommentekkel kapcsolatos funkció ellátásában.
 
 \subsubsection{NewComment komponens}
-Egy új komment létrehozásáért felelős komponens. A komment szöveges tartalma a useRef() React Hook felhasználásával kapható meg az alábbi módon:
+
+A \texttt{NewComment} egy új komment létrehozásáért felelős komponens. A komment szöveges tartalma a \texttt{useRef()} React Hook felhasználásával kapható meg az alábbi módon:
 \begin{itemize}
-    \item Importáljuk a useRef hook-ot: import \{ useRef \} from "react";
-    \item Létrehozzuk a ref objectet: const commentInputRef = useRef();
-    \item Hozzárendeljük egy input mezőhöz: <textarea ref={commentInputRef}/>
-    \item Kinyerjük az értéket: commentInputRef.current.value
+\item Importáljuk a \texttt{useRef} hook-ot:
+\begin{java}
+import { useRef } from "react";
+\end{java}
+\item Létrehozzuk a hivatkozás objektumot:
+\begin{java}
+const commentInputRef = useRef();
+\end{java}
+\item Hozzárendeljük egy beviteli mezőhöz:
+\begin{java}
+<textarea ref={commentInputRef} />
+\end{java}
+\item Kinyerjük az értéket:
+\begin{java}
+commentInputRef.current.value
+\end{java}
 \end{itemize}
 
-Egy új komment létrehozása után a NewComment komponens jelezni fog a BookCard komponensnek, hogy a felhasználó létrehozott egy kommentet. Ezután a BookCard komponens jelez a CommentList komponensnek, hogy az frissítse a komment listát.
+Egy új komment létrehozása után a \texttt{NewComment} komponens jelezni fog a \texttt{BookCard} komponensnek, hogy a felhasználó létrehozott egy kommentet. Ezután a \texttt{BookCard} komponens jelez a \texttt{CommentList} komponensnek, hogy az frissítse a komment listát.
 
 %ábra? szülő-gyerek, testvér-testvér adatáramlás?
 
 \subsubsection{CommentList komponens}
-A CommentList komponens feladata, hogy az adott könyvhöz tartozó kommenteket kilistázza. Amikor egy könyv adatlapja betöltődik, a hozzá tartozó kommentek is betöltődnek. Ha a felhasználó ír egy kommentet az adott könyvhöz, akkor a CommentList meg fogja jeleníteni az új kommentet.
+
+A \texttt{CommentList} komponens feladata, hogy az adott könyvhöz tartozó kommenteket kilistázza. Amikor egy könyv adatlapja betöltődik, a hozzá tartozó kommentek is betöltődnek. Ha a felhasználó ír egy kommentet az adott könyvhöz, akkor a \texttt{CommentList} meg fogja jeleníteni az új kommentet.
 
 \subsubsection{CommentItem komponens}
-A CommentList komponenstől megkapott kommentet jeleníti meg.
+
+A \texttt{CommentList} komponenstől megkapott kommentet jeleníti meg.
 
 \subsection{Lists komponensek}
-Az alábbi komponensek felelősek a Lists menüpont megvalósításáért.
+
+Az alábbi komponensek felelősek a \textit{Lists} menüpont megvalósításáért.
+
 \subsubsection{ListContent komponens}
-A komponens feladata, hogy a kívánt listákkal kapcsolatos funkciókat megjelenítse. A Lists menüpont megnyitásakor ez a komponens renderelődik. A megjelenő 5 gomb közül egyre kattintva megváltozik az URL, aminek következtében a komponens megjeleníti a kívánt funkciót. Az URL-el kapcsolatos műveletek a useLocation és useHistory React Router Hook-ok segítségével valósulnak meg.
+
+A komponens feladata, hogy a kívánt listákkal kapcsolatos funkciókat megjelenítse. A \textit{Lists} menüpont megnyitásakor ez a komponens renderelődik. A megjelenő 5 gomb közül egyre kattintva megváltozik az URL, aminek következtében a komponens megjeleníti a kívánt funkciót. Az URL-el kapcsolatos műveletek a \texttt{useLocation} és \texttt{useHistory} React Router Hook-ok segítségével valósulnak meg.
 
 \subsubsection{BrowseLists komponens}
-A BrowseLists komponens kilistázza a felhasználók listáit egy kívánt sorrendben. A rendezés query paraméter segítségével valósul meg.
+
+A \texttt{BrowseLists} komponens kilistázza a felhasználók listáit egy kívánt sorrendben. A rendezés query paraméter segítségével valósul meg.
 
 \subsubsection{ListItem komponens}
-A BrowseLists komponens által kilistázott listákat megjelenítő komponens. Megjeleníti a lista adatait, valamint kattintásra átirányít a lista adatlapjára.
+
+A \texttt{BrowseLists} komponens által kilistázott listákat megjelenítő komponens. Megjeleníti a lista adatait, valamint kattintásra átirányít a lista adatlapjára.
 
 \subsubsection{ListCard komponens}
-A ListCard komponens egy lista ID-jének megkapása után megjelenít bizonyos információkat az adott listáról. Az ID  megkapható URL paraméterként, ekkor a BookCard komponenshez hasonló módon fog megjelenni a komponens. A RemoveBooksFromList komponens felhasználja ezt a komponenst egyszerűsített formában, ugyanis csak a listához tartozó könyveket fogja megjeleníteni. Ebben az esetben az lista ID props-ként kerül megadásra.
+
+A \texttt{ListCard} komponens egy lista ID-je alapján megjelenít bizonyos információkat az adott listáról. Az ID  megkapható URL paraméterként, ekkor a \texttt{BookCard} komponenshez hasonló módon fog megjelenni a komponens. A \texttt{RemoveBooksFromList} komponens felhasználja ezt a komponenst egyszerűsített formában, ugyanis csak a listához tartozó könyveket fogja megjeleníteni. Ebben az esetben az lista ID props-ként kerül megadásra.
 
 \subsubsection{ListSelector komponens}
-A komponens célja, hogy egy listaválasztásra alkalmas lenyíló menüt valósítson meg. Ez a komponens a DeleteList, AddBooksToList és RemoveBooksFromList komponensekben szolgál arra, hogy a felhasználó kiválaszthassa, hogy melyik listával kíván dolgozni. A komponens egy select HTML elemet renderel, ahol a választási lehetőségek a felhasználó listái lesznek.
+
+A komponens célja, hogy egy listaválasztásra alkalmas lenyíló menüt valósítson meg. Ez a komponens a \texttt{DeleteList}, \texttt{AddBooksToList} és \texttt{RemoveBooksFromList} komponensekben szolgál arra, hogy a felhasználó kiválaszthassa, hogy melyik listával kíván dolgozni. A komponens egy \texttt{select} HTML elemet renderel, ahol a választási lehetőségek a felhasználó listái lesznek.
 
 \subsubsection{NewList komponens}
+
 A komponens új lista létrehozását teszi lehetővé.
 
 \subsubsection{DeleteList komponens}
-A komponens egy lista törlésére ad lehetőséget. A lenyíló menüből egy lista kiválasztása, majd a Delete gomb megnyomása után a kiválasztott lista törlődik.
+
+A komponens egy lista törlésére ad lehetőséget. A lenyíló menüből egy lista kiválasztása, majd a \textit{Delete} gomb megnyomása után a kiválasztott lista törlődik.
 
 \subsubsection{AddBookToList komponens}
-Az AddBookToList komponens ad lehetőséget arra, hogy egy listához új könyveket adjunk. A lenyíló menüből egy listát kiválasztva megjelenik a BooksContent komponens, de csak azokat a könyveket fogja megjeleníteni, amik még nem tartoznak az adott listához.
+
+Az \texttt{AddBookToList} komponens ad lehetőséget arra, hogy egy listához új könyveket adjunk. A lenyíló menüből egy listát kiválasztva megjelenik a \texttt{BooksContent} komponens, de csak azokat a könyveket fogja megjeleníteni, amik még nem tartoznak az adott listához.
 
 \subsubsection{RemoveBookFromList komponens}
-A RemoveBookFromList komponens lehetővé teszi, hogy listákból könyveket lehessen eltávolítani. A lenyíló menüből egy listát kiválasztva megjelennek az adott listához tartozó könyvek. A Remove gombra kattintva az adott könyv eltávolítható a listából.
+
+A \texttt{RemoveBookFromList} komponens lehetővé teszi, hogy listákból könyveket lehessen eltávolítani. A lenyíló menüből egy listát kiválasztva megjelennek az adott listához tartozó könyvek. A \textit{Remove} gombra kattintva az adott könyv eltávolítható a listából.
 
 \subsection{Expand komponensek}
-Az alábbi komponensek felelősek az Expand menüpont megvalósításáért.
+
+Az alábbi komponensek felelősek az \textit{Expand} menüpont megvalósításáért.
 
 \subsubsection{ExpandCollectionContent komponens}
-A komponens feladata, hogy a könyvtárbővítéssel kapcsolatos funkciókat megjelenítse. Az Expand menüpont megnyitásakor ez a komponens renderelődik. A megjelenő 2 gomb közül egyre kattintva megváltozik az URL, aminek következtében a komponens megjeleníti a kívánt funkciót. Az URL-el kapcsolatos műveletek a useLocation és useHistory React Router Hook-ok segítségével valósulnak meg.
+
+A komponens feladata, hogy a könyvtárbővítéssel kapcsolatos funkciókat megjelenítse. Az \textit{Expand} menüpont megnyitásakor ez a komponens renderelődik. A megjelenő 2 gomb közül egyre kattintva megváltozik az URL, aminek következtében a komponens megjeleníti a kívánt funkciót. Az URL-el kapcsolatos műveletek a \texttt{useLocation} és \texttt{useHistory} React Router Hook-ok segítségével valósulnak meg.
 
 \subsubsection{ExpandCollectionAdd komponens}
-ExpandCollectionAdd komponens lehetőséget biztosít arra, hogy a GoogleBooks-on található könyvek között keressünk. Cím, szerző és/vagy kategória megadása után a Search gombra kattintva megjelennek a találatok. A keresési mezők a useRef Reach Hook-al vannak megvalósítva. 
+
+\texttt{ExpandCollectionAdd} komponens lehetőséget biztosít arra, hogy a Google Books-on található könyvek között keressünk. Cím, szerző és/vagy kategória megadása után a \textit{Search} gombra kattintva megjelennek a találatok. A keresési mezők a \texttt{useRef} Reach Hook-al vannak megvalósítva.
 
 \subsubsection{ExpandCollectionVote komponens}
+
 A komponens feladata, hogy kilistázza a szavazásra bocsátott könyveket.
 
 \subsubsection{ExpandCollectionList komponens}
-Az ExpandCollectionAdd és ExpandCollectionVote komponensekben a megjelenő könyvek kilistázásáért felelős komponens.
+
+Az \texttt{ExpandCollectionAdd} és \texttt{ExpandCollectionVote} komponensekben a megjelenő könyvek kilistázásáért felelős komponens.
 
 \subsubsection{ExpandCollectionItem komponens}
-Az ExpandCollectionList által kilistázott könyvek. Kattintásra megjelenik a könyvhöz tartozó rövid tartalmi összefoglaló. A komponens figyeli, hogy egy adott felhasználó szavazott-e már az adott könyvre. Ha nem, akkor megjelenik a Vote gomb. Ha elég szavazat gyűlt össze, akkor a komponens hozzáadja az adott könyvet a könyvtárhoz. 
+
+Az \texttt{ExpandCollectionList} által kilistázott könyvek. Kattintásra megjelenik a könyvhöz tartozó rövid tartalmi összefoglaló. A komponens figyeli, hogy egy adott felhasználó szavazott-e már az adott könyvre. Ha nem, akkor megjelenik a \textit{Vote} gomb. Ha elég szavazat gyűlt össze, akkor a komponens hozzáadja az adott könyvet a könyvtárhoz. 
 
 \subsection{Borrowings komponensek}
-Az alábbi komponens felelős a Borrowings menüpont megvalósításáért.
+
+Az alábbi komponens felelős a \textit{Borrowings} menüpont megvalósításáért.
 
 \subsubsection{BorrowingsContent komponens}
-A BorrowingsContent az Authentication Context-ben található borrowings tömb felhasználásával megjeleníteni a felhasználó kölcsönzéseit.
+
+A \texttt{BorrowingsContent} az \textit{Authentication Context}-ben található \texttt{borrowings} tömb felhasználásával megjeleníteni a felhasználó kölcsönzéseit.
 
 \subsection{Bookmarks komponensek}
-Az alábbi komponens felelős a Bookmarks menüpont megvalósításáért.
+
+Az alábbi komponens felelős a \textit{Bookmarks} menüpont megvalósításáért.
 
 \subsubsection{BookmarksContent komponens}
-A BorrowingsContent az Authentication Context-ben található borrowings tömb felhasználásával megjeleníteni a felhasználó könyvjelzőit.
+
+A \texttt{BorrowingsContent} az \textit{Authentication Context}-ben található \texttt{borrowings} tömb felhasználásával megjeleníteni a felhasználó könyvjelzőit.
 
 \subsection{Authentication komponensek}
+
 Az alábbi komponensek felelősek a regisztráció és a bejelentkezés megvalósításáért.
 
 \subsubsection{Signup komponens}
-A Signup komponens teszi lehetővé az oldalra való regisztrációt.  Az input mezők tartalmának kinyerése a useRef React Hook segítségével történik. 
+
+A \texttt{Signup} komponens teszi lehetővé az oldalra való regisztrációt.  Az input mezők tartalmának kinyerése a \texttt{useRef} React Hook segítségével történik.
 
 \subsubsection{Login komponens}
-A Login komponens teszi lehetővé az oldalra történő bejelentkezést. Helyes adatok megadását követően a felhasználó adatai bekerülnek az Authentication Context-be.
+
+A \texttt{Login} komponens teszi lehetővé az oldalra történő bejelentkezést. Helyes adatok megadását követően a felhasználó adatai bekerülnek az \textit{Authentication Context}-be.
 
 \subsection{UserProfile komponensek}
-Az alábbi komponensek felelősek a Profile menüpont megvalósításáért.
+
+Az alábbi komponensek felelősek a \textit{Profile} menüpont megvalósításáért.
 
 \subsubsection{UserProfileContent komponens}
-A komponens feladata, hogy a felhasználói fiókkal kapcsolatos funkciókat megjelenítse. Az Profile menüpont megnyitásakor ez a komponens renderelődik. A megjelenő 2 gomb közül egyre kattintva megváltozik az URL, aminek következtében a komponens megjeleníti a kívánt funkciót. Az URL-el kapcsolatos műveletek a useLocation és useHistory React Router Hook-ok segítségével valósulnak meg.
+
+A komponens feladata, hogy a felhasználói fiókkal kapcsolatos funkciókat megjelenítse. A \textit{Profile} menüpont megnyitásakor ez a komponens renderelődik. A megjelenő 2 gomb közül egyre kattintva megváltozik az URL, aminek következtében a komponens megjeleníti a kívánt funkciót. Az URL-el kapcsolatos műveletek a \texttt{useLocation} és \texttt{useHistory} React Router Hook-ok segítségével valósulnak meg.
 
 \subsubsection{ChangeUserData komponens}
-A ChangeUserData komponens feladata, hogy lehetőséget nyújtson a felhasználónak, hogy megváltoztassa az adatait. Az input mezőkből az adatokat a useRef React Hook-al kapjuk meg.
+
+A \texttt{ChangeUserData} komponens feladata, hogy lehetőséget nyújtson a felhasználónak, hogy megváltoztassa az adatait. Az input mezőkből az adatokat a \texttt{useRef} React Hook-al kapjuk meg.
 
 \subsubsection{UserBorrowingHistory komponens}
-A UserBorrowingHistory komponens megjeleníti a felhasználó kölcsönzési előzményét. 
+
+A \texttt{UserBorrowingHistory} komponens megjeleníti a felhasználó kölcsönzési előzményét. 
 
 \subsection{Admin komponensek}
-Az alábbi komponensek felelősek az Admin menüpont megvalósításáért.
+
+Az alábbi komponensek felelősek az \textit{Admin} menüpont megvalósításáért.
 
 \subsubsection{AdminContent komponens}
-A komponens feladata, hogy betöltse a kívánt admin funkciót.
+
+A komponens feladata, hogy betöltse a kívánt adminisztrátori funkciókat.
 
 \subsubsection{AdminNewBook komponens}
-Az AdminNewBook komponens felelős új könyvek könyvtárhoz adásához, valamint meglévő könyvek módosításához. Könyv módosítása esetén a könyv aktuális információi automatikus megjelennek az input mezőkben.
+
+Az \texttt{AdminNewBook} komponens felelős új könyvek könyvtárhoz adásához, valamint meglévő könyvek módosításához. Könyv módosítása esetén a könyv aktuális információi automatikus megjelennek az input mezőkben.
 
 \subsubsection{AdminManageUsers komponens}
-Az AdminManageUsers komponens lekérdezi a felhasználói listát, majd azt átadja az AdminUserList komponensnek.
+
+Az \texttt{AdminManageUsers} komponens lekérdezi a felhasználói listát, majd azt átadja az \texttt{AdminUserList} komponensnek.
 
 \subsubsection{AdminUserList komponens}
-Az AdminUserList komponens megkapja a felhasználói listát, majd annak minden elemére létrehoz egy AdminUserItem komponenst.
+
+Az \texttt{AdminUserList} komponens megkapja a felhasználói listát, majd annak minden elemére létrehoz egy \texttt{AdminUserItem} komponenst.
 
 \subsubsection{AdminUserItem komponens}
-Az AdminUserItem komponens megjeleníti a felhasználó adatait, valamint lehetőséget ad az adminnak, hogy bannolja a felhasználót.
+
+Az \texttt{AdminUserItem} komponens megjeleníti a felhasználó adatait, valamint lehetőséget ad az adminisztrátornak, hogy letiltsa a felhasználót.
 
 \subsection{Layout komponensek}
+
 Az alábbi komponensek az alkalmazás kinézetéhez adnak hozzá.
 
 \subsubsection{Button komponens}
-A Button komponens lényegében egy button HTML elem annyi különbséggel, hogy tartozik hozzá egy CSS-ben megadott stílus is.
+
+A \texttt{Button} komponens lényegében egy button HTML elem annyi különbséggel, hogy tartozik hozzá egy CSS-ben megadott stílus is.
 
 \subsubsection{Navigation komponens}
-A Navigation komponens menüponttól függetlenül mindig megjelenik az oldal tetején. Ennek a komponensnek a segítségével lehet a különböző menüpontok között navigálni. Bejelentkezett felhasználók számára a Borrowings és Bookmarks menüpontok jelzik, hogy hány darab aktív kölcsönzése és könyvjelzője van a felhasználónak. 
+
+A Navigation komponens menüponttól függetlenül mindig megjelenik az oldal tetején. Ennek a komponensnek a segítségével lehet a különböző menüpontok között navigálni. Bejelentkezett felhasználók számára a \textit{Borrowings} és \textit{Bookmarks} menüpontok jelzik, hogy hány darab aktív kölcsönzése és könyvjelzője van a felhasználónak. 
 
 \subsubsection{SubNavigation komponens}
-A SubNavigation komponens tájékoztatja a felhasználót, hogy pontosan az oldal melyik részén is tartózkodik.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.6]{images/application/navigation.png}
-    \caption{Navigation és Subnavigation}
+A \texttt{SubNavigation} komponens tájékoztatja a felhasználót, hogy pontosan az oldal melyik részén is tartózkodik (\ref{fig:navigation}. ábra).
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.7]{images/application/navigation.png}
+\caption{Navigation és Subnavigation}
+\label{fig:navigation}
 \end{figure}
 
 \subsubsection{Layout komponens}
-A Layout komponens biztosítja azt, hogy a Navigation komponens mindenhol szerepeljen. Ez úgy valósul meg, hogy az App.js fájlban a Route-okat tartalmazó Switch komponenst a Layout komponensen belül kell elhelyezni.
+
+A \texttt{Layout} komponens biztosítja azt, hogy a \texttt{Navigation} komponens mindenhol szerepeljen. Ez úgy valósul meg, hogy az \texttt{App.js} fájlban a \texttt{Route}-okat tartalmazó \texttt{Switch} komponenst a \texttt{Layout} komponensen belül kell elhelyezni.
 
 \subsection{Utility komponensek}
+
 Az alábbi komponensek különböző kisegítő funkciókat biztosítanak más komponensek számára.
 
 \subsubsection{LoadingSpinner komponens}
-A LoadingSpinner komponens kerül felhasználásra amikor egy aszinkron kérésre kapott válaszra vár az adott komponens.
+
+A \texttt{LoadingSpinner} komponens kerül felhasználásra amikor egy aszinkron kérésre kapott válaszra vár az adott komponens.
 
 \subsubsection{Pagination komponens}
-A Pagination komponens a react-paginate letölthető komponens segítségével valósul meg. A komponens létrehoz egy olyan felületet, ahol a felhasználó kiválaszthatja, hogy a találatok hanyadik szettjét szeretné megtekinteni. Például: Ha 80 találat van, és oldalanként 10 találatot kérünk, akkor 8 külön oldalon lesznek megjelenítve a találatok. A komponens jelzi, hogy jelenleg melyik oldalon vagyunk, és hogy hány elérhető oldal van. Egy oldalszámra kattintva megjelennek a kiválasztott oldalhoz tartozó találatok, az előre és hátra gombokra kattintva egy oldalt tudunk előre, vagy hátra lépni.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.7]{images/application/pagination.png}
-    \caption{Navigation és Subnavigation}
+A \texttt{Pagination} komponens a \texttt{react-paginate} letölthető komponens segítségével valósul meg. A komponens létrehoz egy olyan felületet (\ref{fig:pagination}. ábra), ahol a felhasználó kiválaszthatja, hogy a találatok hanyadik szettjét szeretné megtekinteni. Például: Ha 80 találat van, és oldalanként 10 találatot kérünk, akkor 8 külön oldalon lesznek megjelenítve a találatok. A komponens jelzi, hogy jelenleg melyik oldalon vagyunk, és hogy hány elérhető oldal van. Egy oldalszámra kattintva megjelennek a kiválasztott oldalhoz tartozó találatok, az előre és hátra gombokra kattintva egy oldalt tudunk előre, vagy hátra lépni.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=1]{images/application/pagination.png}
+\caption{Navigation és Subnavigation}
+\label{fig:pagination}
 \end{figure}
 
-A Pagination komponens más komponensekbe egyszerűen implementálható. Propsként meg kell kapnia a jelenlegi oldalt, valamint egy függvényt, ami az oldal változását kezeli. Azt, hogy a találatok közül hanyadik oldalnak kell betöltődnie, az implementáló komponensek tartják számon. Amikor a komponensek lekérik az elemeket az adatbázisból, akkor mellékelniük kell hogy hanyadik oldalt kérik, hogy hogy hány darab találatot kérnek.
+A \texttt{Pagination} komponens más komponensekbe egyszerűen implementálható. Pro\-per\-ty-ként meg kell kapnia a jelenlegi oldalt, valamint egy függvényt, ami az oldal változását kezeli. Azt, hogy a találatok közül hanyadik oldalnak kell betöltődnie, az implementáló komponensek tartják számon. Amikor a komponensek lekérik az elemeket az adatbázisból, akkor mellékelniük kell hogy hanyadik oldalt kérik, hogy hogy hány darab találatot kérnek.
 
 \subsubsection{YearSelector komponens}
-A YearSelector komponens lehetőséget biztosít, hogy egy lenyíló menüből a felhasználó évszámot választhasson.
+
+A \texttt{YearSelector} komponens lehetőséget biztosít, hogy egy lenyíló menüből a felhasználó évszámot választhasson.
 
 \Section{A backend megvalósítása}
 % TODO: Mivel a backend aránylag egyszerű szerkezetű, ezért itt elég csak röviden bemutatni, hogy a routing hogy lett megoldva, és hogy szerkezetileg hogy épül fel az alkalmazás.
-A backend NodeJS és Express segítségével valósul meg. A NodeJS egy nyílt forráskódú JavaScript környezet, amelynek segítségével szerver alkalmazásokat lehet készíteni. Az Express egy minimális és rugalmas NodeJS keretrendszer.
-
-\bigskip
+A backend \textit{NodeJS} és \textit{Express} segítségével valósul meg. A NodeJS egy nyílt forráskódú JavaScript környezet, amelynek segítségével szerver alkalmazásokat lehet készíteni. Az Express egy minimális és rugalmas NodeJS keretrendszer.
 
 A szerver alkalmazás az Express keretrendszeren kívül más modulokat is felhasznál:
 \begin{itemize}
-    \item A path modul: Fájl és mappa elérési útvonalakkal való dolgozáshoz ad eszközöket
-    \item A morgan modul: Kérések naplózását végzi
-    \item A cookie-parser és body-parser modulok: Kérések törzseit (?) és cookie-jainek elemzésére használatos
+    \item A \texttt{path} modul: Fájl és mappa elérési útvonalakkal való dolgozáshoz ad eszközöket.
+    \item A \texttt{morgan} modul: Kérések naplózását végzi.
+    \item A \texttt{cookie-parser} és \texttt{body-parser} modulok: Kérések törzseinek és sütijeinek elemzésére használatos.
 \end{itemize}
 
-Az útvonalak a routes mappában találhatóak, és az index.js fájlban kerülnek importálásra. A config.js fájlban kerül inicializálásra a Neo4j driver.
+Az útvonalak a \texttt{routes} mappában találhatóak, és az \texttt{index.js} fájlban kerülnek importálásra. A \texttt{config.js} fájlban kerül inicializálásra a Neo4j driver.
