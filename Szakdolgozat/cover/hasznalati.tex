@@ -6,30 +6,30 @@
 
 \noindent A CD tartalmazza az alábbiakat:
 \begin{itemize}
-    \item A szakdolgozat
-    \item A szakdolgozat forráskódja
-    \item A mintaalkalmazás forráskódja
-    \item Tesztadatbázis
-    \item API dokumentáció
-    \item CD Használati útmutató
+    \item a szakdolgozat PDF formátumban,
+    \item a szakdolgozat \LaTeX\ forráskódja,
+    \item a mintaalkalmazás forráskódja,
+    \item tesztadatbázis,
+    \item API dokumentáció,
+    \item CD Használati útmutató.
 \end{itemize}
 
 \bigskip
 
 A CD-n található mintaalkalmazás futtatásához a klienshez és a backendhez is telepíteni kell a szükséges csomagokat. Az alkalmazás gyökérkönyvtárából kiindulva:
 \begin{itemize}
-    \item Szerver: npm install
-    \item Kliens: cd client, ezt követően npm install
+    \item Szerver: \texttt{npm install}
+    \item Kliens: \texttt{cd client}, ezt követően \texttt{npm install}
 \end{itemize}
 
-Ezután külön terminálokon futtatni kell mindkettőt. Az alkalmazás gyökérkönyvtárából kiindulva:
+Ez után külön terminálokon futtatni kell mindkettőt. Az alkalmazás gyökérkönyvtárából kiindulva:
 \begin{itemize}
-    \item Szerver: npm start
-    \item Kliens: cd client, ezt követően npm start
+    \item Szerver: \texttt{npm start}
+    \item Kliens: \texttt{cd client}, ezt követően \texttt{npm start}
 \end{itemize}
 
-A tesztadatbázis a tesztadatbazis.dump fájlban található. Ezt a fájlt egy Neo4j gráfadatbázisba kell importálni. Neo4j Aura esetében az adatbázis létrehozásakor kapott felhasználónevet, jelszót és URI-t az alkalamzás server.js fájlában kell megadni. 
+A tesztadatbázis a \texttt{tesztadatbazis.dump} fájlban található. Ezt a fájlt egy Neo4j gráfadatbázisba kell importálni. Neo4j Aura esetében az adatbázis létrehozásakor kapott felhasználónevet, jelszót és URI-t az alkalamzás \texttt{server.js} fájlban kell megadni.
 
 \bigskip
 
-A borítóképek FireBase Storage-be kerülnek feltöltésre. Ehhez telepíteni kell a firebase csomagot. Ezt követően be kell jelentkezni, initializálni a projektet, majd felállítani a storage-t. Az AdminNewBook.js fájlban kell átírni a projectId-t az aktuális projektnek megfelelően. Mivel a borítóképek elérési útvonala függ a projekt névtől, a tesztadatbázisban található könyvek boríóképei nem fognak megjelenni, ha a FireBase Storage, amin a képek vannak, nem elérhető.
+A könyvek borítóképei a FireBase Storage-be kerülnek feltöltésre. Ehhez telepíteni kell a \texttt{firebase} csomagot. Ezt követően be kell jelentkezni, initializálni a projektet, majd beállítani a \texttt{storage}-t. Az \texttt{AdminNewBook.js} fájlban kell átírni a \texttt{projectId}-t az aktuális projektnek megfelelően. Mivel a borítóképek elérési útvonala függ a projekt névtől, a tesztadatbázisban található könyvek borítóképei nem fognak megjelenni, ha a \textit{FireBase Storage}, amin a képek vannak, nem elérhető.

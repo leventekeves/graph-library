@@ -4,20 +4,15 @@
 
 % Ezt is bőven elég csak akkor megírni, hogy ha már a dolgozat többi része kész van.
 
-A Neo4j féle gráfadatbázissal egyszerű volt megoldani a mintaalkalmazás adatbázisát. A fejlesztők által készített dokumentáció nagyon részletes és sok példát tartalmaz, ezért könnyű volt elsajátítani az alapokat. Mivel a Neo4j az egyik legelterjedtebb gráfadatbázis, sok más forrásból is lehetett tanulni. Megjegyzendő, hogy mivel nem annyira elterjedt, mint például az relációs adatbázis, voltak esetek, ahol nehezen lehetett információt találni egy-egy problémával kapcsolatban. 
+A dolgozatban egy könyvtári alkalmazás példáján keresztül került bemutatásra az, hogy egy webalkalmazás elkészítése során az adatok kezelése hogyan oldható meg a Neo4j gráfadatbázis segítségével.
+A példa megválasztásánál szempontként szerepelt, hogy minden gyakori lekérdezés típus bemutatható legyen a segítségével, így általános képet adva arról, hogy azok hogyan szervezhetők gráfba, és milyen eszközöket adottak a lekérdezésekhez és a fejlesztéshez.
 
-\bigskip
+A Neo4j féle gráfadatbázissal egyszerű volt megoldani a mintaalkalmazás adatainak kezelését. A fejlesztők által készített dokumentáció nagyon részletes és sok példát tartalmaz, ezért könnyű volt elsajátítani az alapokat. Mivel a Neo4j az egyik legelterjedtebb gráfadatbázis, sok más forrásból is lehetett tanulni. Megjegyzendő, hogy mivel nem annyira elterjedt, mint például a relációs adatbáziskezelő rendszerek, ezért voltak esetek, ahol nehezen lehetett információt találni egy-egy problémával kapcsolatban. 
 
-A Neo4j Aura segítségével egyszerű volt az adatbázis futtatása. Az ingyenes verzió 50 ezer csomópont, és 175 ezer kapcsolat létrehozását támogatja, ami bőven elég volt a minta alkalmazás számára. Hátránya, hogy pár nap inaktivitás után az adatbázist automatikusan leszüneteltetik, amit ezt követően manuálisan kell visszakapcsolni.
+A Neo4j Aura segítségével egyszerű volt az adatbázis futtatása. Az ingyenes verzió 50 ezer csomópont, és 175 ezer kapcsolat létrehozását támogatja, ami bőven elég volt a minta alkalmazás számára. Hátránya, hogy pár nap inaktivitás után az adatbázist automatikusan szüneteltetik, amit ezt követően manuálisan kell visszakapcsolni.
 
-\bigskip
+A Neo4j által készített JavaScript driver és a Session API segítségével sikerült megoldani a mintaalkalmazás és az adatbázis összekapcsolását. Lekérdezések esetében a paraméterek megadása nem minden esetben volt kézenfekvő.
 
-A Neo4j által készített JavaScript driver és a Session API segítségével egyszerű volt a mintaalkalmazás és az adatbázis összekapcsolása. Lekérdezések esetében a paraméterek megadása egy kicsit szokatlan volt, de meg lehetett szokni.
-
-\bigskip
-
-A Neo4j grafikus felületével kellemes volt dolgozni, az adatbázisba felvitt adatok látványosan vizualizálódtak. Sokszor már csak ránézésből is meg lehetett állapítani, hogy egy lekérdezés helyesen lett-e megírva.
-
-\bigskip
+A Neo4j grafikus felületével kellemes volt dolgozni, az adatbázisba felvitt adatok látványosan megjeleníthetők. Sokszor már csak ránézésből is meg lehetett állapítani, hogy egy lekérdezés helyesen működik-e.
 
 Összeségében egyszerűen és hatékonyan fel tudtam építeni a minta alkalmazás adatait tároló gráfadatbázist a Neo4j által nyújtott eszközökkel.
