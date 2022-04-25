@@ -8,11 +8,9 @@ Ebben a fejezetben webalkalmazások és a Neo4j adatbázis jogosultságkezelés�
 % https://neo4j.com/docs/cypher-manual/current/access-control/manage-privileges/
 
 
-Webalkalmazások esetén szükséges lehet, hogy bizonyos felhasználó csoportok eltérően tudjanak interaktálni az alkalmazással. Például a mintaalkalmazásban a felhasználók 3 csoportra vannak bontva: nem bejelentkezett felhasználó, bejelentkezett  felhasználó, és admin jogosultságú felhasználó. Egy nem bejelentkezett felhasználó az alkalmazás csak egy részével tud interaktálni, egy bejelentkezett felhasználó az admin funkciók kivételével minden funkciót igénybe tud venni, míg az admin jogosultsággal rendelkező felhasználó az alkalmazás minden funkcióját ki tudja használni.
+Webalkalmazások esetén szükséges lehet, hogy bizonyos felhasználó csoportok különböző szinten tudjanak hozzáférni az alkalmazáshoz. Például a mintaalkalmazásban a felhasználók 3 csoportra vannak bontva: nem bejelentkezett felhasználó, bejelentkezett  felhasználó, és adminisztrátor jogosultságú felhasználó. Egy nem bejelentkezett felhasználó az alkalmazás csak egy részével tud interaktálni, egy bejelentkezett felhasználó az admin funkciók kivételével minden funkciót igénybe tud venni, míg az admin jogosultsággal rendelkező felhasználó az alkalmazás minden funkcióját ki tudja használni.
 
-\bigskip
-
-Neo4j-ben lehetőség van úgynevezett szerep alapú hozzáférés-szabályozásra. \cite{neo4j-privileges} Ez a szolgáltatás csak az Enterprise Edition-ben érhető el. Hozzáférést a GRANT paranccsal lehet biztosítani, és a DENY paranccsal lehet megtagadni. A megadott illetve e megtagadott hozzáférést a REVOKE paranccsal lehet semmissé tenni. 
+Neo4j-ben lehetőség van úgynevezett szerep alapú hozzáférés-szabályozásra \cite{neo4j-privileges}. Ez a szolgáltatás csak az \textit{Enterprise Edition}-ben érhető el. Hozzáférést a \texttt{GRANT} és a \texttt{DENY} parancsokkal lehet szabályozni. A megadott illetve a megtagadott hozzáférést a \texttt{REVOKE} paranccsal lehet semmissé tenni. 
 
 \Section{Gyorsítótárazás}
 % https://gremmedia.hu/mi-az-gyorsitotarazas-masneven-caching
@@ -20,24 +18,20 @@ Neo4j-ben lehetőség van úgynevezett szerep alapú hozzáférés-szabályozás
 
 % https://neo4j.com/developer/kb/understanding-neo4j-query-plan-caching/
 % https://neo4j.com/developer/kb/warm-the-cache-to-improve-performance-from-cold-start/
-A gyorsítótárazás, vagy caching segítségével adatokat lehet tárolni a helyi merevlemezen annak érdekében, hogy különböző oldalak gyorsabban elérhetőek legyenek. \cite{cache} A gyorsítótárazás kis méretű statikus adatok kezelésére szolgál, például képek, CSS és JavaScript fájlok. Gyorsítótárazás esetén fontos, hogy a tárolt adatok ne váljanak elavulttá. Az elavultság megelőzésének érdekében minden gyorsítótárazási mechanizmusnak tudnia kell szabályozni a tartalom frissítésének időpontját. Például egy weboldal megnyitásakor a böngésző ellenőrzi, hogy a gyórsítótárban lévő adatok frissek-e. Ha igen, akkor betölti azokat, ha nem, akkor letölti az adatok friss verzióját.
+A gyorsítótárazás (\textit{caching}) segítségével adatokat lehet tárolni a helyi merevlemezen annak érdekében, hogy a lekérdezésekre gyorsabban tudjon válaszolni a webalkalmazás \cite{cache}. A gyorsítótárazás kis méretű statikus adatok kezelésére szolgál, például képek, CSS és JavaScript fájlok. Gyorsítótárazás esetén fontos, hogy a tárolt adatok ne váljanak elavulttá. Az elavultság megelőzésének érdekében minden gyorsítótárazási mechanizmusnak tudnia kell szabályozni a tartalom frissítésének időpontját. Például egy weboldal megnyitásakor a böngésző ellenőrzi, hogy a gyorsítótárban lévő adatok frissek-e. Ha igen, akkor betölti azokat, ha nem, akkor letölti az adatok friss verzióját (egyúttal frissíti a gyorsítótárat).
 
-\bigskip
-
-Neo4j-ben lehetőség van az úgynevezett page cache használatára. Ez a Neo4j által használt adatok gyorsítótárazására szolgál. Gráf adatokat és indexeket tárol vele a memóriában. \cite{neo4j-page-cache}
+Neo4j-ben lehetőség van az úgynevezett \textit{page cache} használatára. Ez a Neo4j által használt adatok gyorsítótárazására szolgál. Gráf adatokat és indexeket tárol vele a memóriában \cite{neo4j-page-cache}.
 
 \Section{Konfigurálási lehetőségek}
 % https://neo4j.com/docs/operations-manual/current/configuration/
-A Neo4j adatbázis konfigurációs beállításai a neo4j.conf fájlban találhatóak. A legtöbb beállítás a Neo4j-re vonatkozik, de bizonyos beállítások a Java Runtime-hoz kapcsolódik, ugyanis a Neo4j ezen fut.
+A Neo4j adatbázis konfigurációs beállításai a \texttt{neo4j.conf} fájlban találhatóak. A legtöbb beállítás a Neo4j-re vonatkozik, de bizonyos beállítások a Java futtatókörnyezethez kapcsolódik, ugyanis a Neo4j ezen fut.
 
-\bigskip
-
-Néhány érdekesebb konfigurálási lehetőség: \cite{neo4j-config-settings}
+Néhány érdekesebb konfigurálási lehetőség \cite{neo4j-config-settings}:
 \begin{itemize}
-    \item dbms.backup.enabled - Online biztonsági mentések készítését szabályozza.
-    \item dbms.db.timezone - Az adatbázis időzónáját szabályozza.
-    \item dbms.default\_database - Azt szabályozza, hogy melyik legyen az alapértelmezett adatbázis.
-    \item dbms.read\_only - Ha be van kapcsolva, akkor csak olvasási operációk futtathatók.
+    \item \texttt{dbms.backup.enabled} - Online biztonsági mentések készítését szabályozza.
+    \item \texttt{dbms.db.timezone} - Az adatbázis időzónáját szabályozza.
+    \item \texttt{dbms.default\_database} - Azt szabályozza, hogy melyik legyen az alapértelmezett adatbázis.
+    \item \texttt{dbms.read\_only} - Ha be van kapcsolva, akkor csak olvasási operációk futtathatók.
 \end{itemize}
 
 
@@ -49,10 +43,10 @@ Néhány érdekesebb konfigurálási lehetőség: \cite{neo4j-config-settings}
 % TODO: Szét lehet szedni kisebb darabokra is, hogy ha úgy jobb.
 % TODO: Az importálható/exportálható formátumokra érdemes kitérni röviden.
 
-A Neo4j többfajta lehetőséget is biztosít biztonsági mentések létrehozására. \cite{neo4j-backup}
+A Neo4j többfajta lehetőséget is biztosít biztonsági mentések létrehozására \cite{neo4j-backup}.
 
 \begin{itemize}
-    \item Backup és Restore: Online biztonsági mentések létrehozására és azokat felhasználva adatbázis visszaállítás végrehajtására használható módszer. Csak az Enterprise Edition-el használható.
-    \item Copy: Offline adatbázisok esetében adatbázis-ellentmondások megszüntetésére, fel nem használt tárhely felszabadítására, valamint régebbi verzióról új verzióra váltásra lehet használni. Csak az Enterprise Edition-el használható.
-    \item Dump és Load: Offline biztonsági mentések létrehozására és azokat felhasználva adatbázis visszaállítás végrehajtására használható módszer. A mentés létrehozásakor létrejön egy .dump kiterjesztésű fájl, amit ezután fel lehet használni az adatbázis visszaállítására.
+    \item \textit{Backup és Restore}: Online biztonsági mentések létrehozására és azokat felhasználva adatbázis visszaállítás végrehajtására használható módszer. (Csak az \textit{Enterprise Edition}-el használható.)
+    \item \textit{Copy}: Offline adatbázisok esetében adatbázis-ellentmondások megszüntetésére, fel nem használt tárhely felszabadítására, valamint régebbi verzióról új verzióra váltásra lehet használni. (Szintén csak az \textit{Enterprise Edition}-el használható.)
+    \item \textit{Dump és Load}: Offline biztonsági mentések létrehozására és azokat felhasználva adatbázis visszaállítás végrehajtására használható módszer. A mentés létrehozásakor létrejön egy \texttt{.dump} kiterjesztésű fájl, amit ezután fel lehet használni az adatbázis visszaállítására.
 \end{itemize}
