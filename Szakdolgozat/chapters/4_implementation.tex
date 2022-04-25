@@ -1,8 +1,7 @@
 \Chapter{Adatkezelés Neo4j segítségével}
 % TODO: Egy rövid felvezetés kellene, hogy a Neo4j-s megoldások elsődlegesen a relációs adatmodellel kerülnek összehasonlításra.
 
-A mintaalkalmazás az adatok egy Neo4j által biztosított gráfadatbázisban történik. Ebben a fejezetben szó lesz arról, hogy milyen szolgáltatásokat biztosít a Neo4j a felhasználók számára, hogy kerülnek az adatok leírásra, hogy valósulnak meg a lekérdezések a Cypher lekérdező nyelv segítségével, hogy hogyan lehet kapcsolatot létesíteni az adatbázis és a mintaalkalmazás között, valamint arról, hogy a Neo4j milyen magasabb rendű hozzáférési módot biztosít.
-
+A mintaalkalmazás adatainak tárolása egy Neo4j által biztosított gráfadatbázisban történik. Ebben a fejezetben szó lesz arról, hogy milyen szolgáltatásokat biztosít a Neo4j a felhasználók számára, hogyan írhatjuk le az adatokat, hogy valósulnak meg a lekérdezések a Cypher lekérdező nyelv segítségével, hogy hogyan lehet kapcsolatot létesíteni az adatbázis és a mintaalkalmazás között, valamint arról, hogy a Neo4j milyen magasabb rendű hozzáférési módot biztosít.
 
 \Section{Szoftveres eszközök}
 % TODO: Itt röviden be kellene mutatni, hogy milyen szoftveres eszközök fordulnak elő. Értem ez alatt magát a db szerver implementációt, a különféle klienseket, adminisztrációs eszközöket.
@@ -12,54 +11,58 @@ A Neo4j számos szoftveres eszközt biztosít a gráfokkal való adatkezelés le
 % https://go.neo4j.com/rs/710-RRC-335/images/Neo4j-product-brief-database-US-EN.pdf
 \subsection{Neo4j Graph Database}
 
-A Neo4j Graph Database a Neo4j Platform központi része. A Neo4j széles körben elterjedt, a vállalati felhasználási eseteket szolgálja ki különböző iparágakban, beleértve az élettudományokat, a közműveket, a pénzügyi szolgáltatásokat, a kiberbiztonságot és még sok mást. \cite{neo4j-graph-database}
+A \textit{Neo4j Graph Database} a Neo4j Platform központi része. A Neo4j széles körben elterjedt, sikerrel alkalmazzák különféle tudományos, ipari és vállalati területeken, beleértve az élettudományokat, a közműveket, a pénzügyi szolgáltatásokat, a kiberbiztonságot és még sok mást \cite{neo4j-graph-database}.
 
-\bigskip
-
-\noindent A Neo4j Graph Database legfontosabb tulajdonságai:
+A Neo4j Graph Database legfontosabb tulajdonságai közé tartozik
 \begin{itemize}
-      \item Natív gráf méretezés
-      \item Kiváló teljesítmény
-      \item Üzemeltetői bizalom
-      \item Felhőhöz tervezve
-      \item Vállalati szintű biztonság
-      \item Fejlesztői termelékenység
-\end {itemize}
+      \item a gráfok automatikus, dinamikus átméretezése,
+      \item a kiváló teljesítmény,
+      \item a megbízható működés az üzemeltetés során,
+      \item a felhő alapú rendszerekhez illeszkedő kialakítása, 
+      \item a hatékony fejlesztés segítése.
+\end{itemize}
+A következő szakaszokban az eszközkészletének néhány eleme kerül említésre.
 
 \subsection{Neo4j AuraDB}
-A Neo4j AuraDB egy felhőalapú gráfadatbázis szolgáltatás. 
+
+A \textit{Neo4j AuraDB} egy felhőalapú gráfadatbázis szolgáltatás. 
 
 % https://neo4j.com/developer/graph-data-science/
 \subsection{Neo4j Graph Data Science}
-A Graph Data Science segítségével ismeretekre lehet szert tenni az adatok összefüggéseiből és struktúráiból, jellemzően előrejelzésekhez . Olyan eszköztárat taralmaz, amely segít az adatkutatóknak megválaszolni kérdéseket és megmagyarázni az eredményeket grafikonadatok segítségével. \cite{neo4j-graph-data-science}
+
+A \textit{Graph Data Science} segítségével ismeretekre lehet szert tenni az adatok összefüggéseiből és struktúráiból, jellemzően előrejelzésekhez . Olyan eszköztárat taralmaz, amely segít az adatkutatóknak megválaszolni kérdéseket és megmagyarázni az eredményeket grafikonokon ábrázolt adatok segítségével \cite{neo4j-graph-data-science}.
 
 \subsection{Neo4j Developer Tools}
+
 A Neo4j két fejlesztői felületet biztosít: egy letölthető és telepíthető asztali alkalmazást, és egy böngészőből futtatható alkalmazát.
 
 \subsubsection{Neo4j Desktop}
-A Neo4j Desktop egy fejlesztői IDE (Integrated Development Environment) vagy felügyeleti környezet. \cite{neo4j-desktop}
+
+A \textit{Neo4j Desktop} egy fejlesztői IDE (\textit{Integrated Development Environment}) vagy felügyeleti környezet \cite{neo4j-desktop}.
 Tetszőleges számú lokális projektet és adatbázist lehet vele kezelni, valamint lehet vele csatlakozni távoli Neo4j szerverekhez is. 
 
 A Neo4j Desktop által kezelt adatbázisok konfigurálhatók, frissíthetők és karbantarthatók a felhasználói felületen keresztül, parancssor nélkül. Lehetőséget biztosít Neo4j bővítmények telepítésére.
 
 \subsubsection{Neo4j Browser}
-A Neo4j Browser egy böngészőből futtatható Neo4j interface lekérdezésekhez és adatok megjelenítéséhez. Cypher-szerkesztőt kínál szintaktikai kiemeléssel, kódkiegészítéssel és figyelmeztetésekkel, amelyek segítenek a Cypher lekérdezések írásakor.  \cite{neo4j-browser}
+
+A \textit{Neo4j Browser} egy böngészőből futtatható Neo4j interface lekérdezésekhez és adatok megjelenítéséhez. Cypher-szerkesztőt kínál szintaktikai kiemeléssel, kódkiegészítéssel és figyelmeztetésekkel, amelyek segítenek a Cypher lekérdezések írásakor \cite{neo4j-browser}.
 
 % https://neo4j.com/developer/neo4j-bloom/
 % https://neo4j.com/docs/bloom-user-guide/current/
 % https://neo4j.com/docs/bloom-user-guide/current/about-bloom/ itt van még pár dolog róla
 \subsection{Neo4j Bloom}
-A Neo4j Bloom egy olyan eszköz, ami vizualizálja az adatokat egy gráfban, valamint lehetőséget biztosít lekérdezésekre legkérdező nyelv vagy programozási nyelv ismerete nélkül. A Bloom igénybe vehető a Neo4j Desktop és Neo4j Browser szolgáltatásokon keresztül. \cite{neo4j-bloom1} \cite{neo4j-bloom2}
+
+A \textit{Neo4j Bloom} egy olyan eszköz, amely megjeleníthetővé teszi az adatokat egy gráfban, valamint lehetőséget biztosít lekérdezésekre lekérdező nyelv vagy programozási nyelv ismerete nélkül. A Bloom igénybe vehető a Neo4j Desktop és Neo4j Browser szolgáltatásokon keresztül \cite{neo4j-bloom1}, \cite{neo4j-bloom2}.
 
 % https://neo4j.com/developer/graphql/
 % https://neo4j.com/docs/graphql-manual/current/introduction/
 \subsection{Neo4j GraphQL Library}
-A Neo4j GraphQL Library egy rendkívül rugalmas, alacsony kódú, nyílt forráskódú JavaScript-könyvtár, amely lehetővé teszi a gyors API-fejlesztést.
 
-A Neo4j gráf adatbázissal a GraphQL Library egyszerűvé teszi az alkalmazások számára, hogy az alkalmazás adatokat natívan gráfként kezeljék a frontendtől egészen a tárolásig, elkerülve ezzel a séma duplikációt, és hibátlan integrációt biztosítva a frontend és a backend között.
+A \textit{Neo4j GraphQL Library} egy rendkívül rugalmas, kevés kódolást igénylő (\textit{low code}), nyílt forráskódú JavaScript könyvtár, amely lehetővé teszi a gyors API-fejlesztést.
 
-A könyvtár TypeScripten van írva. A "Séma az első" paradigma lehetővé teszi a fejlesztők számára, hogy a szükséges alkalmazásadatokra összpontosítsanak, miközben a könyvtár gondoskodik az API felépítésének nehezével. \cite{neo4j-graphql-library1} \cite{neo4j-graphql-library2}
+A Neo4j gráf adatbázissal a GraphQL Library egyszerűvé teszi az alkalmazások számára, hogy az alkalmazás adatokat natívan gráfként kezeljék a frontend-től egészen a tárolásig, elkerülve ezzel a séma duplikációt, és probléma mentes integrációt biztosítva a frontend és a backend között.
 
+A könyvtár TypeScripten készült. A "Séma az első" (\textit{schema first}) paradigma lehetővé teszi a fejlesztők számára, hogy a szükséges alkalmazásadatokra összpontosítsanak, miközben a könyvtár gondoskodik az API felépítésének nehezéről  \cite{neo4j-graphql-library1}, \cite{neo4j-graphql-library2}.
 
 \Section{Az adatok leírása}
 
@@ -67,18 +70,18 @@ A könyvtár TypeScripten van írva. A "Séma az első" paradigma lehetővé tes
 % https://neo4j.com/docs/getting-started/current/graphdb-concepts/#graphdb-concepts - not cited
 % https://neo4j.com/docs/cypher-manual/current/syntax/values/
 
-A Neo4j egy típusos adatbázis, ami az alábbi típusokat tudja kezelni: \cite{neo4j-values}
+A Neo4j egy típusos adatbázis, ami az alábbi típusokat tudja kezelni \cite{neo4j-values}:
 \begin{itemize}
-    \item Tualjdonság típusok: Integer, Float, String, Boolean, Point, Date, Time, LocalTime, DateTime, LocalDateTime, Duration
-    \item Strukturális típusok: Node, Relationship, Path
-    \item Összetett típusok: List and Map
+    \item Tulajdonság típusok: Integer, Float, String, Boolean, Point, Date, Time, LocalTime, DateTime, LocalDateTime, Duration,
+    \item Strukturális típusok: Node, Relationship, Path,
+    \item Összetett típusok: List, Map.
 \end{itemize}
 
-Neo4j-ben a csomópontok egyedeket reprezentálnak. \cite{adatok-leirasa} A csomópontokhoz tartozhatnak úgynevezett címkék, amik leírják, hogy milyen típusú az adott csomópont. Egy csomóponthoz tartozhat nulla, egy, vagy több címke. Például a mintaalkalmazásban található könyvek Book címkével ellátott csomópontokként kerülnek ábrázolásra az adatbázisban.
+Neo4j-ben a csomópontok egyedeket reprezentálnak \cite{adatok-leirasa}. A csomópontokhoz tartozhatnak úgynevezett címkék, amik leírják, hogy milyen típusú az adott csomópont. Egy csomóponthoz tartozhat nulla, egy, vagy több címke. Például a mintaalkalmazásban található könyvek \textit{Book} címkével ellátott csomópontokként kerülnek ábrázolásra az adatbázisban.
 
-Az élek két csomópont közötti kapcsolatot reprezentálnak. Egy kapcsolatnak mindig van iránya és típusa. Például a mintaalkalmazásban egy könyv felhasználó általi értékelését követően a felhasználó és a könyv csomópontok között létrejön egy Rated kapcsolat.
+Az élek két csomópont közötti kapcsolatot reprezentálnak. Egy kapcsolatnak mindig van iránya és típusa. Például a mintaalkalmazásban egy könyv felhasználó általi értékelését követően a felhasználó és a könyv csomópontok között létrejön egy \textit{Rated} kapcsolat.
 
-Csomópontok és kapcsolatok rendelkezhetnek tulajdonságokkal, amik kulcs-érték párok. Például egy könyvhöz tartozhat egy szerző tulajdonság.
+Csomópontok és kapcsolatok rendelkezhetnek tulajdonságokkal, amik kulcs-érték párok. Például egy könyvhöz tartozhat szerző tulajdonság.
 
 \Section{Lekérdezések}
 
@@ -86,7 +89,7 @@ Csomópontok és kapcsolatok rendelkezhetnek tulajdonságokkal, amik kulcs-ért�
 
 % https://neo4j.com/developer/cypher/
 
-Neo4j-ben a lekérdezések a Cypher Query Language segítségével valósulnak meg. A Cypher egy SQL által inspirált lekérdező nyelv, ezért ebben az alfejezetben egyrészt be lesz mutatva, hogy bizonyos dolgok hogyan valósíthatók meg Cypherrel és SQL-el egyeránt.\cite{cypher} \cite{sql}
+Neo4j-ben a lekérdezések a \textit{Cypher Query Language} segítségével valósulnak meg. A Cypher egy SQL által inspirált lekérdező nyelv, ezért ebben az alfejezetben egyaránt bemutatásra kerül, hogy bizonyos műveletek hogyan valósíthatók meg Cypherrel és SQL-el \cite{cypher}, \cite{sql}.
 
 % https://neo4j.com/developer/cypher/guide-sql-to-cypher/
 
@@ -96,207 +99,174 @@ Neo4j-ben a lekérdezések a Cypher Query Language segítségével valósulnak m
 % match             & select
 % optional match    & outer join
 % return            & -
-Cypherben az adatok kiválasztása a MATCH paranccsal történik, amiket a kiválasztást követően a RETURN paranccsal lehet megkapni. A következő parancs lekérdezi az adatbázisban található összes könyvet.
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (n:Book) RETURN n
-\end{lstlisting}
-
-\noindent Az alábbi parancs pedig a Stephen King által írt könyveket fogja lekérdezni.
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (n:Book{author:"Stephen King"}) RETURN n
-\end{lstlisting}
-
-Az OPTIONAL MATCH parancs hasonlóan működik mint a MATCH, annyi eltéréssel, hogy ha nincs találat, akkor az OPTINAL MATCH null értéket fog használni a minta hiányzó részeinél. A következő parancs az adatbázisban található könyveket fogja visszaadni, és ha van hozzájuk értékelés, akkor azoknak az átlagát is. Amennyiben nincs értékelés, akkor az átlag helyén null érték fog szerepelni.
-
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (b:Book) 
-    OPTIONAL MATCH (a)-[r:Rated]->(b) 
-    RETURN b.title, avg(r.rating)
-\end{lstlisting}
-
-
-\noindent SQL-ben a MATCH megfelelője a SELECT paranccsal, míg a OPTIONAL MATCH megfelelője az OUTER JOIN:
-
-\begin{lstlisting}[columns=fullflexible]
-    SELECT * FROM Books;
-    SELECT * FROM Books WHERE Author='Stephen King';
-    SELECT Books.Title, avg(Rated.Rating) FROM Books 
-    FULL OUTER JOIN Rated USING(BookID) GROUP BY Books.Title;
-\end{lstlisting}
+Cypher-ben az adatok kiválasztása a \texttt{MATCH} paranccsal történik, amiket a kiválasztást követően a \texttt{RETURN} paranccsal lehet megkapni. A következő parancs lekérdezi az adatbázisban található összes könyvet.
+\begin{java}
+MATCH (n:Book) RETURN n
+\end{java}
+Az alábbi parancs pedig a Stephen King által írt könyveket fogja lekérdezni.
+\begin{java}
+MATCH (n:Book{author: "Stephen King"}) RETURN n
+\end{java}
+Az \texttt{OPTIONAL MATCH} parancs hasonlóan működik mint a \texttt{MATCH}, annyi eltéréssel, hogy ha nincs találat, akkor az \texttt{OPTIONAL MATCH} null értéket fog használni a minta hiányzó részeinél. A következő parancs az adatbázisban található könyveket fogja visszaadni, és ha van hozzájuk értékelés, akkor azoknak az átlagát is. Amennyiben nincs, akkor az átlag helyén null érték fog szerepelni.
+\begin{java}
+MATCH (b:Book) 
+OPTIONAL MATCH (a)-[r:Rated]->(b) 
+RETURN b.title, avg(r.rating)
+\end{java}
+SQL-ben a \texttt{MATCH} megfelelője a \texttt{SELECT} paranccsal, míg az \texttt{OPTIONAL MATCH} megfelelője az \texttt{OUTER JOIN}:
+\begin{java}
+SELECT * FROM Books;
+SELECT * FROM Books WHERE Author='Stephen King';
+SELECT Books.Title, AVG(Rated.Rating) FROM Books 
+FULL OUTER JOIN Rated USING(BookID) GROUP BY Books.Title;
+\end{java}
 
 \subsection{Korlátozás}
 % where             & where
-A WHERE paranccsal korlátozásokat lehet hozzárendelni a MATCH és OPTIONAL MATCH parancsokhoz. A WHERE paranccsal lehet vizsgálni például egy csomópont vagy kapcsolat ID-jét, címkéjét és tulajdonságait, számok közötti egyenlőséget illetve egyenlőtlenséget, string egyezést. Az alábbi parancs a 24-es ID-vel rendelkező könyv adatait fogja visszaadni.
+A \texttt{WHERE} paranccsal korlátozásokat lehet hozzárendelni a \texttt{MATCH} és \texttt{OPTIONAL MATCH} parancsokhoz. A \texttt{WHERE} paranccsal lehet vizsgálni például egy csomópont vagy kapcsolat ID-jét, címkéjét és tulajdonságait, számok közötti egyenlőséget illetve egyenlőtlenséget, szöveges egyezést. Az alábbi parancs a 24-es ID-vel rendelkező könyv adatait fogja visszaadni.
+\begin{java}
+MATCH (b:Book) 
+WHERE ID(b)=24
+RETURN b
+\end{java}
 
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (b:Book) 
-    WHERE ID(b)=24
-    RETURN b
-\end{lstlisting}
-
-\noindent SQL-ben
+% \noindent SQL-ben
 
 \subsection{Létrehozás}
 % create            & insert into
 % https://neo4j.com/docs/cypher-manual/current/clauses/create/
-Cypherrel az adatbázisban csomópontot és kapcsolatot a CREATE paranccsal lehet létrehozni. A következő parancs létrehoz egy könyvet az adatbázisban a megadott tulajdonságokkal. A parancsban az \textit{n} egy változó, a Book egy címke, míg az author és a title tulajdonságok. 
-\begin{lstlisting}[columns=fullflexible]
-    CREATE(n:Book{author:"J. R. R. Tolkien", title:"The Two Towers"})
-\end{lstlisting}
-
-\bigskip
-
-\noindent A alábbi parancs egy kapcsolatot fog létrehozni a megadott felhasználó és megadott könyv között a megadott névvel.
-
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (a:User), (b:Book) 
-    WHERE ID(a)=112 AND ID(b)=23
-    CREATE (a)-[r:Bookmarked]->(b) 
-\end{lstlisting}
-
-\bigskip
-
-SQL-ben adat rögzítéséhez először egy táblát kell létrehozni, majd ezt követően az feltölteni adatokkal.
-\begin{lstlisting}[columns=fullflexible]
-    CREATE TABLE Books(
-        BookID int primary key not null,
-        Author varchar(30),
-        Title varchar(30)
-    );
-    
-    INSERT INTO Books values (1, 'J. R. R. Tolkien', 'The Two Towers');
-\end{lstlisting}
-
-
-\noindent A Cypher-beli kapcsolatot SQL-ben egyedi és idegen kulcsokkal lehet megvalósítani. Az alábbi példában kapcsolótábla kerül alkalmazásra:
-\begin{lstlisting}[columns=fullflexible]
-    CREATE TABLE Bookmarked(
-        UserID int, 
-        FOREIGN KEY(UserID) REFERENCES Users(UserID),
-        BookID int, 
-        FOREIGN KEY(BookID) REFERENCES Books(BookID)
-    );
-    
-    INSERT INTO Bookmarked VALUES (112, 23);
-
-\end{lstlisting}
+Cypher-rel az adatbázisban csomópontot és kapcsolatot a \texttt{CREATE} paranccsal lehet létrehozni. A következő lekérdezés létrehoz egy könyvet az adatbázisban a megadott tulajdonságokkal. A parancsban az \textit{n} egy változó, a \textit{Book} egy címke, míg az \textit{author} és a \textit{title} tulajdonságok. 
+\begin{java}
+CREATE(n:Book{
+  author:"J. R. R. Tolkien",
+  title:"The Two Towers"
+})
+\end{java}
+Az alábbi parancs egy kapcsolatot fog létrehozni a megadott felhasználó és megadott könyv között a megadott névvel.
+\begin{java}
+MATCH (a:User), (b:Book) 
+WHERE ID(a)=112 AND ID(b)=23
+CREATE (a)-[r:Bookmarked]->(b) 
+\end{java}
+SQL-ben adat rögzítéséhez először egy táblát kell létrehozni, majd ezt követően lehet azt feltölteni adatokkal.
+\begin{java}
+CREATE TABLE Books(
+  BookID INT PRIMARY KEY NOT NULL,
+  Author VARCHAR(30),
+  Title VARCHAR(30)
+);
+INSERT INTO Books
+VALUES (1, 'J. R. R. Tolkien', 'The Two Towers');
+\end{java}
+A Cypher-beli kapcsolatot SQL-ben egyedi és idegen kulcsokkal lehet megvalósítani. Az alábbi példában kapcsolótábla kerül alkalmazásra:
+\begin{java}
+CREATE TABLE Bookmarked(
+  UserID INT, 
+  FOREIGN KEY(UserID) REFERENCES Users(UserID),
+  BookID INT, 
+  FOREIGN KEY(BookID) REFERENCES Books(BookID)
+);
+INSERT INTO Bookmarked VALUES (112, 23);
+\end{java}
 
 \subsection{Törlés}
 % delete            & delete
-Csomópontok és kapcsolatok törlésére a DELETE paranccsal van lehetőségünk. Az alábbi parancs törölni fogja a megadott csomópontot, amennyiben az nem rendelkezik kapcsolatokkal.
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (n:Book) 
-    WHERE ID(n)=24 
-    DELETE n
-\end{lstlisting}
-
-Amennyiben olyan csomópontot szeretnénk törölni, amihez tartozik kapcsolat, akkora DETACH DELETE parancsolt kell használni.
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (n:Book) 
-    WHERE ID(n)=24
-    DETACH DELETE n
-\end{lstlisting}
-
-A következő parancs megszünteti a Bookmarked kapcsolatot a megadott felhasználó és a megadott könyv között.
-
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (a:User)-[r:Bookmarked]->(b:Book) 
-    WHERE ID(a)=12 AND ID(b)=14
-    DELETE r
-\end{lstlisting}
-
-\bigskip
-
-\noindent SQL-ben a törlés a DELETE paranccsal történik.
-\begin{lstlisting}[columns=fullflexible]
-    DELETE FROM Books 
-    WHERE BookID=24;
-\end{lstlisting}
+Csomópontok és kapcsolatok törlésére a \textbf{DELETE} paranccsal van lehetőségünk. Az alábbi lekérdezés törölni fogja a megadott csomópontot, amennyiben az nem rendelkezik kapcsolatokkal.
+\begin{java}
+MATCH (n:Book) 
+WHERE ID(n)=24 
+DELETE n
+\end{java}
+Amennyiben olyan csomópontot szeretnénk törölni, amihez tartozik kapcsolat, akkor a \texttt{DETACH DELETE} parancsot kell használni.
+\begin{java}
+MATCH (n:Book) 
+WHERE ID(n)=24
+DETACH DELETE n
+\end{java}
+A következő parancs megszünteti a \textit{Bookmarked} kapcsolatot a megadott felhasználó és a megadott könyv között.
+\begin{java}
+MATCH (a:User)-[r:Bookmarked]->(b:Book) 
+WHERE ID(a)=12 AND ID(b)=14
+DELETE r
+\end{java}
+SQL-ben a törlés a \texttt{DELETE} paranccsal történik.
+\begin{java}
+DELETE FROM Books 
+WHERE BookID = 24;
+\end{java}
 
 \subsection{Rendezés}
 % order by          &  order by
-Cypherben az ORDER BY paranccsal lehet a találatokat rendezni. Az alábbi parancs a könyv darabszáma alapján fogja rendezni a találatokat csökkenő sorrendben.
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (n:Book) 
-    RETURN n.stock 
-    ORDER BY n.stock DESC
-\end{lstlisting}
-
-\bigskip
-
-\noindent SQL-ben szintén az ORDER BY paranccsal történik a rendezés.
-
-\begin{lstlisting}[columns=fullflexible]
-    SELECT * 
-    FROM Books 
-    ORDER BY Stock DESC;
-\end{lstlisting}
+Cypher-ben az \texttt{ORDER BY} paranccsal lehet a találatokat rendezni. Az alábbi parancs a könyv darabszáma alapján csökkenő sorrendben fogja visszaadni a találatokat.
+\begin{java}
+MATCH (n:Book) 
+RETURN n.stock 
+ORDER BY n.stock DESC
+\end{java}
+SQL-ben szintén az \texttt{ORDER BY} paranccsal történik a rendezés.
+\begin{java}
+SELECT * 
+FROM Books 
+ORDER BY Stock DESC;
+\end{java}
 
 \subsection{Kihagyás}
 % skip              & skip
-Cypherben a SKIP paranccsal át lehet ugrani a megadott mennyiségű első találatot. A következő parancs a könyv darabszáma alapján fogja rendezni a találatokat csökkenő sorrendben, majd ezek közül kihagy 1-et, és visszaadja a többit.
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (n:Book) 
-    RETURN n.stock 
-    ORDER BY n.stock DESC
-    SKIP 1
-\end{lstlisting}
-
-\noindent SQL-ben elem kihagyására az OFFSET paranccsal van lehetőség.
-
-\begin{lstlisting}[columns=fullflexible]
-    SELECT * 
-    FROM Books 
-    ORDER BY Stock DESC;
-    OFFSET 1 ROWS
-\end{lstlisting}
+Cypher-ben a \texttt{SKIP} paranccsal át lehet ugrani a megadott mennyiségű első találatot. A következő parancs a könyv darabszáma alapján fogja rendezni a találatokat csökkenő sorrendben, majd ezek közül kihagy 1-et, és visszaadja a többit.
+\begin{java}
+MATCH (n:Book) 
+RETURN n.stock 
+ORDER BY n.stock DESC
+SKIP 1
+\end{java}
+SQL-ben elem kihagyására az \texttt{OFFSET} paranccsal van lehetőség.
+\begin{java}
+SELECT * 
+FROM Books 
+ORDER BY Stock DESC
+OFFSET 1;
+\end{java}
 
 \subsection{Limitálás}
 % limit             & offset
-Cypherben a LIMIT paranccsal meg lehet adni, hogy hány találatot szeretnénk megkapni. Az alábbi parancs a könyv darabszáma alapján fogja rendezni a találatokat csökkenő sorrendben, de csak az első két találat lesz visszaadva.
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (n:Book) 
-    RETURN n.stock 
-    ORDER BY n.stock DESC
-    LIMIT 2
-\end{lstlisting}
+Cypher-ben a \texttt{LIMIT} paranccsal meg lehet adni, hogy hány találatot szeretnénk megkapni. Az alábbi parancs a könyv darabszáma alapján fogja rendezni a találatokat csökkenő sorrendbe, de csak az első két találatot adja vissza.
+\begin{java}
+MATCH (n:Book) 
+RETURN n.stock 
+ORDER BY n.stock DESC
+LIMIT 2
+\end{java}
+SQL-ben hasonlóképpen használható a \texttt{LIMIT} parancs.
+\begin{java}
+SELECT *
+FROM Books 
+ORDER BY Stock DESC
+LIMIT 2;
+\end{java}
+Alternatívaként használható az alábbi, \texttt{FETCH} paranccsal megadott lekérdezés is.
+\begin{java}
+SELECT *
+FROM Books 
+ORDER BY Stock DESC;
+FETCH FIRST 2 ROWS ONLY;
+\end{java}
 
-\bigskip
-
-\noindent SQL-ben erre a FETCH paranccsal van lehetőség.
-
-\begin{lstlisting}[columns=fullflexible]
-    SELECT * 
-    FROM Books 
-    ORDER BY Stock DESC;
-    FETCH FIRST 2 ROWS ONLY;
-\end{lstlisting}
-
-
-\bigskip
-
-A SKIP és LIMIT, illetve OFFSET és FETCH parancsok gyakran együtt vannak használva pagination funkció létrehozásának érdekében.
+A \texttt{SKIP} és \texttt{LIMIT}, illetve \texttt{OFFSET} és \texttt{FETCH} parancsokat gyakran együtt használják a webalkalmazásokban a lapozás (\textit{pagination}) megvalósításához.
 
 \subsection{Frissítés}
 % set               & update/set
-Cypherben a SET paranccsal lehet tulajdonságokat és címkéket frissíteni. Lehet vele nem létező tulajdonságokat létrehozni, létező tulajdonságok értékét megváltoztatni, valamint tulajdonságokat törölni is. Az alábbi parancs a megadott ID-jű könyv kategóriáját Fantasy-ra fogja beállítani.
-
-\begin{lstlisting}[columns=fullflexible]
-    MATCH (n:Book) 
-    WHERE ID(n)=24
-    SET n.category="Fantasy"
-\end{lstlisting}
-
-\bigskip
-
-\noindent SQL-ben ez a UPDATE paranccsal történik.
-
-\begin{lstlisting}[columns=fullflexible]
-    UPDATE Books
-    SET Category = 'Fantasy'
-    WHERE BookID = 24;
-\end{lstlisting}
-
+Cypher-ben a \texttt{SET} paranccsal lehet tulajdonságokat és címkéket létrehozni, értéküket megváltoztatni, illetve törölni. Az alábbi parancs a megadott ID-jű könyv kategóriáját \textit{Fantasy}-ra fogja beállítani.
+\begin{java}
+MATCH (n:Book) 
+WHERE ID(n)=24
+SET n.category="Fantasy"
+\end{java}
+SQL-ben ez az \texttt{UPDATE} paranccsal történik.
+\begin{java}
+UPDATE Books
+SET Category = 'Fantasy'
+WHERE BookID = 24;
+\end{java}
 
 % \subsubsection{Egyebek}
 % merge             & merge?
@@ -305,71 +275,77 @@ Cypherben a SET paranccsal lehet tulajdonságokat és címkéket frissíteni. Le
 \Section{Kapcsolódás az adatbázishoz}
 % TODO: Ezt elég csak röviden részletezni.
 
-A Neo4j-hez igénybe vehető számos hivatalos driver, amik egyszerűsítik egy alkalmazás és az adatbázis összekapcsolását. Az alábbi programozási nyelvekhez érhető el hivatalos driver:
-
+A Neo4j-hez igénybe vehető számos hivatalos meghajtóprogram (\textit{driver}), amik egyszerűsítik egy alkalmazás és az adatbázis összekapcsolását. Az alábbi programozási nyelvekhez érhető el hivatalos kiadás:
 \begin{itemize}
-    \item .NET
-    \item Go
-    \item Java
-    \item JavaScript
-    \item Python
+    \item .NET,
+    \item Go,
+    \item Java,
+    \item JavaScript,
+    \item Python.
 \end{itemize}
-
-\noindent JavaScript esetében a kapcsolódás az alábbi módon történik:
+JavaScript esetében a kapcsolódás az alábbi módon történik:
 \begin{itemize}
-    \item Neo4j driver telepítése: npm install neo4j-driver
-    \item Neo4j driver importálása: const neo4j = require("neo4j-driver");
-    \item Neo4j driver inicializálása: const driver = neo4j.driver(uri, neo4j.auth.basic(user, password));
+\item Neo4j driver telepítése:
+\begin{java}
+npm install neo4j-driver
+\end{java}
+\item Neo4j driver importálása: 
+\begin{java}
+const neo4j = require("neo4j-driver");
+\end{java}
+\item Neo4j driver inicializálása:
+\begin{java}
+const driver = neo4j.driver(
+  uri,
+  neo4j.auth.basic(user, password)
+);
+\end{java}
 \end{itemize}
 
 \Section{Lekérdezések kiadása}
 % TODO: Tulajdonképpen a Neo4j API-t kell röviden bemutatni.
 % https://neo4j.com/docs/javascript-manual/current/session-api/
-A mintaalkalmazásban a lekérdezések kiadására a Neo4j Driver-ben található Session API kerül felhasználásra. \cite{neo4j-session-api} Ahhoz, hogy elkezdhessük használni a Session API-t, először is deklarálnunk kell a session objektumot:
-\begin{lstlisting}
-     const session = driver.session()
-\end{lstlisting}
+A mintaalkalmazásban a lekérdezések kiadására a \textit{Neo4j Driver}-ben található \textit{Session API} kerül felhasználásra \cite{neo4j-session-api}. Ahhoz, hogy elkezdhessük használni a \textit{Session API}-t, először is deklarálnunk kell a \texttt{session} objektumot:
+\begin{java}
+const session = driver.session()
+\end{java}
 
-Ezt követően a run() függvény segítségével futtathatjuk a lekérdezéseket az alábbi módon:
-
-\begin{lstlisting}
-     session.run(query, queryParams);
-\end{lstlisting}
+Ezt követően a \texttt{run} függvény segítségével futtathatjuk a lekérdezéseket az alábbi módon:
+\begin{java}
+session.run(query, queryParams);
+\end{java}
  
-A query az maga a lekérdezés string formátumban, a queryParams pedig egy opcionális objektum, ami tartalmazza a lekérdezéshez tartozó paramétereket. Például, az alábbi példában azt a felhasználót keressük, akinek az ID-je megegyezik a userId változóban szereplő értékkel. A lekérdezésben a \$userIdParam jelzi, hogy oda egy paramétert vár.
+A \texttt{query} az maga a lekérdezés sztring formátumban, a \texttt{queryParams} pedig egy opcionális objektum, ami tartalmazza a lekérdezéshez tartozó paramétereket. Például, az alábbi példában azt a felhasználót keressük, akinek az ID-je megegyezik a \texttt{userId} változóban szereplő értékkel. A lekérdezésben a \texttt{\$userIdParam} jelzi, hogy oda egy paramétert vár.
+\begin{java}
+const query = `
+  MATCH(n:User) 
+  WHERE ID(n)=$userIdParam 
+  RETURN n`;
+  
+const queryParams = {
+  userIdParam: userId
+};
+\end{java}
 
-\begin{lstlisting}[columns=fullflexible]
-     const query = `
-      MATCH(n:User) 
-      WHERE ID(n)=$userIdParam 
-      RETURN n`;
-      
-    const queryParams = {
-      userIdParam: userId,
-    };
-\end{lstlisting}
-
-A run() függvény futtatása után a then() függvénnyel lehet a kapott választ feldolgozni. Az alábbi példában a kapott válasz kerül kiírásra:
-\begin{lstlisting}
-      session.run(query, queryParams)
-      .then(function (result) {
-        console.log(result)
-      });
-\end{lstlisting}
+A \texttt{run} függvény futtatása után a \texttt{then} függvénnyel lehet a kapott választ feldolgozni. Az alábbi példában ez kerül kiírásra:
+\begin{java}
+session.run(query, queryParams)
+  .then(function (result) {
+    console.log(result)
+  }
+);
+\end{java}
 
 % https://neo4j.com/docs/ogm-manual/current/introduction/
 \Section{Magasabb szintű hozzáférési módok}
 % TODO: Ide kerülhetne akár csak irodalomkutatás jelleggel, hogy milyen ORM jellegű megoldások fordulhatnak elő.
-Magasabb hozzáférési módként a Neo4j objektum gráf leképzést (Object Graph Mapper / OGM) ajánl.  Az OGM a gráf csomópontjait és kapcsolatait képezi le objektumokra és hivatkozásokra az alábbi módon:
+Magasabb hozzáférési módként a Neo4j objektum gráf leképzést (\textit{OGM, Object Graph Mapper}) ajánl. Az OGM a gráf csomópontjait és kapcsolatait képezi le objektumokra és hivatkozásokra az alábbi módon:
 \begin{itemize}
-    \item Az objektumpéldányok csomópontokkal vannak leképezve
-    \item  Az objektumhivatkozások kapcsolatokkal vannak leképezve
-    \item A JVM primitívek csomópont- vagy kapcsolattulajdonságokkal vannak leképezve
+    \item Az objektumpéldányokat csomópontokra képzi.
+    \item Az objektumhivatkozásokat kapcsolatokra képzi.
+    \item A JVM primitíveket csomópont- vagy kapcsolattulajdonságokra képzi.
 \end{itemize}
 
-Az OGM elvonatkoztatja az adatbázist, és kényelmes módot biztosít a tartománymodell grafikonon való megtartására és lekérdezésére alacsony szintű illesztőprogramok használata nélkül. Rugalmasságot biztosít a fejlesztő számára, hogy egyéni lekérdezéseket biztosítson, ha a Neo4j-OGM által generált lekérdezések nem elegendőek.
+Az OGM elvonatkoztatja az adatbázist, és kényelmes módot biztosít a tartománymodell grafikonon való megtartására és lekérdezésére alacsony szintű illesztőprogramok használata nélkül. Rugalmasságot biztosít a fejlesztő számára egyéni lekérdezésekhez, ha a Neo4j-OGM által generált lekérdezések nem elegendőek.
 
-\bigskip
-
-A Neo4j a Neo4j-OGM könyvtárat biztosítja az OGM-hez. Ez könyvtár egy Java könyvtár, amely a Neo4j használatával képes megőrizni tartományobjektumokat. Cypher utasításokat használ a műveletek kezelésére.
-
+A Neo4j a \textit{Neo4j-OGM} könyvtárat biztosítja az OGM-hez. Ez egy Java könyvtár, amely a Neo4j használatával képes megőrizni a tartományobjektumokat. Cypher utasításokat használ a műveletek kezelésére.
