@@ -10,8 +10,8 @@ module.exports = function (app) {
     var itemsPerPage = +req.query.itemsperpage;
 
     const query = `
-      MATCH (b:ExpandBook) 
-      RETURN b, count(b) 
+      MATCH ()-[r:Voted]->(n:ExpandBook) 
+      RETURN n, COUNT(r) 
       SKIP $skipParam 
       LIMIT $limitParam`;
     const queryParams = {
@@ -75,7 +75,8 @@ module.exports = function (app) {
       CREATE (a)-[r:Voted]->(b:ExpandBook{author:$authorParam, 
       title:$titleParam, category:$categoryParam, 
       cover:$coverParam, description:$descriptionParam, 
-      pages:$pagesParam, year:$yearParam})`;
+      pages:$pagesParam, year:$yearParam})
+      RETURN ID(b)`;
     const queryParams = {
       authorParam: author,
       titleParam: title,
@@ -90,7 +91,7 @@ module.exports = function (app) {
     session_expand
       .run(query, queryParams)
       .then(function (result) {
-        res.redirect("/");
+        res.json({ bookId: result.records[0]._fields[0].low });
       })
       .catch(function (error) {
         console.log(error);

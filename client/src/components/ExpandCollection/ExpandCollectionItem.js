@@ -5,13 +5,19 @@ import classes from "./ExpandCollectionItem.module.css";
 import noCover from "../../utility/nocover.png";
 
 async function addBookToVoteListPost(book, userId) {
-  await fetch(`/expand`, {
+  const response = await fetch(`/expand`, {
     method: "POST",
     body: JSON.stringify({ ...book, userId }),
     headers: {
       "Content-Type": "application/json",
     },
   });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Could not fetch books.");
+  }
+  return data;
 }
 
 async function addBookToLibrary(book) {
@@ -58,7 +64,9 @@ const ExpandCollectionItem = (props) => {
   };
 
   const addBookToVoteListHandler = () => {
-    addBookToVoteListPost(props.book, authCtx.id);
+    addBookToVoteListPost(props.book, authCtx.id).then((data) => {
+      authCtx.votes.push({ bookId: data.bookId });
+    });
     setIsPressed(true);
   };
 
@@ -78,7 +86,7 @@ const ExpandCollectionItem = (props) => {
   }, [alreadyVoted]);
 
   const voteHandler = () => {
-    if (props.book.votes > 2) {
+    if (props.book.votes >= 2) {
       addBookToLibrary(props.book);
       setIsAdded(true);
     } else {

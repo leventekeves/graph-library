@@ -28,8 +28,6 @@ async function getList(listId, pageNumber, itemsPerPage) {
   if (!response.ok) {
     throw new Error(data.message || "Could not fetch books.");
   }
-
-  console.log(data);
   return data;
 }
 

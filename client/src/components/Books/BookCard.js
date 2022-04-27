@@ -392,7 +392,6 @@ const BookCard = () => {
                   <img className={classes.cover} src={book.cover} alt="cover" />
                 )}
               </div>
-              {console.log(book.description)}
               <div className={classes["book-details"]}>
                 <div className={classes.title}>{book.title}</div>
                 <div className={classes.author}>by {book.author}</div>
