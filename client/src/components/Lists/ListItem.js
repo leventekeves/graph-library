@@ -2,8 +2,6 @@ import { Link } from "react-router-dom";
 import classes from "./ListItem.module.css";
 
 const ListItem = (props) => {
-  //const transformedBooks = Object.values(props.books);
-
   let formatedDate;
   const date = new Date(props.date);
 

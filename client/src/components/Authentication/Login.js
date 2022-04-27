@@ -35,30 +35,27 @@ const Login = () => {
   const onSubmitHandler = (event) => {
     event.preventDefault();
 
-    loginUser(
-      // emailInputRef.current.value,
-      // passwordInputRef.current.value
-      "admin@admin.com",
-      "admin"
-    ).then((data) => {
-      if (data) {
-        authCtx.login(
-          "123456789",
-          data.id,
-          data.name,
-          data.access,
-          data.ratings,
-          data.bookmarks,
-          data.borrowings,
-          data.recommendations,
-          data.votes,
-          data.historyBorrowings
-        );
-        history.replace("/");
-      } else {
-        setLoginFailed(true);
+    loginUser(emailInputRef.current.value, passwordInputRef.current.value).then(
+      (data) => {
+        if (data) {
+          authCtx.login(
+            "123456789",
+            data.id,
+            data.name,
+            data.access,
+            data.ratings,
+            data.bookmarks,
+            data.borrowings,
+            data.recommendations,
+            data.votes,
+            data.historyBorrowings
+          );
+          history.replace("/");
+        } else {
+          setLoginFailed(true);
+        }
       }
-    });
+    );
   };
 
   return (

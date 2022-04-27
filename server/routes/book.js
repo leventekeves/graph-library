@@ -159,31 +159,6 @@ module.exports = function (app) {
 
     /////////////////////////
 
-    // if (booksInList.length > 0) {
-    //   query = `MATCH (b:Book)
-    //     WHERE NOT ID(b) IN $booksInListParam
-    //     OPTIONAL MATCH (a)-[r:Rated]->(b)
-    //     RETURN b, avg(r.rating) AS rating
-    //     SKIP $skipParam
-    //     LIMIT $limitParam`;
-    //   queryNumberOfBooks = `MATCH (b:Book)
-    //     WHERE NOT ID(b) IN $booksInListParam
-    //     RETURN count(b)`;
-    // } else {
-    //   query = `MATCH (b:Book)
-    //     OPTIONAL MATCH (a)-[r:Rated]->(b)
-    //     RETURN b, avg(r.rating) AS rating
-    //     SKIP $skipParam
-    //     LIMIT $limitParam`;
-    //   queryNumberOfBooks = "MATCH (b:Book) RETURN count(b)";
-    // }
-
-    // queryParams = {
-    //   booksInListParam: booksInList,
-    //   skipParam: neo4j.int(pageNumber * itemsPerPage),
-    //   limitParam: neo4j.int(itemsPerPage),
-    // };
-
     session_book
       .run(query, queryParams)
       .then(function (result) {

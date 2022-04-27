@@ -99,37 +99,6 @@ const BooksContent = (props) => {
       category: categoryFilter,
     };
 
-    // if (firstLoad) {
-    //   getBooks(
-    //     queryParamsForRequest,
-    //     currentPage,
-    //     itemsPerPage,
-    //     props.listId
-    //   ).then((data) => {
-    //     if (isActive) {
-    //       setData(data);
-    //       setIsLoading(false);
-    //       setFirstLoad(false);
-    //     }
-    //   });
-    // }
-
-    // if (pageChange) {
-    //   getBooks(
-    //     queryParamsForRequest,
-    //     currentPage,
-    //     itemsPerPage,
-    //     props.listId
-    //   ).then((data) => {
-    //     if (isActive) {
-    //       setData(data);
-    //       setIsLoading(false);
-    //       setFirstLoad(false);
-    //       setPageChange(false);
-    //     }
-    //   });
-    // }
-
     if (pageChange || firstLoad)
       getBooks(
         queryParamsForRequest,
