@@ -26,7 +26,7 @@ const BookmarksContent = () => {
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const itemsPerPage = 3;
+  const itemsPerPage = 8;
 
   const authCtx = useContext(AuthContext);
 
